@@ -36,6 +36,8 @@ export default function RootLayout() {
         <Stack.Screen name="bonds" />
         <Stack.Screen name="codex" />
         <Stack.Screen name="settings" />
+        <Stack.Screen name="support" />
+        <Stack.Screen name="privacy" />
         <Stack.Screen name="battle" />
         <Stack.Screen name="reward" />
         <Stack.Screen name="event" />

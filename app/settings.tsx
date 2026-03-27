@@ -1,11 +1,10 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from 'react-native';
@@ -13,37 +12,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
 import { useGameStore } from '@/src/state/gameStore';
-import { useProfileStore } from '@/src/state/profileStore';
 import { colors } from '@/src/theme/colors';
 import { spacing } from '@/src/theme/spacing';
-import type { ProfileSettingsState } from '@/src/types/profile';
-
-type SettingsLoadStatus = 'idle' | 'loading' | 'ready' | 'error';
-
-type SettingRowProps = {
-  label: string;
-  description: string;
-  value: boolean;
-  disabled: boolean;
-  onValueChange: (value: boolean) => void;
-};
 
 export default function SettingsScreen() {
-  const profile = useProfileStore((state) => state.profile);
-  const refreshProfile = useProfileStore((state) => state.refreshProfile);
-  const bootstrapProfile = useGameStore((state) => state.profile);
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const bootstrapError = useGameStore((state) => state.error);
   const initializeApp = useGameStore((state) => state.initializeApp);
   const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
-  const updateSettings = useProfileStore((state) => state.updateSettings);
-  const [loadStatus, setLoadStatus] = useState<SettingsLoadStatus>('idle');
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [savingKey, setSavingKey] = useState<keyof ProfileSettingsState | null>(
-    null
-  );
-  const resolvedProfile = profile ?? bootstrapProfile;
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -51,109 +27,7 @@ export default function SettingsScreen() {
     }
   }, [bootstrapStatus, initializeApp]);
 
-  useEffect(() => {
-    if (bootstrapStatus === 'idle' || bootstrapStatus === 'loading') {
-      if (loadStatus !== 'loading') {
-        setLoadStatus('loading');
-        setLoadError(null);
-      }
-      return;
-    }
-
-    if (bootstrapStatus === 'error') {
-      setLoadStatus('error');
-      setLoadError(
-        bootstrapError ?? 'The settings profile could not be reopened.'
-      );
-      return;
-    }
-
-    if (loadStatus === 'ready' || loadStatus === 'error') {
-      return;
-    }
-
-    let isCancelled = false;
-
-    setLoadStatus('loading');
-    setLoadError(null);
-
-    void (async () => {
-      try {
-        if (!resolvedProfile) {
-          await refreshProfile();
-        }
-
-        if (isCancelled) {
-          return;
-        }
-
-        setLoadStatus('ready');
-      } catch (error) {
-        if (isCancelled) {
-          return;
-        }
-
-        setLoadStatus('error');
-        setLoadError(
-          error instanceof Error && error.message
-            ? error.message
-            : 'The settings profile could not be reopened.'
-        );
-      }
-    })();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [
-    bootstrapError,
-    bootstrapStatus,
-    loadStatus,
-    refreshProfile,
-    resolvedProfile,
-  ]);
-
-  const handleRefresh = async () => {
-    setLoadStatus('loading');
-    setLoadError(null);
-
-    try {
-      await refreshBootstrap();
-      await refreshProfile();
-      setLoadStatus('ready');
-    } catch (error) {
-      setLoadStatus('error');
-      setLoadError(
-        error instanceof Error && error.message
-          ? error.message
-          : 'The settings profile could not be refreshed.'
-      );
-    }
-  };
-
-  const handleToggle = async (
-    key: keyof ProfileSettingsState,
-    value: boolean
-  ) => {
-    setSavingKey(key);
-    setSaveError(null);
-
-    try {
-      await updateSettings({ [key]: value });
-    } catch (error) {
-      setSaveError(
-        error instanceof Error && error.message
-          ? error.message
-          : 'The new setting could not be saved.'
-      );
-    } finally {
-      setSavingKey(null);
-    }
-  };
-
-  const settings = resolvedProfile?.settings ?? null;
-  const isLoading = loadStatus === 'idle' || loadStatus === 'loading';
-  const isSaving = savingKey !== null;
+  const isLoading = bootstrapStatus === 'idle' || bootstrapStatus === 'loading';
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -169,35 +43,29 @@ export default function SettingsScreen() {
             <Text style={styles.eyebrow}>SYSTEM</Text>
             <Text style={styles.title}>Settings</Text>
             <Text style={styles.subtitle}>
-              Profile preferences now persist for real.
+              Only launch-safe controls belong here.
             </Text>
             <Text style={styles.body}>
-              Audio and content preferences now save directly into the SQLite
-              profile layer instead of routing to a placeholder screen.
+              The unfinished audio and content switches have been intentionally
+              removed from the live UI. They still exist in the saved profile
+              schema for future wiring, but the current runtime does not pretend
+              they change real behavior.
             </Text>
           </View>
 
           {isLoading ? (
-            <LoadingPanel label="Reopening profile preferences..." />
-          ) : loadStatus === 'error' ? (
+            <LoadingPanel label="Reopening release settings..." />
+          ) : bootstrapStatus === 'error' ? (
             <InfoPanel
               title="Settings Error"
               body={
-                loadError ?? 'The settings profile could not be reconstructed.'
+                bootstrapError ??
+                'The settings screen could not confirm the current app state.'
               }
               primaryLabel="Try Again"
-              onPrimaryPress={handleRefresh}
-              secondaryLabel="Return to Title"
-              onSecondaryPress={() => {
-                router.push('/' as Href);
+              onPrimaryPress={() => {
+                void refreshBootstrap();
               }}
-            />
-          ) : !settings ? (
-            <InfoPanel
-              title="Profile Missing"
-              body="The profile did not finish loading, so settings are not available yet."
-              primaryLabel="Reload Settings"
-              onPrimaryPress={handleRefresh}
               secondaryLabel="Return to Title"
               onSecondaryPress={() => {
                 router.push('/' as Href);
@@ -206,98 +74,67 @@ export default function SettingsScreen() {
           ) : (
             <>
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Audio</Text>
+                <Text style={styles.panelTitle}>Launch-Safe Policy</Text>
                 <Text style={styles.panelBody}>
-                  These flags are saved immediately and will be available to the
-                  runtime shell on the next pass that wires audio systems fully
-                  into the app.
+                  Version 1 should not ship with fake controls. Until audio and
+                  tone-filter behavior are fully wired into the live app, those
+                  toggles stay hidden instead of making promises they do not yet
+                  keep.
                 </Text>
-                <View style={styles.settingList}>
-                  <SettingRow
-                    label="Sound Effects"
-                    description="Leave hit confirms, button feedback, and combat noise enabled."
-                    value={settings.sfxEnabled}
-                    disabled={isSaving}
-                    onValueChange={(value) => {
-                      void handleToggle('sfxEnabled', value);
-                    }}
-                  />
-                  <SettingRow
-                    label="Music"
-                    description="Keep ambient dungeon and menu music enabled."
-                    value={settings.musicEnabled}
-                    disabled={isSaving}
-                    onValueChange={(value) => {
-                      void handleToggle('musicEnabled', value);
-                    }}
-                  />
-                </View>
+                <Text style={styles.helperText}>
+                  Honest UI is better than decorative settings.
+                </Text>
               </View>
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Content</Text>
-                <Text style={styles.panelBody}>
-                  The profanity filter flag is now stored in the profile so
-                  future writing and dialogue systems can respect it.
-                </Text>
-                <View style={styles.settingList}>
-                  <SettingRow
-                    label="Profanity Filter"
-                    description="Swap sharper language for a cleaner office-approved tone when content systems opt in."
-                    value={settings.profanityFilterEnabled}
-                    disabled={isSaving}
-                    onValueChange={(value) => {
-                      void handleToggle('profanityFilterEnabled', value);
-                    }}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Current Profile Flags</Text>
+                <Text style={styles.panelTitle}>Current Release Defaults</Text>
                 <View style={styles.detailCard}>
+                  <DetailLine label="Platform" value="Android only" />
+                  <DetailLine label="Store" value="Google Play only" />
+                  <DetailLine label="Developer" value="Moonlithe" />
                   <DetailLine
-                    label="SFX"
-                    value={settings.sfxEnabled ? 'Enabled' : 'Muted'}
+                    label="Launch Regions"
+                    value="English-speaking regions first"
                   />
                   <DetailLine
-                    label="Music"
-                    value={settings.musicEnabled ? 'Enabled' : 'Muted'}
-                  />
-                  <DetailLine
-                    label="Profanity Filter"
-                    value={
-                      settings.profanityFilterEnabled ? 'Enabled' : 'Disabled'
-                    }
-                  />
-                  <DetailLine
-                    label="Save Mode"
-                    value={
-                      isSaving
-                        ? `Saving ${humanizeSettingKey(savingKey)}...`
-                        : 'Saved to profile'
-                    }
+                    label="Working Price"
+                    value="US$3.99 unless testing later supports US$4.99"
                   />
                 </View>
-                {saveError ? (
-                  <Text style={styles.errorBody}>{saveError}</Text>
-                ) : (
-                  <Text style={styles.helperText}>
-                    Preferences are written back to the primary profile as soon
-                    as each toggle changes.
-                  </Text>
-                )}
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Help And Policy</Text>
+                <Text style={styles.panelBody}>
+                  Support and privacy drafts now have dedicated routes so launch
+                  materials can point somewhere real once the final public URL
+                  and support inbox are locked.
+                </Text>
+                <View style={styles.actionGroup}>
+                  <GameButton
+                    label="Support"
+                    onPress={() => {
+                      router.push('/support' as Href);
+                    }}
+                  />
+                  <GameButton
+                    label="Privacy Policy"
+                    onPress={() => {
+                      router.push('/privacy' as Href);
+                    }}
+                    variant="secondary"
+                  />
+                </View>
               </View>
 
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Actions</Text>
                 <View style={styles.actionGroup}>
                   <GameButton
-                    label="Refresh Settings"
+                    label="Refresh Status"
                     onPress={() => {
-                      void handleRefresh();
+                      void refreshBootstrap();
                     }}
-                    disabled={isSaving}
                   />
                   <GameButton
                     label="Return to Title"
@@ -305,7 +142,6 @@ export default function SettingsScreen() {
                       router.push('/' as Href);
                     }}
                     variant="secondary"
-                    disabled={isSaving}
                   />
                 </View>
               </View>
@@ -317,11 +153,7 @@ export default function SettingsScreen() {
   );
 }
 
-function LoadingPanel({
-  label,
-}: {
-  label: string;
-}) {
+function LoadingPanel({ label }: { label: string }) {
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -365,33 +197,6 @@ function InfoPanel({
   );
 }
 
-function SettingRow({
-  label,
-  description,
-  value,
-  disabled,
-  onValueChange,
-}: SettingRowProps) {
-  return (
-    <View style={styles.settingCard}>
-      <View style={styles.settingCopy}>
-        <Text style={styles.settingTitle}>{label}</Text>
-        <Text style={styles.settingBody}>{description}</Text>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        disabled={disabled}
-        thumbColor={value ? colors.background : colors.textSubtle}
-        trackColor={{
-          false: colors.borderStrong,
-          true: colors.accent,
-        }}
-      />
-    </View>
-  );
-}
-
 function DetailLine({ label, value }: { label: string; value: string }) {
   return (
     <Text style={styles.detailLine}>
@@ -399,22 +204,6 @@ function DetailLine({ label, value }: { label: string; value: string }) {
       {value}
     </Text>
   );
-}
-
-function humanizeSettingKey(value: keyof ProfileSettingsState | null) {
-  if (value === 'sfxEnabled') {
-    return 'SFX';
-  }
-
-  if (value === 'musicEnabled') {
-    return 'Music';
-  }
-
-  if (value === 'profanityFilterEnabled') {
-    return 'Filter';
-  }
-
-  return 'settings';
 }
 
 const styles = StyleSheet.create({
@@ -486,33 +275,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  settingList: {
-    gap: spacing.sm + 2,
-  },
-  settingCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  settingCopy: {
-    flex: 1,
-    gap: spacing.xs + 2,
-  },
-  settingTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  settingBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
   detailCard: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -534,11 +296,6 @@ const styles = StyleSheet.create({
     color: colors.textSubtle,
     fontSize: 12,
     lineHeight: 18,
-  },
-  errorBody: {
-    color: colors.errorMuted,
-    fontSize: 13,
-    lineHeight: 19,
   },
   actionGroup: {
     gap: spacing.sm + 2,

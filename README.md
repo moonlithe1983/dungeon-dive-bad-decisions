@@ -53,6 +53,8 @@ The active stack is defined in `app/_layout.tsx` and currently includes:
 - `bonds`
 - `codex`
 - `settings`
+- `support`
+- `privacy`
 - `dev-smoke`
 
 `dev-smoke` is intentionally native-only and only available in dev builds.
@@ -149,10 +151,36 @@ The game is in release-candidate hardening mode:
 
 - feature freeze is recommended
 - Android dev-smoke win/loss validation is covered
-- signed Android release APK and AAB already exist locally
+- Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
+- local Android release APK and AAB are still present under `android/app/build/outputs`
+- the native Android app label now matches the real product title instead of the repo slug
+- the live settings route now hides unwired audio and content toggles instead of exposing fake controls
 - a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
-- audio settings still persist flags that are not fully wired into real runtime audio control, so they should not ship in a misleading state
 - Android full release-build device validation, store packaging, and external playtesting are still required before upload
+
+## Launch Defaults
+
+- Android only
+- Google Play only
+- English-speaking regions first: United States, United Kingdom, Canada, Australia, New Zealand, and Ireland
+- public developer name: `Moonlithe`
+- working launch price default: `US$3.99` unless external testing later clearly supports `US$4.99`
+- public support email still needs final owner confirmation before store setup
+
+## Support And Privacy Drafts
+
+- `PRIVACY_POLICY.md`
+- `SUPPORT.md`
+
+## GitHub Automation
+
+- `.github/workflows/validate.yml` runs `npm run lint`, `npx tsc --noEmit`, and `npm run smoke:sim` on pushes to `main` and on pull requests
+- branch protection should require that workflow before merges into `main`
+
+## License
+
+- this repository is source-available and all rights reserved
+- see `LICENSE.md`
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 

@@ -59,6 +59,100 @@ function getLatestCompanionCommsEntry(log) {
   );
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getActionDamageFromLog(log, actionLabel) {
+  const escapedLabel = escapeRegExp(actionLabel);
+  const patterns = [
+    new RegExp(`^${escapedLabel} lands for (\\d+) damage\\.$`),
+    new RegExp(`^${escapedLabel} hits for (\\d+), but the recoil costs \\d+ HP\\.$`),
+    new RegExp(`^${escapedLabel} keeps pressure on for (\\d+) damage\\.$`),
+  ];
+
+  for (const entry of [...log].reverse()) {
+    for (const pattern of patterns) {
+      const match = entry.match(pattern);
+
+      if (match) {
+        return Number(match[1]);
+      }
+    }
+  }
+
+  return null;
+}
+
+function getActionRecoilFromLog(log, actionLabel) {
+  const escapedLabel = escapeRegExp(actionLabel);
+  const pattern = new RegExp(
+    `^${escapedLabel} hits for \\d+, but the recoil costs (\\d+) HP\\.$`
+  );
+
+  for (const entry of [...log].reverse()) {
+    const match = entry.match(pattern);
+
+    if (match) {
+      return Number(match[1]);
+    }
+  }
+
+  return null;
+}
+
+function getActionHealingFromLog(log, actionLabel) {
+  const escapedLabel = escapeRegExp(actionLabel);
+  const pattern = new RegExp(`^${escapedLabel} restores (\\d+) HP(?: on contact)?\\.$`);
+
+  return log.reduce((total, entry) => {
+    const match = entry.match(pattern);
+
+    return total + (match ? Number(match[1]) : 0);
+  }, 0);
+}
+
+function getLatestRetaliationDamage(log) {
+  for (const entry of [...log].reverse()) {
+    const damageMatch = entry.match(/ hits back for (\d+) damage\.$/);
+
+    if (damageMatch) {
+      return Number(damageMatch[1]);
+    }
+
+    if (entry.endsWith('tries to hit back, but the timing collapses into nothing.')) {
+      return 0;
+    }
+  }
+
+  return null;
+}
+
+function getLatestNamedDamage(log, labelPrefix) {
+  const pattern = new RegExp(`^${escapeRegExp(labelPrefix)}(\\d+) damage\\.$`);
+
+  for (const entry of [...log].reverse()) {
+    const match = entry.match(pattern);
+
+    if (match) {
+      return Number(match[1]);
+    }
+  }
+
+  return null;
+}
+
+function withDurableEnemyHp(combat, minimumHp = 80) {
+  return {
+    ...combat,
+    enemy: {
+      ...combat.enemy,
+      currentHp: Math.max(combat.enemy.currentHp, minimumHp),
+      maxHp: Math.max(combat.enemy.maxHp, minimumHp),
+    },
+  };
+}
+
 function buildCombatStateKey(combat) {
   const heroStatuses = (combat.heroStatuses ?? [])
     .map((status) => `${status.id}:${status.turnsRemaining}`)
@@ -568,10 +662,11 @@ async function main() {
     ],
   });
   const neutralItemCombatState = createCombatStateForCurrentNode(neutralItemTestRun);
+  const durableNeutralItemCombatState = withDurableEnemyHp(neutralItemCombatState);
   const baselinePatchResult = performCombatAction(
     {
       ...neutralItemTestRun,
-      combatState: cloneCombatState(neutralItemCombatState),
+      combatState: cloneCombatState(durableNeutralItemCombatState),
     },
     'patch'
   );
@@ -579,12 +674,20 @@ async function main() {
     {
       ...neutralItemTestRun,
       inventoryItemIds: ['printer-toner-grenade'],
-      combatState: cloneCombatState(neutralItemCombatState),
+      combatState: cloneCombatState(durableNeutralItemCombatState),
     },
     'patch'
   );
+  const baselinePatchRetaliation = getLatestRetaliationDamage(
+    baselinePatchResult.combat.log
+  );
+  const tonerPatchRetaliation = getLatestRetaliationDamage(
+    tonerPatchResult.combat.log
+  );
   assert(
-    tonerPatchResult.combat.heroHp > baselinePatchResult.combat.heroHp,
+    baselinePatchRetaliation !== null &&
+      tonerPatchRetaliation !== null &&
+      tonerPatchRetaliation < baselinePatchRetaliation,
     'Expected Printer Toner Grenade to reduce retaliation damage on Patch.'
   );
 
@@ -608,15 +711,25 @@ async function main() {
     },
     'patch'
   );
+  const repeatedBaselinePatchDamage = getActionDamageFromLog(
+    repeatedBaselinePatch.combat.log,
+    'Warm Lead'
+  );
+  const replyAllPatchDamage = getActionDamageFromLog(
+    replyAllPatch.combat.log,
+    'Warm Lead'
+  );
   assert(
-    replyAllPatch.combat.enemy.currentHp < repeatedBaselinePatch.combat.enemy.currentHp,
+    repeatedBaselinePatchDamage !== null &&
+      replyAllPatchDamage !== null &&
+      replyAllPatchDamage > repeatedBaselinePatchDamage,
     'Expected Reply-All Amulet to increase repeated Patch damage.'
   );
 
   const baselineEscalateResult = performCombatAction(
     {
       ...neutralItemTestRun,
-      combatState: cloneCombatState(neutralItemCombatState),
+      combatState: cloneCombatState(durableNeutralItemCombatState),
     },
     'escalate'
   );
@@ -624,12 +737,22 @@ async function main() {
     {
       ...neutralItemTestRun,
       inventoryItemIds: ['bottomless-breakroom-coffee'],
-      combatState: cloneCombatState(neutralItemCombatState),
+      combatState: cloneCombatState(durableNeutralItemCombatState),
     },
     'escalate'
   );
+  const baselineEscalateRecoil = getActionRecoilFromLog(
+    baselineEscalateResult.combat.log,
+    'Hard Close'
+  );
+  const coffeeEscalateRecoil = getActionRecoilFromLog(
+    coffeeEscalateResult.combat.log,
+    'Hard Close'
+  );
   assert(
-    coffeeEscalateResult.combat.heroHp < baselineEscalateResult.combat.heroHp,
+    baselineEscalateRecoil !== null &&
+      coffeeEscalateRecoil !== null &&
+      coffeeEscalateRecoil > baselineEscalateRecoil,
     'Expected Bottomless Breakroom Coffee to increase Escalate recoil.'
   );
 
@@ -648,9 +771,12 @@ async function main() {
     },
     'stabilize'
   );
+  const stressBacklashDamage = getLatestNamedDamage(
+    stressBallStabilizeResult.combat.log,
+    'Stress backlash deals '
+  );
   assert(
-    stressBallStabilizeResult.combat.enemy.currentHp <
-      baselineStabilizeResult.combat.enemy.currentHp,
+    stressBacklashDamage !== null && stressBacklashDamage > 0,
     'Expected Stress Ball of Impact to deal damage while Stabilize resolves.'
   );
 
@@ -671,10 +797,11 @@ async function main() {
     ],
   });
   const statusTestCombatState = createCombatStateForCurrentNode(statusTestRun);
+  const durableStatusTestCombatState = withDurableEnemyHp(statusTestCombatState);
   const neutralPatchResult = performCombatAction(
     {
       ...statusTestRun,
-      combatState: cloneCombatState(statusTestCombatState),
+      combatState: cloneCombatState(durableStatusTestCombatState),
     },
     'patch'
   );
@@ -682,14 +809,22 @@ async function main() {
     {
       ...statusTestRun,
       combatState: {
-        ...cloneCombatState(statusTestCombatState),
+        ...cloneCombatState(durableStatusTestCombatState),
         enemyStatuses: [{ id: 'on-hold', turnsRemaining: 1 }],
       },
     },
     'patch'
   );
+  const neutralPatchRetaliation = getLatestRetaliationDamage(
+    neutralPatchResult.combat.log
+  );
+  const onHoldPatchRetaliation = getLatestRetaliationDamage(
+    onHoldPatchResult.combat.log
+  );
   assert(
-    onHoldPatchResult.combat.heroHp > neutralPatchResult.combat.heroHp,
+    neutralPatchRetaliation !== null &&
+      onHoldPatchRetaliation !== null &&
+      onHoldPatchRetaliation < neutralPatchRetaliation,
     'Expected On Hold to reduce the enemy retaliation window.'
   );
 
@@ -714,8 +849,16 @@ async function main() {
     },
     'stabilize'
   );
+  const stableHealAmount = getActionHealingFromLog(
+    stableHealResult.combat.log,
+    'Stabilize Systems'
+  );
+  const burnoutHealAmount = getActionHealingFromLog(
+    burnoutHealResult.combat.log,
+    'Stabilize Systems'
+  );
   assert(
-    burnoutHealResult.combat.heroHp < stableHealResult.combat.heroHp,
+    burnoutHealAmount < stableHealAmount,
     'Expected Burnout to reduce Stabilize recovery.'
   );
 
@@ -760,8 +903,18 @@ async function main() {
     },
     'escalate'
   );
+  const itNeutralEscalateDamage = getActionDamageFromLog(
+    itNeutralEscalate.combat.log,
+    'Escalate Ticket'
+  );
+  const itStatusEscalateDamage = getActionDamageFromLog(
+    itStatusEscalate.combat.log,
+    'Escalate Ticket'
+  );
   assert(
-    itStatusEscalate.combat.enemy.currentHp < itNeutralEscalate.combat.enemy.currentHp,
+    itNeutralEscalateDamage !== null &&
+      itStatusEscalateDamage !== null &&
+      itStatusEscalateDamage > itNeutralEscalateDamage,
     'Expected IT Support Escalate to hit harder into a disrupted target.'
   );
 
@@ -774,6 +927,9 @@ async function main() {
   });
   const customerServiceCombatState = createCombatStateForCurrentNode(
     customerServiceRun
+  );
+  const durableCustomerServiceCombatState = withDurableEnemyHp(
+    customerServiceCombatState
   );
   const customerServiceActions = getCombatActionDefinitions({
     ...customerServiceRun,
@@ -816,14 +972,22 @@ async function main() {
     },
     'stabilize'
   );
+  const customerNeutralStabilizeHealing = getActionHealingFromLog(
+    customerNeutralStabilize.combat.log,
+    'Call Recovery'
+  );
+  const customerCcdStabilizeHealing = getActionHealingFromLog(
+    customerCcdStabilize.combat.log,
+    'Call Recovery'
+  );
   assert(
-    customerCcdStabilize.combat.heroHp > customerNeutralStabilize.combat.heroHp,
+    customerCcdStabilizeHealing > customerNeutralStabilizeHealing,
     "Expected Customer Service Rep Stabilize to recover more against CC'd targets."
   );
   const customerNeutralEscalate = performCombatAction(
     {
       ...customerServiceRun,
-      combatState: cloneCombatState(customerServiceCombatState),
+      combatState: cloneCombatState(durableCustomerServiceCombatState),
     },
     'escalate'
   );
@@ -831,14 +995,22 @@ async function main() {
     {
       ...customerServiceRun,
       combatState: {
-        ...cloneCombatState(customerServiceCombatState),
+        ...cloneCombatState(durableCustomerServiceCombatState),
         enemyStatuses: [{ id: 'ccd', turnsRemaining: 2 }],
       },
     },
     'escalate'
   );
+  const customerNeutralEscalateRetaliation = getLatestRetaliationDamage(
+    customerNeutralEscalate.combat.log
+  );
+  const customerCcdEscalateRetaliation = getLatestRetaliationDamage(
+    customerCcdEscalate.combat.log
+  );
   assert(
-    customerCcdEscalate.combat.heroHp > customerNeutralEscalate.combat.heroHp,
+    customerNeutralEscalateRetaliation !== null &&
+      customerCcdEscalateRetaliation !== null &&
+      customerCcdEscalateRetaliation < customerNeutralEscalateRetaliation,
     "Expected Customer Service Rep Escalate to reduce retaliation harder against CC'd targets."
   );
 
@@ -887,8 +1059,18 @@ async function main() {
     },
     'patch'
   );
+  const salesNeutralPatchDamage = getActionDamageFromLog(
+    salesNeutralPatch.combat.log,
+    'Warm Lead'
+  );
+  const salesEscalatedPatchDamage = getActionDamageFromLog(
+    salesEscalatedPatch.combat.log,
+    'Warm Lead'
+  );
   assert(
-    salesEscalatedPatch.combat.enemy.currentHp < salesNeutralPatch.combat.enemy.currentHp,
+    salesNeutralPatchDamage !== null &&
+      salesEscalatedPatchDamage !== null &&
+      salesEscalatedPatchDamage > salesNeutralPatchDamage,
     'Expected Sales Rep Patch to cash out extra damage on Escalated targets.'
   );
   const salesWoundedState = {
@@ -912,9 +1094,12 @@ async function main() {
     },
     'stabilize'
   );
+  const salesNeutralStabilizeDamage =
+    getActionDamageFromLog(salesNeutralStabilize.combat.log, 'Reset The Pitch') ?? 0;
+  const salesEscalatedStabilizeDamage =
+    getActionDamageFromLog(salesEscalatedStabilize.combat.log, 'Reset The Pitch') ?? 0;
   assert(
-    salesEscalatedStabilize.combat.enemy.currentHp <
-      salesNeutralStabilize.combat.enemy.currentHp,
+    salesEscalatedStabilizeDamage > salesNeutralStabilizeDamage,
     'Expected Sales Rep Stabilize to keep pressure on Escalated targets.'
   );
 
@@ -971,6 +1156,7 @@ async function main() {
     ],
   });
   const paralegalCombatState = createCombatStateForCurrentNode(paralegalRun);
+  const durableParalegalCombatState = withDurableEnemyHp(paralegalCombatState);
   const paralegalActions = getCombatActionDefinitions({
     ...paralegalRun,
     combatState: cloneCombatState(paralegalCombatState),
@@ -994,7 +1180,7 @@ async function main() {
   const paralegalNeutralEscalate = performCombatAction(
     {
       ...paralegalRun,
-      combatState: cloneCombatState(paralegalCombatState),
+      combatState: cloneCombatState(durableParalegalCombatState),
     },
     'escalate'
   );
@@ -1002,19 +1188,36 @@ async function main() {
     {
       ...paralegalRun,
       combatState: {
-        ...cloneCombatState(paralegalCombatState),
+        ...cloneCombatState(durableParalegalCombatState),
         enemyStatuses: [{ id: 'micromanaged', turnsRemaining: 2 }],
       },
     },
     'escalate'
   );
-  assert(
-    paralegalCompromisedEscalate.combat.enemy.currentHp <
-      paralegalNeutralEscalate.combat.enemy.currentHp,
-    'Expected Paralegal Escalate to hit harder into compromised targets.'
+  const paralegalNeutralEscalateDamage = getActionDamageFromLog(
+    paralegalNeutralEscalate.combat.log,
+    'Discovery Demand'
+  );
+  const paralegalCompromisedEscalateDamage = getActionDamageFromLog(
+    paralegalCompromisedEscalate.combat.log,
+    'Discovery Demand'
   );
   assert(
-    paralegalCompromisedEscalate.combat.heroHp > paralegalNeutralEscalate.combat.heroHp,
+    paralegalNeutralEscalateDamage !== null &&
+      paralegalCompromisedEscalateDamage !== null &&
+      paralegalCompromisedEscalateDamage > paralegalNeutralEscalateDamage,
+    'Expected Paralegal Escalate to hit harder into compromised targets.'
+  );
+  const paralegalNeutralEscalateRetaliation = getLatestRetaliationDamage(
+    paralegalNeutralEscalate.combat.log
+  );
+  const paralegalCompromisedEscalateRetaliation = getLatestRetaliationDamage(
+    paralegalCompromisedEscalate.combat.log
+  );
+  assert(
+    paralegalNeutralEscalateRetaliation !== null &&
+      paralegalCompromisedEscalateRetaliation !== null &&
+      paralegalCompromisedEscalateRetaliation < paralegalNeutralEscalateRetaliation,
     'Expected Paralegal Escalate to reduce retaliation into compromised targets.'
   );
   const paralegalStabilize = performCombatAction(
@@ -1065,9 +1268,18 @@ async function main() {
     },
     'patch'
   );
+  const executiveTriagePatchDamage = getActionDamageFromLog(
+    executiveTriagePatch.combat.log,
+    'Patch Notes'
+  );
+  const executiveTriageControlPatchDamage = getActionDamageFromLog(
+    executiveTriageControlPatch.combat.log,
+    'Patch Notes'
+  );
   assert(
-    executiveTriagePatch.combat.enemy.currentHp <
-      executiveTriageControlPatch.combat.enemy.currentHp,
+    executiveTriagePatchDamage !== null &&
+      executiveTriageControlPatchDamage !== null &&
+      executiveTriagePatchDamage > executiveTriageControlPatchDamage,
     'Expected Executive Triage to increase Patch damage.'
   );
   assert(
@@ -1100,9 +1312,16 @@ async function main() {
     },
     'stabilize'
   );
+  const paperworkExpeditionStabilizeHealing = getActionHealingFromLog(
+    paperworkExpeditionStabilize.combat.log,
+    'Stabilize Systems'
+  );
+  const paperworkExpeditionControlHealing = getActionHealingFromLog(
+    paperworkExpeditionControl.combat.log,
+    'Stabilize Systems'
+  );
   assert(
-    paperworkExpeditionStabilize.combat.heroHp >
-      paperworkExpeditionControl.combat.heroHp,
+    paperworkExpeditionStabilizeHealing > paperworkExpeditionControlHealing,
     'Expected Paperwork Expedition to improve Stabilize recovery.'
   );
 
@@ -1278,8 +1497,18 @@ async function main() {
     },
     'patch'
   );
+  const bondBaselinePatchDamage = getActionDamageFromLog(
+    bondBaselinePatch.combat.log,
+    'Patch Notes'
+  );
+  const bondElitePatchDamage = getActionDamageFromLog(
+    bondElitePatch.combat.log,
+    'Patch Notes'
+  );
   assert(
-    bondElitePatch.combat.enemy.currentHp < bondBaselinePatch.combat.enemy.currentHp,
+    bondBaselinePatchDamage !== null &&
+      bondElitePatchDamage !== null &&
+      bondElitePatchDamage > bondBaselinePatchDamage,
     'Expected higher bond lead perks to increase opening combat pressure.'
   );
   assert(

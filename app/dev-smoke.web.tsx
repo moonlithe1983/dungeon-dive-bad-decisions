@@ -19,7 +19,7 @@ export default function DevSmokeWebScreen() {
           <Text style={styles.title}>Native Only</Text>
           <Text style={styles.body}>
             The smoke lab seeds native SQLite save state, so it is only available
-            in Android and iOS development builds.
+            in Android native development builds.
           </Text>
         </View>
 

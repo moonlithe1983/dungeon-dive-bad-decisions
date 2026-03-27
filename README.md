@@ -149,9 +149,12 @@ The game is in release-candidate hardening mode:
 
 - feature freeze is recommended
 - Android dev-smoke win/loss validation is covered
-- Android release APK now builds locally
+- signed Android release APK and AAB already exist locally
+- a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
+- audio settings still persist flags that are not fully wired into real runtime audio control, so they should not ship in a misleading state
 - Android full release-build device validation, store packaging, and external playtesting are still required before upload
 
-For the current ship checklist and app-store readiness gate, use the handoff file:
+For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
-- `PROJECT_HANDOFF_2026-03-23.md`
+- `PROJECT_HANDOFF_2026-03-27.md`
+- `PROJECT_HANDOFF_2026-03-24.md`

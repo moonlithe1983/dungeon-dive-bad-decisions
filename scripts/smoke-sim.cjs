@@ -35,6 +35,39 @@ function compileTs(module, filename) {
 require.extensions['.ts'] = compileTs;
 require.extensions['.tsx'] = compileTs;
 
+function createSeededRandom(seedText) {
+  let hash = 2166136261;
+
+  for (const character of seedText) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  let state = hash >>> 0;
+
+  return function nextRandom() {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 0x100000000;
+  };
+}
+
+const smokeSeed = process.env.SMOKE_SIM_SEED ?? 'ci-stable-v1';
+const smokeEpochStart = Number(process.env.SMOKE_SIM_EPOCH_MS ?? '1774900000000');
+const originalMathRandom = Math.random;
+const originalDateNow = Date.now;
+const seededRandom = createSeededRandom(smokeSeed);
+let seededNowTick = 0;
+
+Math.random = function seededMathRandom() {
+  return seededRandom();
+};
+
+Date.now = function seededDateNow() {
+  const nextValue = smokeEpochStart + seededNowTick;
+  seededNowTick += 1;
+  return nextValue;
+};
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -2723,6 +2756,9 @@ main()
     process.exitCode = 1;
   })
   .finally(() => {
+    Math.random = originalMathRandom;
+    Date.now = originalDateNow;
+
     if (originalTsHandler) {
       require.extensions['.ts'] = originalTsHandler;
     } else {

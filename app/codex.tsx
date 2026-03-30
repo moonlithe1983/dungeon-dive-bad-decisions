@@ -25,9 +25,13 @@ import {
 } from '@/src/engine/meta/meta-upgrade-engine';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
-import type { ProfileState } from '@/src/types/profile';
+import type { ProfileSettingsState, ProfileState } from '@/src/types/profile';
 
 type CodexLoadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -118,6 +122,7 @@ const codexCategories: CodexCategoryDefinition[] = [
 ];
 
 export default function CodexScreen() {
+  const { styles } = useCodexTheme();
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const bootstrapProfile = useGameStore((state) => state.profile);
@@ -561,6 +566,8 @@ function capitalize(value: string) {
 }
 
 function LoadingPanel({ label }: { label: string }) {
+  const { colors, styles } = useCodexTheme();
+
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -586,6 +593,8 @@ function InfoPanel({
   secondaryLabel?: string;
   onSecondaryPress?: () => void;
 }) {
+  const { styles } = useCodexTheme();
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
@@ -605,6 +614,8 @@ function InfoPanel({
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const { styles } = useCodexTheme();
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -614,6 +625,8 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { styles } = useCodexTheme();
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -622,221 +635,243 @@ function DetailLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  detailCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  detailLine: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  detailLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  categoryList: {
-    gap: spacing.sm + 2,
-  },
-  categoryCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  categoryCardSelected: {
-    borderColor: colors.accent,
-  },
-  categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  categoryTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  categoryCount: {
-    color: colors.accent,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  categoryBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  entryList: {
-    gap: spacing.sm + 2,
-  },
-  entryCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.sm,
-  },
-  entryCardLocked: {
-    opacity: 0.78,
-  },
-  entryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  entryHeading: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  entryTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  entrySubtitle: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  entryBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  entryBadge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-  },
-  entryBadgeLive: {
-    backgroundColor: colors.surfaceRaised,
-    borderColor: colors.accent,
-  },
-  entryBadgeLocked: {
-    backgroundColor: colors.surfaceRaised,
-    borderColor: colors.borderStrong,
-  },
-  entryBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
-  entryBadgeTextLive: {
-    color: colors.accent,
-  },
-  entryBadgeTextLocked: {
-    color: colors.textMuted,
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
-});
+function useCodexTheme() {
+  const theme = useAppTheme();
+  const styles = useMemo(
+    () => createStyles(theme.settings, theme.colors),
+    [theme.colors, theme.settings]
+  );
+
+  return { ...theme, styles };
+}
+
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  const helperLetterSpacing = settings.dyslexiaAssistEnabled ? 0.2 : 0;
+
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + helperLetterSpacing,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(22, settings),
+      fontWeight: '900',
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + helperLetterSpacing,
+    },
+    detailCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    detailLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    categoryList: {
+      gap: spacing.sm + 2,
+    },
+    categoryCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    categoryCardSelected: {
+      borderColor: colors.accent,
+    },
+    categoryHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    categoryTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+    },
+    categoryCount: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+    },
+    categoryBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    entryList: {
+      gap: spacing.sm + 2,
+    },
+    entryCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.sm,
+    },
+    entryCardLocked: {
+      opacity: 0.78,
+    },
+    entryHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    entryHeading: {
+      flex: 1,
+      gap: spacing.xs,
+    },
+    entryTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+    },
+    entrySubtitle: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    entryBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    entryBadge: {
+      borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderWidth: 1,
+      backgroundColor: colors.surfaceRaised,
+    },
+    entryBadgeLive: {
+      borderColor: colors.accent,
+    },
+    entryBadgeLocked: {
+      borderColor: colors.borderStrong,
+    },
+    entryBadgeText: {
+      fontSize: scaleFontSize(11, settings),
+      fontWeight: '800',
+      letterSpacing: 0.6 + helperLetterSpacing,
+      textTransform: 'uppercase',
+    },
+    entryBadgeTextLive: {
+      color: colors.accent,
+    },
+    entryBadgeTextLocked: {
+      color: colors.textMuted,
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
+  });
+}

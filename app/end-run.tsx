@@ -19,8 +19,13 @@ import {
   loadRunHistoryEntryByRunIdAsync,
 } from '@/src/save/runRepo';
 import { useRunStore } from '@/src/state/runStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { RunHistoryEntry } from '@/src/types/run';
 import { humanizeId } from '@/src/utils/strings';
 import { formatSaveTimestampLabel } from '@/src/utils/time';
@@ -38,6 +43,7 @@ function pickSingleParam(
 }
 
 export default function EndRunScreen() {
+  const { styles } = useEndRunTheme();
   const { runId: runIdParam } = useLocalSearchParams<{
     runId?: string | string[];
   }>();
@@ -381,6 +387,8 @@ export default function EndRunScreen() {
 }
 
 function LoadingPanel({ label }: { label: string }) {
+  const { colors, styles } = useEndRunTheme();
+
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -402,6 +410,8 @@ function InfoPanel({
   primaryLabel: string;
   onPrimaryPress: () => void;
 }) {
+  const { styles } = useEndRunTheme();
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
@@ -417,6 +427,8 @@ function InfoPanel({
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const { styles } = useEndRunTheme();
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -426,6 +438,8 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { styles } = useEndRunTheme();
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -434,128 +448,148 @@ function DetailLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  detailCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  detailLine: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  detailLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  sectionLabel: {
-    color: colors.accent,
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
-});
+function useEndRunTheme() {
+  const theme = useAppTheme();
+  const styles = useMemo(
+    () => createStyles(theme.settings, theme.colors),
+    [theme.colors, theme.settings]
+  );
+
+  return { ...theme, styles };
+}
+
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  const helperLetterSpacing = settings.dyslexiaAssistEnabled ? 0.2 : 0;
+
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + helperLetterSpacing,
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(22, settings),
+      fontWeight: '900',
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + helperLetterSpacing,
+    },
+    detailCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    detailLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: helperLetterSpacing,
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    sectionLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      letterSpacing: 0.6 + helperLetterSpacing,
+      textTransform: 'uppercase',
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
+  });
+}

@@ -21,7 +21,7 @@ Purpose: This is a short addendum to the earlier handoff set. Use this file when
   - color-assist toggle
   - dyslexia-friendly spacing toggle
   - screen-reader hint toggle
-- Shared controls and navigation chrome now respect the saved accessibility/theme profile.
+- Shared controls, navigation chrome, and the archive/reference flow now respect the saved accessibility/theme profile.
 - Older route-specific palettes are not fully migrated yet, so the whole app does not visually restyle with equal depth on every screen yet.
 - Companion bond growth now matters more in live numbers:
   - companion perk magnitudes were increased
@@ -37,23 +37,24 @@ Fresh automated checks performed during this pass:
 - `npx tsc --noEmit`: passed
 - `npm run lint`: passed
 - `npm run smoke:sim`: passed
+- `npm run smoke:sim` now uses a deterministic seeded path so CI and local reruns exercise the same authored tower instead of rolling live random seeds
 
 Fresh `smoke:sim` sample output from March 30, 2026:
 
 - victorious run ID:
-  - `run-1774909372002-teixdiin`
+  - `run-1774900000001-84byddd8`
 - completed run status:
   - `completed`
 - rewards claimed:
   - `13`
 - meta currency at end of the scripted victory path:
-  - `76`
+  - `75`
 - purchased class in the scripted path:
   - `customer-service-rep`
 - purchased companion in the scripted path:
   - `security-skeleton`
 - final hero HP:
-  - `16 / 44`
+  - `1 / 44`
 - defeat branch status:
   - `failed`
 - traversed nodes:
@@ -62,7 +63,7 @@ Fresh `smoke:sim` sample output from March 30, 2026:
 Important validation note:
 
 - The victory path is intentionally tighter than before, so the scripted run now ends much closer to defeat.
-- The durable pass/fail gate is still the acceptance logic inside `scripts/smoke-sim.cjs`, not any one sample reward sequence.
+- The durable pass/fail gate is still the acceptance logic inside `scripts/smoke-sim.cjs`, but the harness now locks to a deterministic seed so CI does not drift between different tower rolls.
 
 ## 3. What is now accurate about the repo state
 
@@ -75,7 +76,7 @@ Current repo-readiness truth:
 - The duplicate pending-reward CTA reported during manual Android play has been fixed.
 - Companion bond growth now has more visible strategic weight than it had in the earlier release-candidate pass.
 - Baseline combat and reward tuning are now less forgiving than the earlier state, but the run still remains solvable by the authored smoke path.
-- Shared controls and chrome already respond to saved accessibility/theme settings, but a full palette migration across every older route is still ongoing.
+- Shared controls and chrome already respond to saved accessibility/theme settings, and `end-run`, `progression`, and `codex` now follow the same live palette/readability system, but a full palette migration across every older route is still ongoing.
 
 ## 4. What did not fully change during this pass
 

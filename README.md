@@ -84,6 +84,7 @@ Notes:
 - `npm run android` uses the native Android run flow (`expo run:android`).
 - Native iOS is intentionally out of scope for this project now.
 - `npm run smoke:sim` is the fastest automated gameplay guardrail.
+- `npm run smoke:sim` now uses a deterministic seeded path so CI and local reruns exercise the same authored tower.
 - `app/settings.tsx` is now the live accessibility and theme control surface.
 
 ## Native Android Release Build
@@ -158,7 +159,7 @@ The game is in release-candidate hardening mode:
 - local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists real accessibility/theme settings plus audio/language preferences
-- shared controls and screen chrome now respect the saved accessibility/theme profile, but a full palette rollout across every older screen style is still ongoing
+- shared controls, screen chrome, and the archive/reference flow (`end-run`, `progression`, `codex`) now respect the saved accessibility/theme profile, but a full palette rollout across every older screen style is still ongoing
 - class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
 - combat log ordering now places the rolling narrative above the action list
 - companion bond growth now has visibly stronger run impact and is surfaced in companion selection

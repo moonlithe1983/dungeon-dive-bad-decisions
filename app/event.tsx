@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
 import { getClassDefinition } from '@/src/content/classes';
+import { getCompanyDisasterSummary } from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getItemDefinition } from '@/src/content/items';
 import { getEventSceneForCurrentNode } from '@/src/engine/event/event-engine';
@@ -91,15 +92,16 @@ export default function EventScreen() {
             <Text style={styles.eyebrow}>RUN NODE</Text>
             <Text style={styles.title}>Event</Text>
             <Text style={styles.subtitle}>
-              Office disasters now offer real choices.
+              Office disasters now offer real choices and real blame.
             </Text>
             <Text style={styles.body}>
-              Event rooms now resolve through deterministic options that can
-              heal the run, rotate companions, hand out contraband, unlock
-              permanent event records in the profile, and now surface both
-              class-aware reads, bond-aware companion reactions, and
-              companion-specific plus team-synergy option edges in the room
-              itself.
+              {getCompanyDisasterSummary()}
+            </Text>
+            <Text style={styles.body}>
+              Event rooms still resolve through deterministic options that can
+              heal the run, rotate companions, and hand out contraband, but
+              now the room also speaks back to your class fantasy, your bond
+              pair, and the awful approval chain waiting upstairs.
             </Text>
           </View>
 
@@ -162,8 +164,9 @@ export default function EventScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Class Read</Text>
                 <Text style={styles.panelBody}>
-                  Your current class now reads each event differently and
-                  quietly tunes one option in the room to match that role.
+                  Your class now reads each event like a person whose job
+                  actually depends on getting this one right and making the
+                  win look executive-approved.
                 </Text>
                 <View style={styles.classReadCard}>
                   <Text style={styles.classReadName}>

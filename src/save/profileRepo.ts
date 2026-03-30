@@ -16,6 +16,8 @@ import {
   type ProfileSettingsState,
   type ProfileState,
   type ProfileStats,
+  type TextSizeSetting,
+  type ThemePresetId,
 } from '@/src/types/profile';
 import { createTimestamp } from '@/src/utils/time';
 
@@ -57,14 +59,21 @@ function isMetaUpgradeLevels(value: unknown): value is MetaUpgradeLevels {
 function isProfileSettingsState(
   value: unknown
 ): value is ProfileSettingsState {
+  const candidate = value as Partial<ProfileSettingsState>;
+
   return (
     Boolean(value) &&
     typeof value === 'object' &&
-    typeof (value as Partial<ProfileSettingsState>).sfxEnabled === 'boolean' &&
-    typeof (value as Partial<ProfileSettingsState>).musicEnabled ===
-      'boolean' &&
-    typeof (value as Partial<ProfileSettingsState>).profanityFilterEnabled ===
-      'boolean'
+    typeof candidate.sfxEnabled === 'boolean' &&
+    typeof candidate.musicEnabled === 'boolean' &&
+    typeof candidate.profanityFilterEnabled === 'boolean' &&
+    typeof candidate.themePreset === 'string' &&
+    typeof candidate.textSize === 'string' &&
+    typeof candidate.highContrastEnabled === 'boolean' &&
+    typeof candidate.reducedMotionEnabled === 'boolean' &&
+    typeof candidate.colorAssistEnabled === 'boolean' &&
+    typeof candidate.dyslexiaAssistEnabled === 'boolean' &&
+    typeof candidate.screenReaderHintsEnabled === 'boolean'
   );
 }
 
@@ -115,10 +124,28 @@ function normalizeBondLevels(value: Record<string, number>) {
 function normalizeSettings(
   settings: ProfileSettingsState
 ): ProfileSettingsState {
+  const themePreset: ThemePresetId =
+    settings.themePreset === 'amber-terminal' ||
+    settings.themePreset === 'night-shift' ||
+    settings.themePreset === 'ada-contrast'
+      ? settings.themePreset
+      : 'corporate-hell';
+  const textSize: TextSizeSetting =
+    settings.textSize === 'large' || settings.textSize === 'largest'
+      ? settings.textSize
+      : 'default';
+
   return {
     sfxEnabled: settings.sfxEnabled,
     musicEnabled: settings.musicEnabled,
     profanityFilterEnabled: settings.profanityFilterEnabled,
+    themePreset,
+    textSize,
+    highContrastEnabled: settings.highContrastEnabled,
+    reducedMotionEnabled: settings.reducedMotionEnabled,
+    colorAssistEnabled: settings.colorAssistEnabled,
+    dyslexiaAssistEnabled: settings.dyslexiaAssistEnabled,
+    screenReaderHintsEnabled: settings.screenReaderHintsEnabled,
   };
 }
 

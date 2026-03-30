@@ -42,10 +42,10 @@ function getMetaCurrencyAward(sourceKind: RewardSourceKind, node: RunNodeState) 
 
 function getRunHealingAward(sourceKind: RewardSourceKind, node: RunNodeState) {
   if (sourceKind === 'reward-node') {
-    return node.kind === 'reward' ? 10 : 7;
+    return node.kind === 'reward' ? 8 : 5;
   }
 
-  return node.kind === 'boss' ? 0 : 7;
+  return node.kind === 'boss' ? 0 : 5;
 }
 
 function getRewardRoomBiomeId(node: RunNodeState): RewardRoomBiomeId {
@@ -85,7 +85,7 @@ function createRewardRoomOptions(
         description:
           'Pocket the retreat reimbursement float and leave the trust exercises to rot without you.',
         metaCurrency: 14,
-        runHealing: 5,
+        runHealing: 4,
         itemId: null,
       },
       {
@@ -94,7 +94,7 @@ function createRewardRoomOptions(
         description:
           'Strip the offsite recovery station for hydration, sugar, and enough supplies to make the next floor tolerable.',
         metaCurrency: 5,
-        runHealing: 18,
+        runHealing: 13,
         itemId: null,
       },
       {
@@ -104,7 +104,7 @@ function createRewardRoomOptions(
           ? `Rip open the premium retreat tote for ${contrabandItem.name} and a smaller mixed payout.`
           : 'Rip open the premium retreat tote for a smaller mixed payout and whatever useful junk survived.',
         metaCurrency: 7 + rarityBonus,
-        runHealing: 9 + rarityBonus,
+        runHealing: 7 + rarityBonus,
         itemId: contrabandItemId,
       },
     ]
@@ -116,7 +116,7 @@ function createRewardRoomOptions(
         description:
           'Take the executive slush money, leave the receipts screaming, and walk out before security rechecks the ledger.',
         metaCurrency: 16,
-        runHealing: 4,
+        runHealing: 3,
         itemId: null,
       },
       {
@@ -125,7 +125,7 @@ function createRewardRoomOptions(
         description:
           'Raid the luxury recovery kit for premium medicine, calm-down chemistry, and the will to keep climbing.',
         metaCurrency: 6,
-        runHealing: 15,
+        runHealing: 11,
         itemId: null,
       },
       {
@@ -135,7 +135,7 @@ function createRewardRoomOptions(
           ? `Steal the executive exit package for ${contrabandItem.name} and a sharper mixed payout.`
           : 'Steal the executive exit package for a sharper mixed payout and whatever elite contraband it still contains.',
         metaCurrency: 9 + rarityBonus,
-        runHealing: 7 + rarityBonus,
+        runHealing: 5 + rarityBonus,
         itemId: contrabandItemId,
       },
     ]
@@ -146,7 +146,7 @@ function createRewardRoomOptions(
       description:
         'Pocket the clean scrap and leave before anyone asks why the drawer is lighter.',
       metaCurrency: 12,
-      runHealing: 4,
+      runHealing: 3,
       itemId: null,
     },
     {
@@ -155,7 +155,7 @@ function createRewardRoomOptions(
       description:
         'Burn the restock supplies on immediate recovery and push the next fight back a little.',
       metaCurrency: 4,
-      runHealing: 16,
+      runHealing: 12,
       itemId: null,
     },
     {
@@ -165,7 +165,7 @@ function createRewardRoomOptions(
         ? `Crack the marked locker for ${contrabandItem.name} and a smaller mixed payout.`
         : 'Crack the marked locker for a smaller mixed payout and whatever useful junk survived.',
       metaCurrency: 6 + rarityBonus,
-      runHealing: 8 + rarityBonus,
+      runHealing: 6 + rarityBonus,
       itemId: contrabandItemId,
     },
   ];

@@ -5,35 +5,40 @@ export const classDefinitions: ClassDefinition[] = [
     id: 'it-support',
     name: 'IT Support',
     combatIdentity: 'Control / cleanse / disruption',
-    description: 'Stabilizes disasters, strips status clutter, and ruins enemy plans.',
+    description:
+      'Keeps executive stupidity limping forward by locking enemies down and stripping the mess off the board.',
     unlockedByDefault: true,
   },
   {
     id: 'customer-service-rep',
     name: 'Customer Service Rep',
     combatIdentity: 'Sustain / mitigation / retaliation',
-    description: 'Survives impossible demands and turns pressure back on the enemy.',
+    description:
+      'Outlasts impossible demands, steadies the room, and sends the pressure back with interest.',
     unlockCost: 32,
   },
   {
     id: 'sales-rep',
     name: 'Sales Rep',
     combatIdentity: 'Burst / momentum / risk-reward',
-    description: 'Stacks pressure fast and cashes in on ugly high-variance turns.',
+    description:
+      'Turns ugly openings into commission-grade violence and cashes out on risky tempo swings.',
     unlockCost: 38,
   },
   {
     id: 'intern',
     name: 'Intern',
     combatIdentity: 'Chaos / scaling / survival comedy',
-    description: 'Starts fragile, grows weirdly strong, and keeps failing upward.',
+    description:
+      'Begins disposable, grows alarming, and somehow keeps surviving the consequences.',
     unlockCost: 26,
   },
   {
     id: 'paralegal',
     name: 'Paralegal',
     combatIdentity: 'Precision / contract traps / punish windows',
-    description: 'Punishes intent lines and wins through exact timing.',
+    description:
+      'Cuts through bad language, traps hostile intent, and wins on exact timing plus clean records.',
     unlockCost: 48,
   },
 ];

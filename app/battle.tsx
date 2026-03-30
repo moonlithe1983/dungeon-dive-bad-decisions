@@ -16,6 +16,11 @@ import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { getRunNodeRoute } from '@/src/engine/run/progress-run';
 import { getClassDefinition } from '@/src/content/classes';
+import {
+  createClassEncounterBrief,
+  getClassNarrative,
+  getCompanyDisasterSummary,
+} from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getEnemyTeamCountermeasureCards } from '@/src/content/enemy-team-reactions';
 import { getItemDefinition } from '@/src/content/items';
@@ -70,6 +75,13 @@ export default function BattleScreen() {
     }
 
     return getClassDefinition(run.heroClassId)?.name ?? run.heroClassId;
+  }, [run]);
+  const classNarrative = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getClassNarrative(run.heroClassId);
   }, [run]);
 
   const companionName = useMemo(() => {
@@ -179,16 +191,16 @@ export default function BattleScreen() {
             <Text style={styles.eyebrow}>RUN NODE</Text>
             <Text style={styles.title}>Battle</Text>
             <Text style={styles.subtitle}>
-              Persistent combat now carries live statuses and companion comms.
+              Persistent combat now carries live stakes and companion comms.
             </Text>
             <Text style={styles.body}>
-              Each fight now initializes a persisted encounter, lets you take
-              real turns, and carries your surviving HP plus active loot and
-              companion support into the next bad decision. Lead and reserve
-              banter now rides inside the saved combat log, and class, team
-              synergy, plus enemy countermeasures and status pressure now
-              persist inside the encounter instead of living only in flavor
-              text.
+              {getCompanyDisasterSummary()}
+            </Text>
+            <Text style={styles.body}>
+              Each fight still carries surviving HP, contraband, and companion
+              support into the next bad decision, but now every encounter also
+              reads like another attempt to save the company before leadership
+              decides your unauthorized competence is the real threat.
             </Text>
           </View>
 
@@ -230,6 +242,11 @@ export default function BattleScreen() {
                   {currentNode.kind === 'boss' ? 'Boss Encounter' : 'Live Encounter'}
                 </Text>
                 <Text style={styles.panelBody}>{currentNode.description}</Text>
+                {classNarrative ? (
+                  <Text style={styles.storyBody}>
+                    {createClassEncounterBrief(run.heroClassId, currentNode.label)}
+                  </Text>
+                ) : null}
                 <View style={styles.statGrid}>
                   <CombatStatCard
                     label={`${className ?? 'Hero'} HP`}
@@ -284,6 +301,12 @@ export default function BattleScreen() {
                   <DetailLine label="Turn" value={String(combatState.turnNumber)} />
                   <DetailLine label="Enemy Tier" value={combatState.enemy.tier} />
                   <DetailLine label="Intent" value={combatState.enemy.intent} />
+                  {classNarrative ? (
+                    <DetailLine
+                      label="Approval Trap"
+                      value={classNarrative.approvalConstraint}
+                    />
+                  ) : null}
                 </View>
                 {teamSynergyCards.length > 0 ? (
                   <View style={styles.itemEffectList}>
@@ -367,6 +390,34 @@ export default function BattleScreen() {
               </View>
 
               <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Combat Log & Comms</Text>
+                <Text style={styles.panelBody}>
+                  Encounter beats, gear notes, and lead or reserve companion
+                  callouts all land here in the order they happen.
+                </Text>
+                <View style={styles.logList}>
+                  {combatState.log
+                    .slice()
+                    .reverse()
+                    .map((entry, index) => (
+                      <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
+                        {entry}
+                      </Text>
+                    ))}
+                </View>
+                <View style={styles.actionGroup}>
+                  <GameButton
+                    label="Retreat to Map"
+                    onPress={() => {
+                      router.replace('/run-map' as Href);
+                    }}
+                    variant="secondary"
+                    disabled={isPerformingCombatAction}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Actions</Text>
                 <Text style={styles.panelBody}>
                   Pick one action each turn. Gear, companion support, and any
@@ -395,34 +446,6 @@ export default function BattleScreen() {
                       </Text>
                     </View>
                   ))}
-                </View>
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Combat Log & Comms</Text>
-                <Text style={styles.panelBody}>
-                  Encounter beats, gear notes, and lead or reserve companion
-                  callouts all land here in the order they happen.
-                </Text>
-                <View style={styles.logList}>
-                  {combatState.log
-                    .slice()
-                    .reverse()
-                    .map((entry, index) => (
-                      <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
-                        {entry}
-                      </Text>
-                    ))}
-                </View>
-                <View style={styles.actionGroup}>
-                  <GameButton
-                    label="Retreat to Map"
-                    onPress={() => {
-                      router.replace('/run-map' as Href);
-                    }}
-                    variant="secondary"
-                    disabled={isPerformingCombatAction}
-                  />
                 </View>
               </View>
             </>
@@ -582,6 +605,11 @@ const styles = StyleSheet.create({
   },
   panelBody: {
     color: colors.textMuted,
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  storyBody: {
+    color: colors.textSecondary,
     fontSize: 14,
     lineHeight: 21,
   },

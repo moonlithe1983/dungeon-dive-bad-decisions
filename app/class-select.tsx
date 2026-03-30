@@ -15,6 +15,12 @@ import { GameButton } from '@/src/components/game-button';
 import { getClassActionKit } from '@/src/content/class-actions';
 import { classDefinitions } from '@/src/content/classes';
 import {
+  COMPANY_NAME,
+  TOWER_NAME,
+  getClassNarrative,
+  getCompanyDisasterSummary,
+} from '@/src/content/company-lore';
+import {
   buildMetaUpgradeCatalog,
   getMetaUpgradeRewardCurrencyBonus,
   getMetaUpgradeRewardHealingBonus,
@@ -53,6 +59,9 @@ export default function ClassSelectScreen() {
     profile && selectedClassId
       ? getRunHeroMaxHp(selectedClassId, [], profile.metaUpgradeLevels)
       : null;
+  const selectedNarrative = selectedClassId
+    ? getClassNarrative(selectedClassId)
+    : null;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -68,12 +77,15 @@ export default function ClassSelectScreen() {
             <Text style={styles.eyebrow}>RUN SETUP</Text>
             <Text style={styles.title}>Choose Your Class</Text>
             <Text style={styles.subtitle}>
-              Pick the office skillset that now counts as combat training.
+              Pick the employee identity that has to survive the climb.
             </Text>
             <Text style={styles.body}>
-              This is the first real step in the new-run flow. Your class
-              choice is stored in the run setup state and carries forward into
-              companion selection.
+              {getCompanyDisasterSummary()}
+            </Text>
+            <Text style={styles.body}>
+              Your class choice decides who you are at {COMPANY_NAME}, why
+              leadership needs you, who they are ready to blame, and what kind
+              of disaster language you bring into the tower.
             </Text>
           </View>
 
@@ -108,6 +120,9 @@ export default function ClassSelectScreen() {
                       >
                         <Text style={styles.optionTitle}>
                           {classDefinition.name}
+                        </Text>
+                        <Text style={styles.optionRole}>
+                          {getClassNarrative(classDefinition.id).roleLabel}
                         </Text>
                         <Text style={styles.optionMeta}>
                           {classDefinition.combatIdentity}
@@ -157,6 +172,10 @@ export default function ClassSelectScreen() {
                     <Text style={styles.selectionIdentity}>
                       {selectedClassDefinition.combatIdentity}
                     </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>Role: </Text>
+                      {selectedNarrative?.roleLabel ?? 'Unknown'}
+                    </Text>
                     {selectedStartingHp ? (
                       <Text style={styles.selectionActionLine}>
                         <Text style={styles.selectionActionLabel}>
@@ -176,6 +195,34 @@ export default function ClassSelectScreen() {
                         {action.summary}
                       </Text>
                     ))}
+                  </View>
+                ) : null}
+                {selectedNarrative ? (
+                  <View style={styles.selectionDetailCard}>
+                    <Text style={styles.selectionIdentity}>Narrative Briefing</Text>
+                    <Text style={styles.selectionActionLine}>
+                      {selectedNarrative.openingHook}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>
+                        Leadership Broke:
+                      </Text>{' '}
+                      {selectedNarrative.leadershipFailure}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>Job On The Line:</Text>{' '}
+                      {selectedNarrative.stake}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>Approval Trap:</Text>{' '}
+                      {selectedNarrative.approvalConstraint}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>
+                        Department Baggage:
+                      </Text>{' '}
+                      {selectedNarrative.rivalDepartments}
+                    </Text>
                   </View>
                 ) : null}
                 {profile ? (
@@ -210,7 +257,7 @@ export default function ClassSelectScreen() {
                 {profile.unlockedClassIds.length < classDefinitions.length ? (
                   <Text style={styles.hintText}>
                     Need more roles? Spend breakroom chits in the hub to requisition
-                    additional classes between dives.
+                    more doomed employees before the next attempt up {TOWER_NAME}.
                   </Text>
                 ) : null}
                 <View style={styles.actionGroup}>
@@ -334,6 +381,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
+  },
+  optionRole: {
+    color: colors.textSubtle,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   optionBody: {
     color: colors.textMuted,

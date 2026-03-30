@@ -5,10 +5,25 @@ export type MetaUpgradeId =
 
 export type MetaUpgradeLevels = Record<MetaUpgradeId, number>;
 
+export type ThemePresetId =
+  | 'corporate-hell'
+  | 'amber-terminal'
+  | 'night-shift'
+  | 'ada-contrast';
+
+export type TextSizeSetting = 'default' | 'large' | 'largest';
+
 export type ProfileSettingsState = {
   sfxEnabled: boolean;
   musicEnabled: boolean;
   profanityFilterEnabled: boolean;
+  themePreset: ThemePresetId;
+  textSize: TextSizeSetting;
+  highContrastEnabled: boolean;
+  reducedMotionEnabled: boolean;
+  colorAssistEnabled: boolean;
+  dyslexiaAssistEnabled: boolean;
+  screenReaderHintsEnabled: boolean;
 };
 
 export type ProfileStats = {
@@ -38,6 +53,13 @@ export const DEFAULT_PROFILE_SETTINGS: ProfileSettingsState = {
   sfxEnabled: true,
   musicEnabled: true,
   profanityFilterEnabled: false,
+  themePreset: 'corporate-hell',
+  textSize: 'default',
+  highContrastEnabled: false,
+  reducedMotionEnabled: false,
+  colorAssistEnabled: false,
+  dyslexiaAssistEnabled: false,
+  screenReaderHintsEnabled: true,
 };
 
 export const DEFAULT_PROFILE_STATS: ProfileStats = {

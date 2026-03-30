@@ -4,7 +4,7 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 ## Premise
 
-Bad Decisions Holdings damaged reality through a long chain of leadership mistakes, and the dungeon is the literal result. The game leans into dark comedy, workplace satire, grotesque absurdity, and companion banter while staying inside a sellable Mature 17+ lane.
+`Crown Meridian Holdings` damaged reality through `Project Everrise`, a leadership-brained attempt to fuse every department into one executive control stack. `Meridian Spire` is the literal result. The game leans into dark comedy, workplace satire, grotesque absurdity, and companion banter while staying inside a sellable mature-but-store-safe lane.
 
 ## Current Product Shape
 
@@ -13,6 +13,8 @@ Bad Decisions Holdings damaged reality through a long chain of leadership mistak
 - Core loop: title -> class select -> companion select -> run map -> battle / reward / event -> archive recap -> progression
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
+- Story framing: class-specific role fantasy and stake language now feed class select, run map, battle intros, and event class reads
+- Accessibility foundation: persisted theme presets, text-size controls, contrast/motion toggles, dyslexia-friendly spacing, and screen-reader hints are now in the live settings route
 - Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation
 
 ## MVP Content Snapshot
@@ -82,6 +84,7 @@ Notes:
 - `npm run android` uses the native Android run flow (`expo run:android`).
 - Native iOS is intentionally out of scope for this project now.
 - `npm run smoke:sim` is the fastest automated gameplay guardrail.
+- `app/settings.tsx` is now the live accessibility and theme control surface.
 
 ## Native Android Release Build
 
@@ -154,7 +157,12 @@ The game is in release-candidate hardening mode:
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
 - local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
-- the live settings route now hides unwired audio and content toggles instead of exposing fake controls
+- the live settings route now persists real accessibility/theme settings plus audio/language preferences
+- shared controls and screen chrome now respect the saved accessibility/theme profile, but a full palette rollout across every older screen style is still ongoing
+- class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
+- combat log ordering now places the rolling narrative above the action list
+- companion bond growth now has visibly stronger run impact and is surfaced in companion selection
+- baseline combat/reward tuning is less forgiving than the earlier release-candidate pass
 - a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
 - Android full release-build device validation, store packaging, and external playtesting are still required before upload
 
@@ -184,5 +192,6 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`

@@ -13,6 +13,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
 import { getClassDefinition } from '@/src/content/classes';
+import {
+  COMPANY_NAME,
+  TOWER_NAME,
+  getClassNarrative,
+  getCompanyDisasterSummary,
+} from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getItemDefinition } from '@/src/content/items';
 import {
@@ -46,6 +52,13 @@ export default function RunMapScreen() {
     }
 
     return getClassDefinition(run.heroClassId)?.name ?? run.heroClassId;
+  }, [run]);
+  const classNarrative = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getClassNarrative(run.heroClassId);
   }, [run]);
 
   const activeCompanionName = useMemo(() => {
@@ -157,14 +170,18 @@ export default function RunMapScreen() {
             <Text style={styles.eyebrow}>ACTIVE RUN</Text>
             <Text style={styles.title}>Run Map</Text>
             <Text style={styles.subtitle}>
-              Floor starts now support real lead-companion rotation.
+              {run
+                ? `${className ?? 'Your role'} is now inside the disaster.`
+                : 'The next office disaster is waiting upstairs.'}
             </Text>
             <Text style={styles.body}>
-              The map now carries longer dive state, boss checkpoints, and a
-              floor-start deployment handoff where the reserve can rotate in
-              before the next encounter. That lets bond perks and narrative
-              reactions shift floor by floor instead of staying locked for the
-              whole run.
+              {getCompanyDisasterSummary()}
+            </Text>
+            <Text style={styles.body}>
+              Floor starts still support real lead-companion rotation, but the
+              bigger problem is that every department in {COMPANY_NAME} now
+              lives somewhere inside {TOWER_NAME}, and leadership expects the
+              cleanup to look approved while you are doing it.
             </Text>
           </View>
 
@@ -270,6 +287,28 @@ export default function RunMapScreen() {
                 ) : null}
               </View>
 
+              {classNarrative ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Mission Brief</Text>
+                  <Text style={styles.panelBody}>{classNarrative.openingHook}</Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine label="Why You Climb" value={classNarrative.stake} />
+                    <DetailLine
+                      label="Leadership Broke"
+                      value={classNarrative.leadershipFailure}
+                    />
+                    <DetailLine
+                      label="Approval Trap"
+                      value={classNarrative.approvalConstraint}
+                    />
+                    <DetailLine
+                      label="Department Baggage"
+                      value={classNarrative.rivalDepartments}
+                    />
+                  </View>
+                </View>
+              ) : null}
+
               {canRotateAtFloorStart ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Floor Transition</Text>
@@ -368,23 +407,7 @@ export default function RunMapScreen() {
                   {currentFloor?.description ??
                     'The current floor layout could not be reconstructed.'}
                 </Text>
-                {run.pendingReward ? (
-                  <View style={styles.actionGroup}>
-                    <GameButton
-                      label="Claim Pending Reward"
-                      onPress={() => {
-                        router.push('/reward' as Href);
-                      }}
-                    />
-                    <GameButton
-                      label="Return to Title"
-                      onPress={() => {
-                        router.push('/' as Href);
-                      }}
-                      variant="secondary"
-                    />
-                  </View>
-                ) : currentNode ? (
+                {currentNode ? (
                   <View style={styles.actionGroup}>
                     <GameButton
                       label={`Enter ${currentNode.label}`}

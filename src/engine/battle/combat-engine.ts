@@ -3,6 +3,7 @@ import {
   createCombatIntroLogEntries,
 } from '@/src/content/combat-banter';
 import { getClassActionPreview } from '@/src/content/class-actions';
+import { createClassCombatIntroLine } from '@/src/content/company-lore';
 import {
   getEnemyTeamCountermeasureDamageBonus,
   getEnemyTeamCountermeasureMaxHpBonus,
@@ -90,18 +91,16 @@ const MAX_LOG_ENTRIES = 8;
 
 const encounterTuningByTier: Record<CombatEnemyState['tier'], EncounterTuning> = {
   normal: {
-    healthMultiplier: 1,
-    enemyDamageRange: [4, 7],
+    healthMultiplier: 1.05,
+    enemyDamageRange: [5, 8],
   },
   miniboss: {
-    healthMultiplier: 1,
+    healthMultiplier: 1.15,
     enemyDamageRange: [6, 9],
   },
-  // Boss fights still stay a little soft while the run-persistence layer is
-  // only in its first real implementation pass.
   boss: {
-    healthMultiplier: 0.55,
-    enemyDamageRange: [4, 6],
+    healthMultiplier: 0.95,
+    enemyDamageRange: [6, 9],
   },
 };
 
@@ -386,18 +385,40 @@ function pickEnemyDefinition(run: RunState, node: RunNodeState) {
   return candidates[index] ?? candidates[0];
 }
 
-function getEncounterTuning(tier: CombatEnemyState['tier']) {
-  return encounterTuningByTier[tier];
+function getFloorDifficultyStep(floorNumber: number) {
+  return Math.max(0, floorNumber - 1);
 }
 
-function getTunedEnemyMaxHp(baseHealth: number, tier: CombatEnemyState['tier']) {
-  const tuning = getEncounterTuning(tier);
+function getEncounterTuning(
+  tier: CombatEnemyState['tier'],
+  floorNumber: number
+) {
+  const baseTuning = encounterTuningByTier[tier];
+  const floorStep = getFloorDifficultyStep(floorNumber);
+  const damageBonus = Math.floor(floorStep / 3);
+
+  return {
+    healthMultiplier: baseTuning.healthMultiplier + floorStep * 0.05,
+    enemyDamageRange: [
+      baseTuning.enemyDamageRange[0] + damageBonus,
+      baseTuning.enemyDamageRange[1] + damageBonus,
+    ] as [number, number],
+  };
+}
+
+function getTunedEnemyMaxHp(
+  baseHealth: number,
+  tier: CombatEnemyState['tier'],
+  floorNumber: number
+) {
+  const tuning = getEncounterTuning(tier, floorNumber);
   return Math.max(1, Math.floor(baseHealth * tuning.healthMultiplier));
 }
 
 function createInitialCombatLog(run: RunState, enemy: CombatEnemyState) {
   const baseLog = [
     `${enemy.name} arrives with terrible intent and a calendar full of violence.`,
+    createClassCombatIntroLine(run.heroClassId, enemy.name),
     ...createCombatIntroLogEntries({
       enemy,
       activeCompanionId: run.activeCompanionId,
@@ -887,7 +908,11 @@ export function createCombatStateForCurrentNode(run: RunState): CombatState {
   const enemyCountermeasures = getEnemyTeamCountermeasures(run, enemyDefinition.id);
   const enemyMaxHp = Math.max(
     1,
-    getTunedEnemyMaxHp(enemyDefinition.baseHealth, enemyDefinition.tier) +
+    getTunedEnemyMaxHp(
+      enemyDefinition.baseHealth,
+      enemyDefinition.tier,
+      currentNode.floorNumber
+    ) +
       getEnemyTeamCountermeasureMaxHpBonus(run, enemyDefinition.id)
   );
   const startingHeroHp = Math.min(
@@ -1178,7 +1203,11 @@ export function performCombatAction(
     };
   }
 
-  const enemyDamageRange = getEncounterTuning(nextCombat.enemy.tier).enemyDamageRange;
+  const currentNode = getRunNodeById(run, nextCombat.nodeId);
+  const enemyDamageRange = getEncounterTuning(
+    nextCombat.enemy.tier,
+    currentNode?.floorNumber ?? run.floorIndex
+  ).enemyDamageRange;
   const enemyOutgoingDamagePenalty = getCombatStatusOutgoingDamagePenalty(
     nextCombat.enemyStatuses
   );

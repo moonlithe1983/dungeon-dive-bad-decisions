@@ -117,13 +117,13 @@ export default function IndexScreen() {
             <Text style={styles.title}>Dungeon Dive:</Text>
             <Text style={styles.titleAccent}>Bad Decisions</Text>
             <Text style={styles.subtitle}>
-              Leadership broke reality. You got the ticket.
+              Crown Meridian broke reality. You got the ticket.
             </Text>
 
             <Text style={styles.bodyCopy}>
-              Descend through a procedural corporate underworld built from
-              negligence, vanity, fake efficiency, and catastrophic executive
-              incompetence.
+              Descend through Meridian Spire, the procedural corporate
+              underworld left behind after Project Everrise welded every
+              department into one executive catastrophe.
             </Text>
           </View>
 

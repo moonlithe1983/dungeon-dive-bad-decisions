@@ -1,16 +1,4 @@
-export const colors = {
-  background: '#0b0d10',
-  surface: '#11151b',
-  surfaceRaised: '#171d25',
-  border: '#262f39',
-  borderStrong: '#2b3440',
-  accent: '#f4d35e',
-  textPrimary: '#f8fafc',
-  textSecondary: '#d7dee7',
-  textMuted: '#b1bcc8',
-  textSubtle: '#93a4b5',
-  buttonText: '#17120a',
-  buttonDisabled: '#495463',
-  error: '#ff9d9d',
-  errorMuted: '#e7b4b4',
-} as const;
+import { resolveAppPalette } from '@/src/theme/app-theme';
+import { DEFAULT_PROFILE_SETTINGS } from '@/src/types/profile';
+
+export const colors = resolveAppPalette(DEFAULT_PROFILE_SETTINGS);

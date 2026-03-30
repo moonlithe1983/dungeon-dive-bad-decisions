@@ -16,6 +16,10 @@ import { getClassDefinition } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
 import { getCompanionRewardEdgePreview } from '@/src/content/reward-companion-hooks';
 import { getActiveTeamSynergyCardsForParty } from '@/src/content/team-synergies';
+import {
+  getCompanionSupportSummary,
+  getNextCompanionSupportSummary,
+} from '@/src/engine/bond/companion-perks';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
 import { colors } from '@/src/theme/colors';
@@ -141,6 +145,27 @@ export default function CompanionSelectScreen() {
                     const isSelected = selectedIndex >= 0;
                     const isDisabled =
                       !isSelected && selectedCompanionIds.length >= 2;
+                    const bondLevel = profile.bondLevels[companion.id] ?? 1;
+                    const activePerk = getCompanionSupportSummary(
+                      companion.id,
+                      'active',
+                      bondLevel
+                    );
+                    const reservePerk = getCompanionSupportSummary(
+                      companion.id,
+                      'reserve',
+                      bondLevel
+                    );
+                    const nextActivePerk = getNextCompanionSupportSummary(
+                      companion.id,
+                      'active',
+                      bondLevel
+                    );
+                    const nextReservePerk = getNextCompanionSupportSummary(
+                      companion.id,
+                      'reserve',
+                      bondLevel
+                    );
 
                     return (
                       <Pressable
@@ -163,6 +188,25 @@ export default function CompanionSelectScreen() {
                         <Text style={styles.optionBody}>
                           {companion.description}
                         </Text>
+                        <Text style={styles.optionEdge}>
+                          Bond Level: {bondLevel}
+                        </Text>
+                        <Text style={styles.optionEdge}>
+                          Active Perk: {activePerk.title}. {activePerk.summary}
+                        </Text>
+                        <Text style={styles.optionEdge}>
+                          Reserve Perk: {reservePerk.title}. {reservePerk.summary}
+                        </Text>
+                        {nextActivePerk || nextReservePerk ? (
+                          <Text style={styles.optionEdge}>
+                            Next Milestone: {nextActivePerk?.summary ?? 'Maxed'} /{' '}
+                            {nextReservePerk?.summary ?? 'Maxed'}
+                          </Text>
+                        ) : (
+                          <Text style={styles.optionEdge}>
+                            Bond Cap Reached: this companion is already at peak support.
+                          </Text>
+                        )}
                         <Text style={styles.optionEdge}>
                           Reward Edge: {getCompanionRewardEdgePreview(companion.id)}
                         </Text>
@@ -195,6 +239,11 @@ export default function CompanionSelectScreen() {
                           return `${role}: ${companion?.name ?? companionId}`;
                         })
                         .join(' | ')}
+                </Text>
+                <Text style={styles.hintText}>
+                  Bond growth persists between failed runs, and these support perks
+                  now scale hard enough to change your opening turns, reward recovery,
+                  and class-specific action lines.
                 </Text>
                 <View style={styles.selectionDetailCard}>
                   <Text style={styles.selectionDetailTitle}>Team Synergies</Text>

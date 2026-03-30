@@ -65,9 +65,9 @@ function buildFormerExecutiveAssistantPerk(
 ): CompanionPerkDefinition {
   if (role === 'active') {
     const bonus = getPerkMagnitude(milestone, {
-      1: 1,
-      3: 2,
-      5: 3,
+      1: 2,
+      3: 4,
+      5: 7,
     });
 
     return {
@@ -81,8 +81,8 @@ function buildFormerExecutiveAssistantPerk(
 
   const reduction = getPerkMagnitude(milestone, {
     1: 1,
-    3: 1,
-    5: 2,
+    3: 2,
+    5: 4,
   });
 
   return {
@@ -100,9 +100,9 @@ function buildFacilitiesGoblinPerk(
 ): CompanionPerkDefinition {
   if (role === 'active') {
     const healing = getPerkMagnitude(milestone, {
-      1: 2,
-      3: 4,
-      5: 6,
+      1: 4,
+      3: 7,
+      5: 11,
     });
 
     return {
@@ -115,9 +115,9 @@ function buildFacilitiesGoblinPerk(
   }
 
   const rewardHealing = getPerkMagnitude(milestone, {
-    1: 2,
-    3: 3,
-    5: 4,
+    1: 3,
+    3: 5,
+    5: 8,
   });
 
   return {
@@ -136,8 +136,8 @@ function buildSecuritySkeletonPerk(
   if (role === 'active') {
     const reduction = getPerkMagnitude(milestone, {
       1: 1,
-      3: 2,
-      5: 3,
+      3: 3,
+      5: 5,
     });
 
     return {
@@ -151,8 +151,8 @@ function buildSecuritySkeletonPerk(
 
   const reduction = getPerkMagnitude(milestone, {
     1: 1,
-    3: 1,
-    5: 2,
+    3: 2,
+    5: 3,
   });
 
   return {
@@ -170,9 +170,9 @@ function buildPossessedCopierPerk(
 ): CompanionPerkDefinition {
   if (role === 'active') {
     const bonus = getPerkMagnitude(milestone, {
-      1: 1,
-      3: 2,
-      5: 3,
+      1: 2,
+      3: 4,
+      5: 7,
     });
 
     return {
@@ -185,9 +185,9 @@ function buildPossessedCopierPerk(
   }
 
   const damage = getPerkMagnitude(milestone, {
-    1: 2,
-    3: 3,
-    5: 4,
+    1: 3,
+    3: 6,
+    5: 9,
   });
 
   return {
@@ -205,9 +205,9 @@ function buildDisillusionedTempPerk(
 ): CompanionPerkDefinition {
   if (role === 'active') {
     const healing = getPerkMagnitude(milestone, {
-      1: 2,
-      3: 3,
-      5: 4,
+      1: 3,
+      3: 5,
+      5: 8,
     });
 
     return {
@@ -221,8 +221,8 @@ function buildDisillusionedTempPerk(
 
   const bonus = getPerkMagnitude(milestone, {
     1: 1,
-    3: 2,
-    5: 3,
+    3: 3,
+    5: 5,
   });
 
   return {

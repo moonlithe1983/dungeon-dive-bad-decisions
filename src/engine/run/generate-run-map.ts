@@ -43,21 +43,21 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'intake',
     label: 'Open-Plan Pits - Basement Intake',
     description:
-      'The lobby floor is where broken process enters the abyss and comes back weaponized.',
+      'The lobby floor is where Crown Meridian fed broken process into Project Everrise and got weaponized office hell back.',
     nodes: [{ kind: 'battle' }, { kind: 'event' }],
   },
   {
     themeId: 'cubicle',
     label: 'Open-Plan Pits - Cubicle Trenches',
     description:
-      'Rows of abandoned desks form a maze of stalled projects, bite-radius politics, and weaponized posture checks.',
+      'Rows of abandoned desks now preserve every stalled initiative leadership refused to kill before it learned to defend itself.',
     nodes: [{ kind: 'battle' }, { kind: 'reward' }],
   },
   {
     themeId: 'breakroom',
     label: 'Open-Plan Pits - Breakroom Sinkhole',
     description:
-      'Morale collapsed here first. The coffee is sentient, the snack inventory is cursed, and the floor still remembers.',
+      'Morale collapsed here first, then leadership called it a culture issue. The coffee is sentient, the snacks are cursed, and the room remembers every lie.',
     nodes: [
       { kind: 'event' },
       {
@@ -74,7 +74,7 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'compliance',
     label: 'Open-Plan Pits - Compliance Annex',
     description:
-      'The final wing of the pits stores policy, shame, and the executive will to enforce both at once.',
+      'The final wing of the pits stores policy, shame, and the executive desire to make both your problem.',
     nodes: [
       { kind: 'reward' },
       {
@@ -91,14 +91,14 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'offsite',
     label: 'Team-Building Catacombs - Offsite Welcome Grotto',
     description:
-      'An old retreat foyer was converted into morale architecture and then left to ferment in the dark.',
+      'An old retreat foyer was converted into morale architecture, budgeted as transformation, and then left to rot in the dark.',
     nodes: [{ kind: 'battle' }, { kind: 'reward' }],
   },
   {
     themeId: 'trust-fall',
     label: 'Team-Building Catacombs - Trust-Fall Ossuary',
     description:
-      'Bone-white seminar circles and collapsed trust exercises line the path to leadership enlightenment.',
+      'Bone-white seminar circles and dead trust exercises line the path to the exact leadership insights that caused this in the first place.',
     nodes: [
       { kind: 'event' },
       {
@@ -115,7 +115,7 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'retreat',
     label: 'Team-Building Catacombs - Retreat Inferno',
     description:
-      'The company offsite burned long ago, but the keynote energy still screams through the rafters.',
+      'The company offsite burned long ago, but the keynote energy and uninsured confidence still scream through the rafters.',
     nodes: [
       { kind: 'reward' },
       {
@@ -132,14 +132,14 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'reception',
     label: 'Executive Suite of the Damned - Reception of Teeth',
     description:
-      'This velvet-lined lobby only looks welcoming from far away. Up close, every courtesy has fangs.',
+      'This velvet-lined lobby only looks welcoming from far away. Up close, every courtesy is armed with executive teeth.',
     nodes: [{ kind: 'battle' }, { kind: 'event' }],
   },
   {
     themeId: 'boardroom',
     label: 'Executive Suite of the Damned - Boardroom Maw',
     description:
-      'The conference wing devours budgets, confidence, and anyone foolish enough to present without backup.',
+      'The conference wing devours budgets, confidence, and anyone foolish enough to present a fix without executive sponsorship.',
     nodes: [
       { kind: 'reward' },
       {
@@ -156,7 +156,7 @@ const floorBlueprints: FloorBlueprint[] = [
     themeId: 'c-suite',
     label: 'Executive Suite of the Damned - Abyssal C-Suite',
     description:
-      'The top floor is all polished brass, occult access, and the last warm breath before absolute executive ruin.',
+      'The top floor is polished brass, occult access, and the last warm breath before absolute executive blame reassignment.',
     nodes: [
       { kind: 'reward' },
       {

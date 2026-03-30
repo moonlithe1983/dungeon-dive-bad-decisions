@@ -175,7 +175,7 @@ function buildCombatStateKey(combat) {
   ].join('|');
 }
 
-function findWinningActionSequence(run, performCombatAction, maxDepth = 14) {
+function findWinningActionSequence(run, performCombatAction, maxDepth = 20) {
   const cache = new Set();
 
   function search(currentRun, depth) {
@@ -1641,7 +1641,7 @@ async function main() {
 
   assert(
     openPlanRewardOptions?.find((option) => option.optionId === 'triage-cart')
-      ?.runHealing === 22,
+      ?.runHealing === 18,
     'Expected the default pair synergy plus Facilities Goblin to improve Open-Plan recovery hauls.'
   );
   assert(
@@ -1685,7 +1685,7 @@ async function main() {
   );
   assert(
     securityTempRewardOptions?.find((option) => option.optionId === 'per-diem-skimming')
-      ?.runHealing === 7,
+      ?.runHealing === 6,
     'Expected Disillusioned Temp to improve Per Diem Skimming recovery.'
   );
   assert(

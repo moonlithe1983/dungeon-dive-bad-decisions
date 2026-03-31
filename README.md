@@ -183,7 +183,8 @@ The game is in release-candidate hardening mode:
 ## GitHub Automation
 
 - `.github/workflows/validate.yml` runs `npm run lint`, `npx tsc --noEmit`, and `npm run smoke:sim` on pushes to `main` and on pull requests
-- branch protection should require that workflow before merges into `main`
+- branch protection should require the `validate` check before merges into `main`
+- use `.github/BRANCH_PROTECTION.md` for the exact GitHub settings to turn on
 
 ## License
 

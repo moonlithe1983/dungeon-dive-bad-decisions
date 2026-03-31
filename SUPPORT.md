@@ -14,11 +14,7 @@ Last updated: March 27, 2026
 
 A final public support inbox still needs to be confirmed before public release.
 
-The current project placeholder is:
-
-- `support@yourdomain.com`
-
-That placeholder should be replaced with a real monitored inbox before store submission.
+Until that inbox is live, preview-build issues should be routed through the playtest channel or coordinator that delivered the build.
 
 ## Helpful Bug Report Details
 

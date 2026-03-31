@@ -28,8 +28,13 @@ import {
 } from '@/src/engine/run/progress-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { RunFloorState, RunNodeState } from '@/src/types/run';
 import { humanizeId } from '@/src/utils/strings';
 
@@ -45,6 +50,8 @@ export default function RunMapScreen() {
     (state) => state.isRotatingActiveCompanion
   );
   const [isAbandonConfirming, setIsAbandonConfirming] = useState(false);
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   const className = useMemo(() => {
     if (!run) {
@@ -514,6 +521,9 @@ function FloorPanel({
   floor: RunFloorState;
   currentNodeId: string | null;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <View style={styles.floorHeader}>
@@ -552,6 +562,8 @@ function NodeCard({
   node: RunNodeState;
   isCurrent: boolean;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
   const statusStyle =
     node.status === 'active'
       ? styles.nodeStatusActive
@@ -581,6 +593,9 @@ function NodeCard({
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -590,6 +605,9 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -598,7 +616,11 @@ function DetailLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -623,26 +645,27 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 34,
+    fontSize: scaleFontSize(34, settings),
     fontWeight: '900',
-    lineHeight: 38,
+    lineHeight: scaleLineHeight(38, settings),
   },
   subtitle: {
     color: colors.accent,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
-    lineHeight: 22,
+    lineHeight: scaleLineHeight(22, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   panel: {
     backgroundColor: colors.surfaceRaised,
@@ -654,13 +677,15 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   panelBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   loadingState: {
     paddingVertical: spacing.lg,
@@ -669,8 +694,9 @@ const styles = StyleSheet.create({
   },
   errorBody: {
     color: colors.errorMuted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   statGrid: {
     flexDirection: 'row',
@@ -690,15 +716,16 @@ const styles = StyleSheet.create({
   },
   statValue: {
     color: colors.accent,
-    fontSize: 22,
+    fontSize: scaleFontSize(22, settings),
     fontWeight: '900',
+    lineHeight: scaleLineHeight(26, settings),
   },
   statLabel: {
     color: colors.textMuted,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   detailCard: {
     backgroundColor: colors.surface,
@@ -710,8 +737,8 @@ const styles = StyleSheet.create({
   },
   detailLine: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
   },
   detailLabel: {
     color: colors.textSubtle,
@@ -730,13 +757,15 @@ const styles = StyleSheet.create({
   },
   supportTitle: {
     color: colors.textPrimary,
-    fontSize: 14,
+    fontSize: scaleFontSize(14, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   supportBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   warningCard: {
     backgroundColor: colors.surface,
@@ -748,19 +777,21 @@ const styles = StyleSheet.create({
   },
   warningTitle: {
     color: colors.error,
-    fontSize: 15,
+    fontSize: scaleFontSize(15, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   warningBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   recoveryNotice: {
     color: colors.accent,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   actionGroup: {
     gap: spacing.sm + 2,
@@ -772,9 +803,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   floorStatus: {
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   floorStatusActive: {
@@ -811,15 +842,15 @@ const styles = StyleSheet.create({
   },
   nodeStep: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   nodeStatus: {
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   nodeStatusActive: {
@@ -833,17 +864,21 @@ const styles = StyleSheet.create({
   },
   nodeTitle: {
     color: colors.textPrimary,
-    fontSize: 18,
+    fontSize: scaleFontSize(18, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(22, settings),
   },
   nodeMeta: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
+    lineHeight: scaleLineHeight(18, settings),
   },
   nodeBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
-});
+  });
+}

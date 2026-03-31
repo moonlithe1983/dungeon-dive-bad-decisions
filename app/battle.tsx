@@ -28,8 +28,13 @@ import { getActiveTeamSynergyCards } from '@/src/content/team-synergies';
 import { getStatusDefinition } from '@/src/content/statuses';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { CombatActionId } from '@/src/types/combat';
 
 export default function BattleScreen() {
@@ -42,6 +47,8 @@ export default function BattleScreen() {
   const isPerformingCombatAction = useRunStore(
     (state) => state.isPerformingCombatAction
   );
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (!run || !currentNode) {
@@ -457,6 +464,9 @@ export default function BattleScreen() {
 }
 
 function LoadingPanel({ label }: { label: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -468,6 +478,9 @@ function LoadingPanel({ label }: { label: string }) {
 }
 
 function ErrorPanel({ message }: { message: string | null }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>Combat Error</Text>
@@ -501,6 +514,9 @@ function InfoPanel({
   secondaryLabel?: string;
   secondaryHref?: string;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
@@ -527,6 +543,9 @@ function InfoPanel({
 }
 
 function CombatStatCard({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -536,6 +555,9 @@ function CombatStatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -544,7 +566,11 @@ function DetailLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -569,26 +595,27 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 34,
+    fontSize: scaleFontSize(34, settings),
     fontWeight: '900',
-    lineHeight: 38,
+    lineHeight: scaleLineHeight(38, settings),
   },
   subtitle: {
     color: colors.accent,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
-    lineHeight: 22,
+    lineHeight: scaleLineHeight(22, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   panel: {
     backgroundColor: colors.surfaceRaised,
@@ -600,18 +627,21 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   panelBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   storyBody: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   loadingState: {
     paddingVertical: spacing.lg,
@@ -620,8 +650,9 @@ const styles = StyleSheet.create({
   },
   errorBody: {
     color: colors.errorMuted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   statGrid: {
     flexDirection: 'row',
@@ -641,15 +672,16 @@ const styles = StyleSheet.create({
   },
   statValue: {
     color: colors.accent,
-    fontSize: 22,
+    fontSize: scaleFontSize(22, settings),
     fontWeight: '900',
+    lineHeight: scaleLineHeight(26, settings),
   },
   statLabel: {
     color: colors.textMuted,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   detailCard: {
     backgroundColor: colors.surface,
@@ -661,8 +693,8 @@ const styles = StyleSheet.create({
   },
   detailLine: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
   },
   detailLabel: {
     color: colors.textSubtle,
@@ -681,29 +713,31 @@ const styles = StyleSheet.create({
   },
   itemEffectName: {
     color: colors.textPrimary,
-    fontSize: 14,
+    fontSize: scaleFontSize(14, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   itemEffectBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   supportUpgradeText: {
     color: colors.textSubtle,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: scaleFontSize(12, settings),
+    lineHeight: scaleLineHeight(18, settings),
   },
   statusSection: {
     gap: spacing.sm,
   },
   statusHeading: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '800',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   actionList: {
     gap: spacing.md,
@@ -713,8 +747,9 @@ const styles = StyleSheet.create({
   },
   actionDescription: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     paddingHorizontal: 2,
   },
   logList: {
@@ -722,10 +757,12 @@ const styles = StyleSheet.create({
   },
   logEntry: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   actionGroup: {
     gap: spacing.sm + 2,
   },
-});
+  });
+}

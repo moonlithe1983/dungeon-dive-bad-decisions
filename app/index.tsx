@@ -14,8 +14,13 @@ import { GameButton } from '@/src/components/game-button';
 import { getRunResumeTarget } from '@/src/engine/run/progress-run';
 import { useGameStore } from '@/src/state/gameStore';
 import { useRunStore } from '@/src/state/runStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { BootstrapSnapshot } from '@/src/types/save';
 
 export default function IndexScreen() {
@@ -27,6 +32,8 @@ export default function IndexScreen() {
   const initializeApp = useGameStore((state) => state.initializeApp);
   const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -149,14 +156,17 @@ export default function IndexScreen() {
                   <StatCard
                     label="Classes"
                     value={String(snapshot?.unlockedClasses ?? 0)}
+                    styles={styles}
                   />
                   <StatCard
                     label="Companions"
                     value={String(snapshot?.unlockedCompanions ?? 0)}
+                    styles={styles}
                   />
                   <StatCard
                     label="Chits"
                     value={String(snapshot?.metaCurrency ?? 0)}
+                    styles={styles}
                   />
                 </View>
 
@@ -168,6 +178,7 @@ export default function IndexScreen() {
                       <RunSummary
                         snapshot={snapshot}
                         nextStopLabel={resumeTarget?.summaryLabel ?? 'Run Map'}
+                        styles={styles}
                       />
                       {recoveredFromBackup ? (
                         <Text style={styles.recoveryNotice}>
@@ -258,9 +269,11 @@ export default function IndexScreen() {
 function RunSummary({
   snapshot,
   nextStopLabel,
+  styles,
 }: {
   snapshot: BootstrapSnapshot;
   nextStopLabel: string;
+  styles: ReturnType<typeof createStyles>;
 }) {
   if (!snapshot.activeRun) {
     return null;
@@ -296,7 +309,11 @@ type StatCardProps = {
   value: string;
 };
 
-function StatCard({ label, value }: StatCardProps) {
+function StatCard({
+  label,
+  value,
+  styles,
+}: StatCardProps & { styles: ReturnType<typeof createStyles> }) {
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -305,208 +322,221 @@ function StatCard({ label, value }: StatCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  badge: {
-    backgroundColor: colors.surfaceRaised,
-    borderColor: colors.borderStrong,
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  badgeText: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 38,
-    fontWeight: '900',
-    lineHeight: 42,
-  },
-  titleAccent: {
-    color: colors.accent,
-    fontSize: 38,
-    fontWeight: '900',
-    lineHeight: 42,
-    marginTop: -4,
-  },
-  subtitle: {
-    color: colors.textSecondary,
-    fontSize: 17,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
-  bodyCopy: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  loadingState: {
-    paddingVertical: spacing.lg + 2,
-    alignItems: 'center',
-    gap: spacing.sm + 2,
-  },
-  loadingText: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  errorState: {
-    gap: spacing.sm + 2,
-  },
-  errorTitle: {
-    color: colors.error,
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  errorBody: {
-    color: colors.errorMuted,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surfaceRaised,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: 24,
-    fontWeight: '900',
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  runCard: {
-    backgroundColor: colors.surfaceRaised,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    gap: spacing.xs + 2,
-  },
-  runCardTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '800',
-    marginBottom: 2,
-  },
-  runCardLine: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  runCardLineMuted: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  runCardLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  runCardHint: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 4,
-  },
-  recoveryNotice: {
-    color: colors.accent,
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 18,
-    marginTop: 4,
-  },
-  primaryActions: {
-    gap: spacing.sm + 2,
-  },
-  menuGrid: {
-    gap: spacing.sm + 2,
-  },
-  footerCard: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: 14,
-    gap: spacing.xs + 2,
-  },
-  footerTitle: {
-    color: colors.accent,
-    fontSize: 14,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: 0.7,
-  },
-  footerBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-});
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    badgeRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+      marginBottom: spacing.sm,
+    },
+    badge: {
+      backgroundColor: colors.surfaceRaised,
+      borderColor: colors.borderStrong,
+      borderWidth: 1,
+      borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+    },
+    badgeText: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      letterSpacing: 0.4 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textTransform: 'uppercase',
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(38, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(42, settings),
+    },
+    titleAccent: {
+      color: colors.accent,
+      fontSize: scaleFontSize(38, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(42, settings),
+      marginTop: -4,
+    },
+    subtitle: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(24, settings),
+    },
+    bodyCopy: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    loadingState: {
+      paddingVertical: spacing.lg + 2,
+      alignItems: 'center',
+      gap: spacing.sm + 2,
+    },
+    loadingText: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    errorState: {
+      gap: spacing.sm + 2,
+    },
+    errorTitle: {
+      color: colors.error,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    errorBody: {
+      color: colors.errorMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surfaceRaised,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(24, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(28, settings),
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    runCard: {
+      backgroundColor: colors.surfaceRaised,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      gap: spacing.xs + 2,
+    },
+    runCardTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+      marginBottom: 2,
+    },
+    runCardLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    runCardLineMuted: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    runCardLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    runCardHint: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      lineHeight: scaleLineHeight(18, settings),
+      marginTop: 4,
+    },
+    recoveryNotice: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+      marginTop: 4,
+    },
+    primaryActions: {
+      gap: spacing.sm + 2,
+    },
+    menuGrid: {
+      gap: spacing.sm + 2,
+    },
+    footerCard: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: 14,
+      gap: spacing.xs + 2,
+    },
+    footerTitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(14, settings),
+      fontWeight: '900',
+      textTransform: 'uppercase',
+      letterSpacing: 0.7 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    footerBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+  });
+}

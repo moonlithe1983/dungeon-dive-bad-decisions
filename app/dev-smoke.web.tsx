@@ -1,14 +1,22 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 
 export default function DevSmokeWebScreen() {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="light" />
@@ -34,7 +42,11 @@ export default function DevSmokeWebScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -56,19 +68,21 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 32,
+    fontSize: scaleFontSize(32, settings),
     fontWeight: '900',
-    lineHeight: 36,
+    lineHeight: scaleLineHeight(36, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
-});
+  });
+}

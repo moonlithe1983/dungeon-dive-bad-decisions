@@ -250,38 +250,6 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Audio & Language</Text>
-                <View style={styles.toggleList}>
-                  <ToggleRow
-                    label="Sound Effects"
-                    description="Keeps runtime sound-effect preference persisted for future audio wiring."
-                    value={settings.sfxEnabled}
-                    onPress={() => {
-                      void applySettings({ sfxEnabled: !settings.sfxEnabled });
-                    }}
-                  />
-                  <ToggleRow
-                    label="Music"
-                    description="Keeps runtime music preference persisted for future audio wiring."
-                    value={settings.musicEnabled}
-                    onPress={() => {
-                      void applySettings({ musicEnabled: !settings.musicEnabled });
-                    }}
-                  />
-                  <ToggleRow
-                    label="Profanity Filter"
-                    description="Lets you tone the writing down when the meaner voice pass expands."
-                    value={settings.profanityFilterEnabled}
-                    onPress={() => {
-                      void applySettings({
-                        profanityFilterEnabled: !settings.profanityFilterEnabled,
-                      });
-                    }}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Current Profile</Text>
                 <View style={styles.detailCard}>
                   <DetailLine

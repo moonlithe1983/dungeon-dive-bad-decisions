@@ -5,35 +5,40 @@ export const companionDefinitions: CompanionDefinition[] = [
     id: 'facilities-goblin',
     name: 'Facilities Goblin',
     specialty: 'Traps / maintenance utility',
-    description: 'A grime-coated survivalist who treats every hazard like a fixable work order.',
+    description:
+      'A grime-coated Meridian Spire survivalist who treats every hazard like a maintenance dare.',
     unlockedByDefault: true,
   },
   {
     id: 'former-executive-assistant',
     name: 'Former Executive Assistant',
     specialty: 'Cooldown manipulation / boss reading',
-    description: 'Knows how power moves before it happens and weaponizes that knowledge.',
+    description:
+      'Spent years reading Crown Meridian panic before it hit the room and now weaponizes that foresight.',
     unlockedByDefault: true,
   },
   {
     id: 'security-skeleton',
     name: 'Security Skeleton',
     specialty: 'Guard / counter support',
-    description: 'Deadpan enforcement with a literal bone-deep commitment to policy.',
+    description:
+      'Deadpan Meridian enforcement with a literal bone-deep commitment to containing executive fallout.',
     unlockCost: 28,
   },
   {
     id: 'possessed-copier',
     name: 'Possessed Copier',
     specialty: 'Duplication chaos / status spread',
-    description: 'An office machine that learned malice and now copies problems.',
+    description:
+      'A Project Everrise copier that learned malice and now duplicates the exact problems leadership denied.',
     unlockCost: 42,
   },
   {
     id: 'disillusioned-temp',
     name: 'Disillusioned Temp',
     specialty: 'Bargain skills / coward tech',
-    description: 'Would rather leave, but until then remains weirdly resourceful.',
+    description:
+      'Survived Crown Meridian staffing churn long enough to turn cowardice into a dependable operating discipline.',
     unlockCost: 34,
   },
 ];

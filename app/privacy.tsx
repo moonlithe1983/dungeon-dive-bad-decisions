@@ -1,12 +1,17 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 
 const sections = [
   {
@@ -36,12 +41,15 @@ const sections = [
     title: 'Support And Updates',
     body: [
       'A final public support inbox still needs to be locked before public store release.',
-      'The current placeholder recorded in project docs is support@yourdomain.com, but that should be replaced with a real monitored inbox before launch.',
+      'For preview builds, use the playtest channel that delivered the build until the public inbox and hosted policy URL are finalized.',
     ],
   },
 ];
 
 export default function PrivacyScreen() {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="light" />
@@ -109,74 +117,82 @@ export default function PrivacyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  copyGroup: {
-    gap: spacing.sm,
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
-});
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    copyGroup: {
+      gap: spacing.sm,
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
+  });
+}

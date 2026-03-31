@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -19,8 +19,13 @@ import { saveActiveRunAsync, saveBackupRunAsync } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 
 type PendingScenario = DevSmokeScenarioId | null;
 
@@ -31,6 +36,8 @@ export default function DevSmokeScreen() {
   const hydrateFromActiveRun = useRunStore((state) => state.hydrateFromActiveRun);
   const [pendingScenario, setPendingScenario] = useState<PendingScenario>(null);
   const [error, setError] = useState<string | null>(null);
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   const seedScenario = async (scenarioId: DevSmokeScenarioId) => {
     if (!__DEV__) {
@@ -179,7 +186,11 @@ export default function DevSmokeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -204,26 +215,27 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 32,
+    fontSize: scaleFontSize(32, settings),
     fontWeight: '900',
-    lineHeight: 36,
+    lineHeight: scaleLineHeight(36, settings),
   },
   subtitle: {
     color: colors.accent,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
-    lineHeight: 22,
+    lineHeight: scaleLineHeight(22, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   panel: {
     backgroundColor: colors.surfaceRaised,
@@ -235,13 +247,15 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   panelBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   loadingRow: {
     flexDirection: 'row',
@@ -251,8 +265,9 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   errorCard: {
     backgroundColor: colors.surfaceRaised,
@@ -264,12 +279,15 @@ const styles = StyleSheet.create({
   },
   errorTitle: {
     color: colors.textPrimary,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   errorBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
-});
+  });
+}

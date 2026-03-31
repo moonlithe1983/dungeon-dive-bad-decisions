@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -28,14 +28,21 @@ import {
 import { getRunHeroMaxHp } from '@/src/engine/run/run-hero';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 
 export default function ClassSelectScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const selectedClassId = useRunStore((state) => state.selectedClassId);
   const setSelectedClassId = useRunStore((state) => state.setSelectedClassId);
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (!profile) {
@@ -285,180 +292,193 @@ export default function ClassSelectScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  cardGrid: {
-    gap: spacing.sm + 2,
-  },
-  optionCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: spacing.lg,
-    gap: spacing.xs + 2,
-  },
-  optionCardSelected: {
-    borderColor: colors.accent,
-  },
-  optionCardPressed: {
-    opacity: 0.94,
-  },
-  optionTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  optionMeta: {
-    color: colors.accent,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 18,
-  },
-  optionRole: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  optionBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  optionStat: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    fontWeight: '700',
-    lineHeight: 19,
-  },
-  kitList: {
-    gap: spacing.xs,
-    marginTop: spacing.xs,
-  },
-  kitCard: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: spacing.sm,
-    gap: spacing.xs,
-  },
-  kitTitle: {
-    color: colors.textPrimary,
-    fontSize: 13,
-    fontWeight: '800',
-    lineHeight: 18,
-  },
-  kitBody: {
-    color: colors.textMuted,
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  optionFooter: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 18,
-    marginTop: 2,
-  },
-  selectionDetailCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  selectionIdentity: {
-    color: colors.accent,
-    fontSize: 13,
-    fontWeight: '800',
-    lineHeight: 18,
-  },
-  selectionActionLine: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  selectionActionLabel: {
-    color: colors.textPrimary,
-    fontWeight: '800',
-  },
-  hintText: {
-    color: colors.textSubtle,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
-});
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    cardGrid: {
+      gap: spacing.sm + 2,
+    },
+    optionCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: spacing.lg,
+      gap: spacing.xs + 2,
+    },
+    optionCardSelected: {
+      borderColor: colors.accent,
+    },
+    optionCardPressed: {
+      opacity: settings.reducedMotionEnabled ? 0.98 : 0.94,
+    },
+    optionTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    optionMeta: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    optionRole: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 0.5 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textTransform: 'uppercase',
+    },
+    optionBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    optionStat: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(19, settings),
+    },
+    kitList: {
+      gap: spacing.xs,
+      marginTop: spacing.xs,
+    },
+    kitCard: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: spacing.sm,
+      gap: spacing.xs,
+    },
+    kitTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    kitBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      lineHeight: scaleLineHeight(18, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    optionFooter: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+      marginTop: 2,
+    },
+    selectionDetailCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
+      padding: spacing.md,
+      gap: spacing.xs,
+    },
+    selectionIdentity: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    selectionActionLine: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    selectionActionLabel: {
+      color: colors.textPrimary,
+      fontWeight: '800',
+    },
+    hintText: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
+  });
+}

@@ -34,8 +34,13 @@ import {
 import { loadLatestRunHistoryEntryAsync } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { RunHistoryEntry } from '@/src/types/run';
 import { humanizeId } from '@/src/utils/strings';
 import { formatSaveTimestampLabel } from '@/src/utils/time';
@@ -72,7 +77,7 @@ const hubShortcuts: HubShortcut[] = [
     href: '/settings',
     label: 'Config',
     title: 'Settings',
-    body: 'Adjust audio and content settings stored in the profile.',
+    body: 'Adjust accessibility, contrast, text scale, and comfort settings stored in the profile.',
   },
 ];
 
@@ -114,6 +119,8 @@ export default function HubScreen() {
   const [activeRequisitionId, setActiveRequisitionId] = useState<string | null>(null);
   const [activeUpgradeId, setActiveUpgradeId] = useState<string | null>(null);
   const resolvedProfile = profile ?? bootstrapProfile;
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -863,6 +870,8 @@ function RequisitionCard({
   activeRequisitionId: string | null;
   onPurchase: (offer: RequisitionOffer) => Promise<void>;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
   const requisitionKey = `${offer.kind}:${offer.id}`;
   const isPending = activeRequisitionId === requisitionKey;
   const buttonLabel = isPending
@@ -922,6 +931,8 @@ function MetaUpgradeCard({
   activeUpgradeId: string | null;
   onPurchase: (offer: MetaUpgradeOffer) => Promise<void>;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
   const isPending = activeUpgradeId === offer.id;
   const buttonLabel = offer.exhausted
     ? 'Maxed'
@@ -982,6 +993,9 @@ function MetaUpgradeCard({
 }
 
 function LoadingPanel({ label }: { label: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -1007,6 +1021,9 @@ function InfoPanel({
   secondaryLabel?: string;
   onSecondaryPress?: () => void;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
@@ -1026,6 +1043,9 @@ function InfoPanel({
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -1035,6 +1055,9 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -1044,6 +1067,9 @@ function DetailLine({ label, value }: { label: string; value: string }) {
 }
 
 function ArchiveStat({ label }: { label: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return <Text style={styles.archiveStat}>{label}</Text>;
 }
 
@@ -1052,6 +1078,9 @@ function ResultBadge({
 }: {
   result: RunHistoryEntry['result'];
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View
       style={[
@@ -1079,7 +1108,11 @@ function ResultBadge({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -1104,26 +1137,27 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 34,
+    fontSize: scaleFontSize(34, settings),
     fontWeight: '900',
-    lineHeight: 38,
+    lineHeight: scaleLineHeight(38, settings),
   },
   subtitle: {
     color: colors.accent,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
-    lineHeight: 22,
+    lineHeight: scaleLineHeight(22, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   panel: {
     backgroundColor: colors.surfaceRaised,
@@ -1135,13 +1169,15 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   panelBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   loadingState: {
     paddingVertical: spacing.lg,
@@ -1166,15 +1202,16 @@ const styles = StyleSheet.create({
   },
   statValue: {
     color: colors.accent,
-    fontSize: 22,
+    fontSize: scaleFontSize(22, settings),
     fontWeight: '900',
+    lineHeight: scaleLineHeight(26, settings),
   },
   statLabel: {
     color: colors.textMuted,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   detailCard: {
     backgroundColor: colors.surface,
@@ -1186,8 +1223,8 @@ const styles = StyleSheet.create({
   },
   detailLine: {
     color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
   },
   detailLabel: {
     color: colors.textSubtle,
@@ -1195,15 +1232,15 @@ const styles = StyleSheet.create({
   },
   successText: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 19,
+    lineHeight: scaleLineHeight(19, settings),
   },
   errorText: {
     color: colors.error,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 19,
+    lineHeight: scaleLineHeight(19, settings),
   },
   requisitionSections: {
     gap: spacing.md,
@@ -1213,8 +1250,9 @@ const styles = StyleSheet.create({
   },
   subsectionTitle: {
     color: colors.textPrimary,
-    fontSize: 15,
+    fontSize: scaleFontSize(15, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   requisitionList: {
     gap: spacing.sm + 2,
@@ -1242,25 +1280,27 @@ const styles = StyleSheet.create({
   },
   requisitionTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   requisitionSubtitle: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   requisitionBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   requisitionHint: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   costBadge: {
     borderRadius: 999,
@@ -1275,9 +1315,9 @@ const styles = StyleSheet.create({
   },
   costBadgeText: {
     color: colors.textMuted,
-    fontSize: 11,
+    fontSize: scaleFontSize(11, settings),
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   costBadgeTextAffordable: {
@@ -1285,8 +1325,8 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     color: colors.textSubtle,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
   },
   archiveCard: {
     backgroundColor: colors.surface,
@@ -1308,18 +1348,20 @@ const styles = StyleSheet.create({
   },
   archiveTitle: {
     color: colors.textPrimary,
-    fontSize: 18,
+    fontSize: scaleFontSize(18, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(22, settings),
   },
   archiveMeta: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
   },
   archiveBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   archiveStats: {
     flexDirection: 'row',
@@ -1328,9 +1370,9 @@ const styles = StyleSheet.create({
   },
   archiveStat: {
     color: colors.accent,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   resultBadge: {
     borderRadius: 999,
@@ -1351,9 +1393,9 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
   },
   resultBadgeText: {
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   resultBadgeTextWin: {
@@ -1378,22 +1420,25 @@ const styles = StyleSheet.create({
   },
   shortcutLabel: {
     color: colors.accent,
-    fontSize: 11,
+    fontSize: scaleFontSize(11, settings),
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     textTransform: 'uppercase',
   },
   shortcutTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   shortcutBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   actionGroup: {
     gap: spacing.sm + 2,
   },
-});
+  });
+}

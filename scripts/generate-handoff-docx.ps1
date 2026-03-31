@@ -22,7 +22,11 @@ function Escape-Xml {
 }
 
 $resolvedMarkdown = Resolve-Path -LiteralPath $SourceMarkdown
-$outputPath = Join-Path (Get-Location) $OutputDocx
+$outputPath = if ([System.IO.Path]::IsPathRooted($OutputDocx)) {
+  $OutputDocx
+} else {
+  Join-Path (Get-Location) $OutputDocx
+}
 $tempRoot = Join-Path (Get-Location) '.tmp_handoff_docx'
 
 if (Test-Path $tempRoot) {

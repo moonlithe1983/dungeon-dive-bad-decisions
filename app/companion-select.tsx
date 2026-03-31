@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -22,8 +22,13 @@ import {
 } from '@/src/engine/bond/companion-perks';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 
 export default function CompanionSelectScreen() {
   const profile = useProfileStore((state) => state.profile);
@@ -36,6 +41,8 @@ export default function CompanionSelectScreen() {
   const createRunFromSetup = useRunStore((state) => state.createRunFromSetup);
   const isCreatingRun = useRunStore((state) => state.isCreatingRun);
   const setupError = useRunStore((state) => state.setupError);
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (!profile) {
@@ -304,7 +311,11 @@ export default function CompanionSelectScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
@@ -329,26 +340,27 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '800',
-    letterSpacing: 1,
+    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 34,
+    fontSize: scaleFontSize(34, settings),
     fontWeight: '900',
-    lineHeight: 38,
+    lineHeight: scaleLineHeight(38, settings),
   },
   subtitle: {
     color: colors.accent,
-    fontSize: 16,
+    fontSize: scaleFontSize(16, settings),
     fontWeight: '800',
-    lineHeight: 22,
+    lineHeight: scaleLineHeight(22, settings),
   },
   body: {
     color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: scaleFontSize(15, settings),
+    lineHeight: scaleLineHeight(22, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   panel: {
     backgroundColor: colors.surfaceRaised,
@@ -360,13 +372,15 @@ const styles = StyleSheet.create({
   },
   panelTitle: {
     color: colors.textPrimary,
-    fontSize: 17,
+    fontSize: scaleFontSize(17, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(21, settings),
   },
   panelBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   loadingState: {
     paddingVertical: spacing.lg,
@@ -391,28 +405,30 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   optionCardPressed: {
-    opacity: 0.94,
+    opacity: settings.reducedMotionEnabled ? 0.98 : 0.94,
   },
   optionTitle: {
     color: colors.textPrimary,
-    fontSize: 18,
+    fontSize: scaleFontSize(18, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(22, settings),
   },
   optionMeta: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   optionBody: {
     color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(21, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   optionEdge: {
     color: colors.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
   },
   selectionDetailCard: {
     backgroundColor: colors.surface,
@@ -424,42 +440,46 @@ const styles = StyleSheet.create({
   },
   selectionDetailTitle: {
     color: colors.textPrimary,
-    fontSize: 15,
+    fontSize: scaleFontSize(15, settings),
     fontWeight: '800',
+    lineHeight: scaleLineHeight(20, settings),
   },
   selectionDetailItem: {
     gap: spacing.xs,
   },
   selectionDetailName: {
     color: colors.accent,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
   },
   selectionDetailBody: {
     color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   optionFooter: {
     color: colors.textSubtle,
-    fontSize: 12,
+    fontSize: scaleFontSize(12, settings),
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: scaleLineHeight(18, settings),
     marginTop: 2,
   },
   errorText: {
     color: colors.error,
-    fontSize: 13,
+    fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
-    lineHeight: 19,
+    lineHeight: scaleLineHeight(19, settings),
   },
   hintText: {
     color: colors.textSubtle,
-    fontSize: 13,
-    lineHeight: 19,
+    fontSize: scaleFontSize(13, settings),
+    lineHeight: scaleLineHeight(19, settings),
+    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
   },
   actionGroup: {
     gap: spacing.sm + 2,
   },
-});
+  });
+}

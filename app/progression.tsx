@@ -23,8 +23,13 @@ import {
 import { loadRunHistoryAsync } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
-import { colors } from '@/src/theme/colors';
+import {
+  scaleFontSize,
+  scaleLineHeight,
+  useAppTheme,
+} from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { ProfileSettingsState } from '@/src/types/profile';
 import type { RunHistoryEntry } from '@/src/types/run';
 import { humanizeId } from '@/src/utils/strings';
 import { formatSaveTimestampLabel } from '@/src/utils/time';
@@ -47,6 +52,8 @@ export default function ProgressionScreen() {
   const [loadStatus, setLoadStatus] = useState<ProgressionLoadStatus>('idle');
   const [loadError, setLoadError] = useState<string | null>(null);
   const resolvedProfile = profile ?? bootstrapProfile;
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -250,9 +257,10 @@ export default function ProgressionScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Unlock Coverage</Text>
                 <Text style={styles.panelBody}>
-                  The archive layer is live now, and the hub owns the first
-                  spending pass. Broader progression choices can still grow out
-                  from here without replacing the saved history view.
+                  The archive now acts like a real Meridian incident ledger,
+                  while the hub covers the first requisition pass. Future
+                  progression can deepen from here without replacing the saved
+                  history view testers already rely on.
                 </Text>
                 <View style={styles.detailCard}>
                   <DetailLine
@@ -387,6 +395,8 @@ function ArchiveCard({
   entry: RunHistoryEntry;
   emphasize?: boolean;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
   const activeCompanionName = useMemo(() => {
     if (!entry.recap) {
       return null;
@@ -534,6 +544,9 @@ function ResultBadge({
 }: {
   result: RunHistoryEntry['result'];
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View
       style={[
@@ -566,6 +579,9 @@ function LoadingPanel({
 }: {
   label: string;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <View style={styles.loadingState}>
@@ -591,6 +607,9 @@ function InfoPanel({
   secondaryLabel?: string;
   onSecondaryPress?: () => void;
 }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
@@ -613,6 +632,9 @@ function InfoPanel({
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <View style={styles.statCard}>
       <Text style={styles.statValue}>{value}</Text>
@@ -622,6 +644,9 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function DetailLine({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
   return (
     <Text style={styles.detailLine}>
       <Text style={styles.detailLabel}>{label}: </Text>
@@ -630,231 +655,243 @@ function DetailLine({ label, value }: { label: string; value: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 1,
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: 34,
-    fontWeight: '900',
-    lineHeight: 38,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: 22,
-    fontWeight: '900',
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  detailCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  detailLine: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  detailLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  archiveList: {
-    gap: spacing.md,
-  },
-  upgradeList: {
-    gap: spacing.sm + 2,
-  },
-  upgradeCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 14,
-    gap: spacing.xs + 2,
-  },
-  upgradeTitle: {
-    color: colors.textPrimary,
-    fontSize: 15,
-    fontWeight: '800',
-    lineHeight: 21,
-  },
-  upgradeBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  archiveCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 14,
-    gap: spacing.sm + 2,
-  },
-  archiveCardEmphasis: {
-    borderColor: colors.accent,
-  },
-  archiveHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  archiveHeading: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  archiveTitle: {
-    color: colors.textPrimary,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  archiveMeta: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  archiveBody: {
-    color: colors.textMuted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  archiveStats: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  archiveStat: {
-    color: colors.accent,
-    fontSize: 12,
-    fontWeight: '700',
-    lineHeight: 18,
-  },
-  resultBadge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-  },
-  resultBadgeWin: {
-    backgroundColor: '#2a2412',
-    borderColor: '#806b2b',
-  },
-  resultBadgeLoss: {
-    backgroundColor: '#27191b',
-    borderColor: '#7d474b',
-  },
-  resultBadgeAbandon: {
-    backgroundColor: colors.surfaceRaised,
-    borderColor: colors.borderStrong,
-  },
-  resultBadgeText: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
-  resultBadgeTextWin: {
-    color: colors.accent,
-  },
-  resultBadgeTextLoss: {
-    color: colors.error,
-  },
-  resultBadgeTextAbandon: {
-    color: colors.textMuted,
-  },
-  emptyState: {
-    color: colors.textSubtle,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
-});
+function createStyles(
+  settings: ProfileSettingsState,
+  colors: ReturnType<typeof useAppTheme>['colors']
+) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(22, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(26, settings),
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    detailCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    detailLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    archiveList: {
+      gap: spacing.md,
+    },
+    upgradeList: {
+      gap: spacing.sm + 2,
+    },
+    upgradeCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: 14,
+      gap: spacing.xs + 2,
+    },
+    upgradeTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    upgradeBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    archiveCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: 14,
+      gap: spacing.sm + 2,
+    },
+    archiveCardEmphasis: {
+      borderColor: colors.accent,
+    },
+    archiveHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      gap: spacing.sm,
+    },
+    archiveHeading: {
+      flex: 1,
+      gap: spacing.xs,
+    },
+    archiveTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    archiveMeta: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+    },
+    archiveBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    archiveStats: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    archiveStat: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    resultBadge: {
+      borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderWidth: 1,
+    },
+    resultBadgeWin: {
+      backgroundColor: '#2a2412',
+      borderColor: '#806b2b',
+    },
+    resultBadgeLoss: {
+      backgroundColor: '#27191b',
+      borderColor: '#7d474b',
+    },
+    resultBadgeAbandon: {
+      backgroundColor: colors.surfaceRaised,
+      borderColor: colors.borderStrong,
+    },
+    resultBadgeText: {
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textTransform: 'uppercase',
+    },
+    resultBadgeTextWin: {
+      color: colors.accent,
+    },
+    resultBadgeTextLoss: {
+      color: colors.error,
+    },
+    resultBadgeTextAbandon: {
+      color: colors.textMuted,
+    },
+    emptyState: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
+  });
+}

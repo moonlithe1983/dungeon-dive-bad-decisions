@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: March 27, 2026
+Last updated: March 31, 2026
 
 ## Current Scope
 
@@ -24,7 +24,7 @@ This local data currently includes:
 - active run state
 - backup autosave state
 - archive history
-- reserved settings flags kept for future runtime wiring
+- saved settings flags for accessibility, readability, and comfort preferences
 
 ## Data The App Does Not Intentionally Send To Moonlithe
 
@@ -40,8 +40,4 @@ Google Play or other platform providers may still collect their own install, pay
 
 A final public support inbox still needs to be confirmed before public release.
 
-The current project placeholder is:
-
-- `support@yourdomain.com`
-
-That placeholder should be replaced with a real monitored inbox before store submission.
+Until that inbox is live, preview-build issues should be routed through the playtest channel or coordinator that delivered the build.

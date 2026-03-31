@@ -18,9 +18,9 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 3,
     title: 'Calendar Sabotage',
     summary:
-      'A late-night breakroom debrief turns into a lesson on how power really hides itself inside scheduling.',
+      'A late-night Meridian Spire debrief turns into a lesson on how Crown Meridian power really hides itself inside scheduling.',
     sceneLines: [
-      'She drags a marker across the breakroom whiteboard and circles three empty meeting blocks like they are crime scenes.',
+      'She drags a marker across the Meridian Spire breakroom whiteboard and circles three empty meeting blocks like they are crime scenes.',
       '"Executives never say what they want in the room," she says. "They say it with who got invited, who got cut, and who suddenly had to reschedule."',
       'You realize she is not venting. She is teaching you how to read a hierarchy by its absences.',
     ],
@@ -31,10 +31,10 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 5,
     title: 'Emergency Contact',
     summary:
-      'She quietly admits that, somewhere along the way, your disasters became the one thing she still shows up for on purpose.',
+      'She quietly admits that, somewhere along the way, your Meridian Spire disasters became the one thing she still shows up for on purpose.',
     sceneLines: [
-      'The office is finally quiet enough to hear the vending machine hum like an anxious witness.',
-      '"I used to keep a go-bag for executives," she says. "Now I keep one because if your radio goes silent, I will absolutely come looking."',
+      'Meridian Spire is finally quiet enough to hear the vending machine hum like an anxious witness.',
+      '"I used to keep a go-bag for Crown Meridian executives," she says. "Now I keep one because if your radio goes silent, I will absolutely come looking."',
       'It lands with the weight of a confession neither of you is willing to call one.',
     ],
   },
@@ -44,10 +44,10 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 3,
     title: 'Maintenance Gospel',
     summary:
-      'A repair run through the walls turns into the first time they trust you with the office routes that matter.',
+      'A repair run through the walls turns into the first time they trust you with the Meridian Spire routes that matter.',
     sceneLines: [
       'They pry open a panel, point into the ductwork, and grin like a raccoon unveiling cathedral architecture.',
-      '"Every building has a nervous system," they say. "Most people only learn where it hurts. You are learning where it listens."',
+      '"Every building has a nervous system," they say. "Meridian Spire just happens to scream in budget codes. Most people only learn where it hurts. You are learning where it listens."',
       'Then they hand you the flashlight without hesitation, and that feels bigger than any speech.',
     ],
   },
@@ -70,7 +70,7 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 3,
     title: 'After-Hours Patrol',
     summary:
-      'A patrol loop through a dead office becomes a strangely sincere conversation about duty, habits, and who is worth guarding.',
+      'A patrol loop through a dead Meridian floor becomes a strangely sincere conversation about duty, habits, and who is worth guarding.',
     sceneLines: [
       'Their flashlight never shakes, even when the generator does.',
       '"Policy is mostly an excuse to stand next to people who need backup," they say, staring down a dark hallway. "You have started to qualify."',
@@ -96,7 +96,7 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 3,
     title: 'Unauthorized Duplicate',
     summary:
-      'The copier spits out a page containing a memory you never typed, and then waits for your reaction like a nervous dog.',
+      'The copier spits out a page containing a Project Everrise memory you never typed, and then waits for your reaction like a nervous dog.',
     sceneLines: [
       'A warm sheet slides out with your handwriting on it, except you never wrote the words.',
       'The machine chirps once, uncertain, then prints a second page: "SORRY. TRYING TO HELP."',
@@ -122,9 +122,9 @@ export const bondSceneDefinitions: BondSceneDefinition[] = [
     milestoneLevel: 3,
     title: 'Exit Strategy',
     summary:
-      'What starts as a joke about quitting becomes a real conversation about why they keep staying when you ask.',
+      'What starts as a joke about quitting Meridian Spire becomes a real conversation about why they keep staying when you ask.',
     sceneLines: [
-      'They lean back in a folding chair and stare at the ceiling tiles like they owe them money.',
+      'They lean back in a folding chair and stare at the Meridian Spire ceiling tiles like they owe them money.',
       '"I keep planning to ghost this place," they admit. "Then you do something deranged and I want to see how it turns out."',
       'It is not quite loyalty yet, but it is definitely investment.'
     ],

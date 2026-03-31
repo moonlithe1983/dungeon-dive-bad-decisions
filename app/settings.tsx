@@ -86,9 +86,10 @@ export default function SettingsScreen() {
             <Text style={styles.body}>
               Pick a color preset, raise readability, reduce motion, keep words
               from splitting badly on Android, and turn on extra assistive cues
-              before the next climb. Shared controls and screen chrome already
-              respect these settings, and the remaining older screen palette
-              styles are the next rollout target.
+              before the next climb. Shared controls plus the main gameplay and
+              meta routes already respect these settings, and the remaining work
+              is smaller polish on secondary surfaces instead of a broad route
+              migration.
             </Text>
           </View>
 
@@ -106,8 +107,8 @@ export default function SettingsScreen() {
                 <Text style={styles.panelBody}>
                   All presets stay readable in dark conditions. `ADA Contrast`
                   pushes the strongest edge separation. Shared controls update
-                  immediately; older route-specific panel palettes are still
-                  being migrated onto the same system.
+                  immediately, and the current title, setup, run, recap, and
+                  reference routes already use the same live theme profile.
                 </Text>
                 <View style={styles.optionGrid}>
                   {getThemePresetDefinitions().map((preset) => {

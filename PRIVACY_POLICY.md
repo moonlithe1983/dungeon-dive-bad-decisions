@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: March 27, 2026
+Last updated: March 31, 2026
 
 ## Current Scope
 

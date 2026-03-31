@@ -157,14 +157,18 @@ The game is in release-candidate hardening mode:
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
 - local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
-- the live settings route now persists real accessibility/theme settings plus audio/language preferences
-- shared controls and screen chrome now respect the saved accessibility/theme profile, but a full palette rollout across every older screen style is still ongoing
+- the live settings route now persists the real accessibility/theme settings that the app actually uses
+- the primary gameplay, recap, reference, and test routes now respect the saved accessibility/theme profile rather than only the shared chrome
 - class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
+- older companion/meta writing now carries more of that sharper company-specific tone
 - combat log ordering now places the rolling narrative above the action list
 - companion bond growth now has visibly stronger run impact and is surfaced in companion selection
 - baseline combat/reward tuning is less forgiving than the earlier release-candidate pass
+- tester-facing support/privacy/settings copy no longer exposes placeholder or future-feature language
+- the GitHub `validate` workflow check is stable and ready to be required by branch protection on `main`
+- the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
-- Android full release-build device validation, store packaging, and external playtesting are still required before upload
+- the current polished build still needs a shorter Android regression pass before broader playtesting and upload
 
 ## Launch Defaults
 
@@ -173,7 +177,7 @@ The game is in release-candidate hardening mode:
 - English-speaking regions first: United States, United Kingdom, Canada, Australia, New Zealand, and Ireland
 - public developer name: `Moonlithe`
 - working launch price default: `US$3.99` unless external testing later clearly supports `US$4.99`
-- public support email still needs final owner confirmation before store setup
+- public support inbox still needs final owner confirmation before store setup
 
 ## Support And Privacy Drafts
 
@@ -193,6 +197,8 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-03-31.md`
+- `DUNGEON_DIVE_APP_NEEDS_2026-03-31.md`
 - `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`

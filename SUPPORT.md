@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Support
 
-Last updated: March 27, 2026
+Last updated: March 31, 2026
 
 ## Current Launch Defaults
 
@@ -32,4 +32,5 @@ If you report a problem, include:
 
 - the game is currently being prepared as an offline single-player release
 - unfinished settings that do not affect real runtime behavior are intentionally hidden from the live UI
-- a full 10-floor Android release-build manual validation pass is still required before launch
+- one full 10-floor Android release-build validation pass has already been completed on the prior candidate
+- the next device check should focus on the current polished build that includes the latest UI and copy updates

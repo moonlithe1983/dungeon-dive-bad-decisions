@@ -13,6 +13,7 @@ import {
 import { createInitialRun } from '@/src/engine/run/create-initial-run';
 import {
   canRotateActiveCompanionAtFloorStart,
+  chooseCurrentRunNode,
   createAbandonedRunSnapshot,
   getCurrentRunNode,
   rotateActiveCompanionAtFloorStart as rotateActiveCompanionAtFloorStartInEngine,
@@ -20,6 +21,7 @@ import {
   type ResolveCurrentNodeResult,
 } from '@/src/engine/run/progress-run';
 import {
+  createArchivedRunDefeatSummary,
   applyResolvedNodeProgress,
   applyRunProgressDelta,
   createArchivedRunOutcomeNote,
@@ -91,6 +93,7 @@ type RunStoreState = {
   toggleSelectedCompanionId: (companionId: string) => void;
   hydrateFromActiveRun: (run?: RunState | null) => Promise<RunState | null>;
   createRunFromSetup: () => Promise<RunState>;
+  chooseCurrentNode: (nodeId: string) => Promise<RunState>;
   resolveCurrentNode: () => Promise<ResolveCurrentNodeResult>;
   prepareCombatForCurrentNode: () => Promise<RunState>;
   performCombatAction: (actionId: CombatActionId) => Promise<CombatActionResult>;
@@ -334,6 +337,31 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
       throw new Error(message);
     }
   },
+  chooseCurrentNode: async (nodeId) => {
+    const { currentRun } = get();
+
+    if (!currentRun) {
+      throw new Error('No active dive is loaded.');
+    }
+
+    try {
+      const savedRun = await saveActiveRunAsync(chooseCurrentRunNode(currentRun, nodeId));
+      await refreshBootstrapState();
+      setCurrentRunReady(set, savedRun);
+      return savedRun;
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : RUN_RESOLUTION_ERROR_MESSAGE;
+
+      set({
+        currentRunError: message,
+      });
+
+      throw new Error(message);
+    }
+  },
   resolveCurrentNode: async () => {
     const { currentRun } = get();
 
@@ -524,6 +552,10 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
               run: failedRun,
               currentNodeLabel: currentNode.label,
               enemyName: combatResult.combat.enemy.name,
+            }),
+            defeatSummary: createArchivedRunDefeatSummary({
+              combat: combatResult.combat,
+              currentNodeLabel: currentNode.label,
             }),
           },
         });

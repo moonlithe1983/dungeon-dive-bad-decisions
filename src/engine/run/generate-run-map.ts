@@ -635,7 +635,7 @@ function createNode(
   nodeBlueprint: NodeBlueprint,
   random: SeededRandom,
   usedEventIds: Set<string>,
-  isInitiallyActive: boolean
+  initialStatus: RunNodeState['status']
 ): RunNodeState {
   const copy = getNodeCopy(floorBlueprint, nodeBlueprint, random, usedEventIds);
 
@@ -646,7 +646,7 @@ function createNode(
     kind: nodeBlueprint.kind,
     label: copy.label,
     description: copy.description,
-    status: isInitiallyActive ? 'active' : 'locked',
+    status: initialStatus,
   };
 }
 
@@ -672,7 +672,7 @@ export function generateRunMap(seed: string): RunMapState {
             nodeBlueprint,
             random,
             usedEventIds,
-            floorNumber === 1 && nodeIndex === 0
+            floorNumber === 1 ? 'active' : 'locked'
           )
         ),
       } satisfies RunFloorState;

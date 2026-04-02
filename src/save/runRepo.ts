@@ -26,6 +26,7 @@ import type {
 } from '@/src/types/combat';
 import type { ActiveRunSummary } from '@/src/types/save';
 import type {
+  ArchivedRunDefeatSummary,
   ArchivedRunBondGain,
   ArchivedRunRecap,
   ArchivedRunOutcomeNote,
@@ -117,6 +118,7 @@ type ClearActiveRunOptions = {
     run: RunState;
     bossesKilledDelta?: number;
     outcome?: ArchivedRunOutcomeNote;
+    defeatSummary?: ArchivedRunDefeatSummary | null;
   };
 };
 
@@ -127,6 +129,7 @@ type PersistedArchivedRunRecap = {
   metaUpgradeLevels?: Record<string, number> | null;
   stats?: RunProgressStats | null;
   outcome?: ArchivedRunOutcomeNote | null;
+  defeatSummary?: ArchivedRunDefeatSummary | null;
   bondGains?: ArchivedRunBondGain[] | null;
 };
 
@@ -372,6 +375,24 @@ function isArchivedRunBondGain(value: unknown): value is ArchivedRunBondGain {
   );
 }
 
+function isArchivedRunDefeatSummary(value: unknown): value is ArchivedRunDefeatSummary {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<ArchivedRunDefeatSummary>;
+
+  return (
+    typeof candidate.nodeLabel === 'string' &&
+    typeof candidate.enemyName === 'string' &&
+    typeof candidate.enemyIntent === 'string' &&
+    typeof candidate.finalBlow === 'string' &&
+    isStringArray(candidate.heroStatusLabels) &&
+    isStringArray(candidate.enemyStatusLabels) &&
+    typeof candidate.recommendation === 'string'
+  );
+}
+
 function isArchivedRunRecap(value: unknown): value is PersistedArchivedRunRecap {
   if (!value || typeof value !== 'object') {
     return false;
@@ -387,6 +408,8 @@ function isArchivedRunRecap(value: unknown): value is PersistedArchivedRunRecap 
       isNumberRecord(candidate.metaUpgradeLevels)) &&
     (candidate.stats == null || isRunProgressStats(candidate.stats)) &&
     (candidate.outcome == null || isArchivedRunOutcomeNote(candidate.outcome)) &&
+    (candidate.defeatSummary == null ||
+      isArchivedRunDefeatSummary(candidate.defeatSummary)) &&
     (candidate.bondGains == null ||
       (Array.isArray(candidate.bondGains) &&
         candidate.bondGains.every(isArchivedRunBondGain)))
@@ -569,7 +592,8 @@ function createDefaultArchivedRunOutcome(
 function buildArchivedRunRecap(
   run: RunState,
   outcome: ArchivedRunOutcomeNote,
-  bondGains: ArchivedRunBondGain[]
+  bondGains: ArchivedRunBondGain[],
+  defeatSummary: ArchivedRunDefeatSummary | null = null
 ): ArchivedRunRecap {
   return {
     activeCompanionId: run.activeCompanionId,
@@ -581,6 +605,7 @@ function buildArchivedRunRecap(
     metaUpgradeLevels: normalizeMetaUpgradeLevels(run.metaUpgradeLevels),
     stats: normalizeRunProgressStats(run.stats),
     outcome,
+    defeatSummary,
     bondGains,
   };
 }
@@ -610,6 +635,7 @@ function normalizeArchivedRunRecap(
     metaUpgradeLevels,
     stats: normalizeRunProgressStats(recap.stats),
     outcome: recap.outcome ?? createDefaultArchivedRunOutcome(result),
+    defeatSummary: recap.defeatSummary ?? null,
     bondGains: (recap.bondGains ?? []).map((bondGain) => ({
       companionId: bondGain.companionId,
       role: bondGain.role,
@@ -875,7 +901,8 @@ function buildRunHistoryEntry(
   run: RunState,
   result: ArchivedRunResult,
   outcome: ArchivedRunOutcomeNote,
-  bondGains: ArchivedRunBondGain[]
+  bondGains: ArchivedRunBondGain[],
+  defeatSummary: ArchivedRunDefeatSummary | null = null
 ): Omit<RunHistoryEntry, 'id'> {
   const className =
     getClassDefinition(run.heroClassId)?.name ?? humanizeId(run.heroClassId);
@@ -886,7 +913,7 @@ function buildRunHistoryEntry(
     classId: run.heroClassId,
     className,
     floorReached: run.floorIndex,
-    recap: buildArchivedRunRecap(run, outcome, bondGains),
+    recap: buildArchivedRunRecap(run, outcome, bondGains, defeatSummary),
     updatedAt: createTimestamp(),
     createdAt: run.createdAt,
   };
@@ -1051,7 +1078,8 @@ async function recordArchivedRunAsync(
   result: ArchivedRunResult,
   run: RunState,
   outcome: ArchivedRunOutcomeNote,
-  bossesKilledDelta = 0
+  bossesKilledDelta = 0,
+  defeatSummary: ArchivedRunDefeatSummary | null = null
 ) {
   const db = await getDatabaseAsync();
   const profile = await loadOrSeedProfileAsync();
@@ -1060,7 +1088,8 @@ async function recordArchivedRunAsync(
     run,
     result,
     outcome,
-    bondProgression.bondGains
+    bondProgression.bondGains,
+    defeatSummary
   );
 
   await db.runAsync(
@@ -1146,7 +1175,8 @@ export async function clearActiveRunAsync(options?: ClearActiveRunOptions) {
       options.archive.result,
       options.archive.run,
       options.archive.outcome ?? createDefaultArchivedRunOutcome(options.archive.result),
-      options.archive.bossesKilledDelta ?? 0
+      options.archive.bossesKilledDelta ?? 0,
+      options.archive.defeatSummary ?? null
     );
   }
 

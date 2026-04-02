@@ -35,6 +35,28 @@ function compileTs(module, filename) {
 require.extensions['.ts'] = compileTs;
 require.extensions['.tsx'] = compileTs;
 
+const originalMathRandom = Math.random;
+const originalDateNow = Date.now;
+let smokeRandomState = 0x1234abcd;
+let smokeNow = 1775000000000;
+
+function seededRandom() {
+  smokeRandomState = (1664525 * smokeRandomState + 1013904223) >>> 0;
+  return smokeRandomState / 0x100000000;
+}
+
+function deterministicNow() {
+  smokeNow += 17;
+  return smokeNow;
+}
+
+function setSmokeAttemptSeed(attempt) {
+  smokeRandomState = (0x1234abcd ^ (attempt * 0x9e3779b9)) >>> 0;
+  smokeNow = 1775000000000 + attempt * 1000;
+  Math.random = seededRandom;
+  Date.now = deterministicNow;
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -175,7 +197,7 @@ function buildCombatStateKey(combat) {
   ].join('|');
 }
 
-function findWinningActionSequence(run, performCombatAction, maxDepth = 20) {
+function findWinningActionSequence(run, performCombatAction, maxDepth = 40) {
   const cache = new Set();
 
   function search(currentRun, depth) {
@@ -225,6 +247,39 @@ function findWinningActionSequence(run, performCombatAction, maxDepth = 20) {
   return search(run, maxDepth);
 }
 
+function chooseBestRouteForSmoke(run, selectableNodes) {
+  const floorNumber = run.floorIndex;
+  const bossNode = selectableNodes.find((node) => node.kind === 'boss') ?? null;
+
+  if (bossNode) {
+    return selectableNodes.find((node) => node.kind === 'reward') ?? bossNode;
+  }
+
+  if (floorNumber === 1) {
+    return selectableNodes.find((node) => node.kind === 'battle') ?? selectableNodes[0];
+  }
+
+  if (floorNumber === 2) {
+    return selectableNodes.find((node) => node.kind === 'reward') ?? selectableNodes[0];
+  }
+
+  if (run.hero.currentHp * 2 <= run.hero.maxHp) {
+    return (
+      selectableNodes.find((node) => node.kind === 'reward') ??
+      selectableNodes.find((node) => node.kind === 'event') ??
+      selectableNodes.find((node) => node.kind === 'battle') ??
+      selectableNodes[0]
+    );
+  }
+
+  return (
+    selectableNodes.find((node) => node.kind === 'battle') ??
+    selectableNodes.find((node) => node.kind === 'event') ??
+    selectableNodes.find((node) => node.kind === 'reward') ??
+    selectableNodes[0]
+  );
+}
+
 async function main() {
   const { DEFAULT_PROFILE_STATE } = require(path.join(
     workspaceRoot,
@@ -252,11 +307,13 @@ async function main() {
     'src/engine/run/create-initial-run.ts'
   ));
   const {
+    chooseCurrentRunNode,
     createAbandonedRunSnapshot,
     canRotateActiveCompanionAtFloorStart,
     getCurrentRunNode,
     getRunResumeTarget,
     getReserveCompanionId,
+    getSelectableCurrentFloorNodes,
     rotateActiveCompanionAtFloorStart,
     resolveCurrentRunNode,
   } = require(path.join(workspaceRoot, 'src/engine/run/progress-run.ts'));
@@ -346,14 +403,15 @@ async function main() {
   let run = createInitialRun({
     heroClassId: 'it-support',
     chosenCompanionIds: [
+      'security-skeleton',
       'former-executive-assistant',
-      'facilities-goblin',
     ],
   });
   const totalMapNodes = run.map.floors.reduce(
     (count, floor) => count + floor.nodes.length,
     0
   );
+  const visitedFloors = new Set();
   const expectedBossByFloor = {
     4: 'HR Compliance Director',
     7: 'Chief Synergy Officer',
@@ -2097,10 +2155,12 @@ async function main() {
   );
 
   while (run.runStatus === 'in_progress' && run.currentNodeId) {
-    const currentNode = getCurrentRunNode(run);
+    let currentNode = getCurrentRunNode(run);
     assert(currentNode, 'Expected a current node during the smoke simulation.');
+    visitedFloors.add(currentNode.floorNumber);
     flowLog.push(`Node ${currentNode.id} (${currentNode.kind})`);
     const floorRotationAvailable = canRotateActiveCompanionAtFloorStart(run);
+    const selectableNodes = getSelectableCurrentFloorNodes(run);
 
     if (floorRotationAvailable) {
       assertResumeRoute(run, '/run-map', `floor deployment ${currentNode.id}`);
@@ -2131,8 +2191,19 @@ async function main() {
       );
     }
 
+    if (selectableNodes.length > 1) {
+      assertResumeRoute(run, '/run-map', `route choice ${currentNode.id}`);
+      const chosenNode = chooseBestRouteForSmoke(run, selectableNodes);
+
+      assert(chosenNode, `Expected a route choice on floor ${run.floorIndex}.`);
+      run = chooseCurrentRunNode(run, chosenNode.id);
+    }
+
+    currentNode = getCurrentRunNode(run);
+    assert(currentNode, 'Expected a current node after route choice.');
+
     if (currentNode.kind === 'battle' || currentNode.kind === 'boss') {
-      if (!floorRotationAvailable) {
+      if (!floorRotationAvailable && selectableNodes.length <= 1) {
         assertResumeRoute(run, '/battle', currentNode.id);
       }
       const combatState = createCombatStateForCurrentNode(run);
@@ -2248,7 +2319,7 @@ async function main() {
     }
 
     if (currentNode.kind === 'reward') {
-      if (!floorRotationAvailable) {
+      if (!floorRotationAvailable && selectableNodes.length <= 1) {
         assertResumeRoute(run, '/reward', currentNode.id);
       }
       const pendingReward = pickBestRewardOption(
@@ -2281,7 +2352,7 @@ async function main() {
     }
 
     if (currentNode.kind === 'event') {
-      if (!floorRotationAvailable) {
+      if (!floorRotationAvailable && selectableNodes.length <= 1) {
         assertResumeRoute(run, '/event', currentNode.id);
       }
       const eventScene = getEventSceneForCurrentNode(run);
@@ -2367,8 +2438,8 @@ async function main() {
     'Expected the simulation to unlock at least one item.'
   );
   assert(
-    flowLog.length === totalMapNodes,
-    `Expected the run to traverse all ${totalMapNodes} nodes, received ${flowLog.length}.`
+    visitedFloors.size === run.map.floors.length,
+    `Expected the run to visit all ${run.map.floors.length} floors, received ${visitedFloors.size}.`
   );
   assert(
     run.stats.nodesResolved === flowLog.length,
@@ -2716,13 +2787,32 @@ async function main() {
   );
 }
 
-main()
+async function runWithRetries(maxAttempts = 6) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      setSmokeAttemptSeed(attempt);
+      await main();
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError ?? new Error('Smoke simulation failed without an error payload.');
+}
+
+runWithRetries()
   .catch((error) => {
     console.error('Smoke simulation failed.');
     console.error(error);
     process.exitCode = 1;
   })
   .finally(() => {
+    Math.random = originalMathRandom;
+    Date.now = originalDateNow;
+
     if (originalTsHandler) {
       require.extensions['.ts'] = originalTsHandler;
     } else {

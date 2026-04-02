@@ -1,4 +1,7 @@
+import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
+import type { CombatState } from '@/src/types/combat';
 import type {
+  ArchivedRunDefeatSummary,
   ArchivedRunOutcomeNote,
   ArchivedRunResult,
   RunNodeKind,
@@ -143,5 +146,59 @@ export function createArchivedRunOutcomeNote(input: {
     detail: `Archived voluntarily${locationLabel} on floor ${input.run.floorIndex}.${
       input.pendingRewardLost ? ' A pending reward was left behind.' : ''
     }`,
+  };
+}
+
+function pickDefeatFinalBlow(combat: CombatState) {
+  const meaningfulLine = [...combat.log]
+    .reverse()
+    .find(
+      (entry) =>
+        !entry.includes('The office wins this round') &&
+        !entry.includes('You collapse under the combined weight') &&
+        !entry.includes('Your run is over')
+    );
+
+  return meaningfulLine ?? `${combat.enemy.name} finished the exchange before you could recover.`;
+}
+
+function createDefeatRecommendation(combat: CombatState) {
+  const heroStatusIds = combat.heroStatuses.map((status) => status.id);
+
+  if (heroStatusIds.includes('on-hold')) {
+    return 'Tempo killed this run. Bring cleaner control or burst so the enemy cannot dictate the turn order.';
+  }
+
+  if (heroStatusIds.includes('micromanaged')) {
+    return 'Action taxes stacked up. Cleanse sooner or pick safer, lower-friction turns.';
+  }
+
+  if (heroStatusIds.includes('burnout')) {
+    return 'You got dragged into attrition. Lean harder into recovery or shorter fights.';
+  }
+
+  if (heroStatusIds.includes('escalated')) {
+    return 'The fight snowballed. Either stabilize earlier or commit to ending the exchange faster.';
+  }
+
+  if (heroStatusIds.includes('ccd')) {
+    return 'Too much spillover pressure landed at once. Mitigation and focused takedowns will help.';
+  }
+
+  return 'You ran out of runway before the encounter broke. Try a cleaner build direction earlier and protect your HP before the last exchange.';
+}
+
+export function createArchivedRunDefeatSummary(input: {
+  combat: CombatState;
+  currentNodeLabel: string;
+}): ArchivedRunDefeatSummary {
+  return {
+    nodeLabel: input.currentNodeLabel,
+    enemyName: input.combat.enemy.name,
+    enemyIntent: input.combat.enemy.intent,
+    finalBlow: pickDefeatFinalBlow(input.combat),
+    heroStatusLabels: input.combat.heroStatuses.map(formatCombatStatusLabel),
+    enemyStatusLabels: input.combat.enemyStatuses.map(formatCombatStatusLabel),
+    recommendation: createDefeatRecommendation(input.combat),
   };
 }

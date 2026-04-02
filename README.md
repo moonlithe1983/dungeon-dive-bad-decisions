@@ -10,9 +10,11 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> companion select on fresh profiles -> run map -> battle / reward / event -> archive recap -> progression
+- Core loop: title -> companion select on fresh profiles -> route-choice run map -> battle / reward / event -> archive recap -> progression
 - Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
+- Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
+- Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
 - Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
@@ -157,9 +159,13 @@ The game is in release-candidate hardening mode:
 - feature freeze is recommended
 - fresh-profile onboarding now skips fake class selection until more classes are unlocked
 - the opening roster now shows 3 companions so the first team pick is a real choice
+- the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
+- battle and reward screens now hide deeper mechanical detail behind toggles so the first read is shorter and more phone-friendly
+- archived defeat recaps now call out the enemy, final exchange, live statuses, and a suggested next-run adjustment
 - Android dev-smoke win/loss validation is covered
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
 - an April 2 Android visual sweep confirmed the updated title, onboarding, settings, support, privacy, and no-active-run map copy in-context on the current debug build
+- automated smoke validation now also covers the route-choice map structure deterministically instead of assuming a single forced floor path
 - local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
@@ -173,7 +179,7 @@ The game is in release-candidate hardening mode:
 - the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
-- the current code/docs state still needs a focused Android regression across battle, reward, event, end-run, resume, and `dev-smoke` before broader playtesting and upload
+- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke` before broader playtesting and upload
 
 ## Launch Defaults
 

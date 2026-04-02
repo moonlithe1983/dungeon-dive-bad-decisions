@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -38,6 +38,7 @@ export default function RewardScreen() {
     (state) => state.isSelectingRewardOption
   );
   const isClaimingReward = useRunStore((state) => state.isClaimingReward);
+  const [showDetails, setShowDetails] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -51,7 +52,7 @@ export default function RewardScreen() {
     }
 
     void preparePendingRewardForCurrentNode().catch(() => {
-      // The store already captures the error for UI display.
+      // Store captures the error for the UI.
     });
   }, [currentNode, preparePendingRewardForCurrentNode, run]);
 
@@ -118,17 +119,13 @@ export default function RewardScreen() {
       >
         <View style={styles.shell}>
           <View style={styles.heroCard}>
-            <Text style={styles.eyebrow}>RUN NODE</Text>
-            <Text style={styles.title}>Reward</Text>
+            <Text style={styles.eyebrow}>REWARD</Text>
+            <Text style={styles.title}>Claim The Haul</Text>
             <Text style={styles.subtitle}>
-              {hasSelectableOptions
-                ? 'Each haul offers a different way to keep the climb alive.'
-                : 'Victory pays out in both short-term survival and long-term leverage.'}
+              Pick the package that makes the next rooms easier to survive.
             </Text>
             <Text style={styles.body}>
-              {hasSelectableOptions
-                ? 'Choose one package before claiming it. Different floors offer different kinds of haul, and the right crew can tilt certain rewards in your favor.'
-                : 'Claiming rewards can strengthen the current dive while adding new leverage for the next one.'}
+              Scrap helps the long game. Healing and contraband keep this run alive right now.
             </Text>
           </View>
 
@@ -139,7 +136,7 @@ export default function RewardScreen() {
           ) : !run ? (
             <InfoPanel
               title="No Reward Loaded"
-              body="There is no active run to pay out. Return to the map or title screen and reopen the current flow from there."
+              body="There is no active run to pay out."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
               secondaryLabel="Return to Title"
@@ -150,7 +147,7 @@ export default function RewardScreen() {
           ) : !pendingReward ? (
             <InfoPanel
               title="Nothing To Claim"
-              body="There is no reward waiting right now. If a battle or reward node produced loot, it will appear here."
+              body="There is no reward waiting right now."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
               secondaryLabel="Return to Title"
@@ -162,60 +159,34 @@ export default function RewardScreen() {
                 <Text style={styles.panelTitle}>{pendingReward.title}</Text>
                 <Text style={styles.panelBody}>{pendingReward.description}</Text>
                 <View style={styles.statGrid}>
-                  <RewardStatCard
-                    label="Meta Currency"
-                    value={`+${pendingReward.metaCurrency}`}
-                  />
-                  <RewardStatCard
-                    label="Run Healing"
-                    value={`+${pendingReward.runHealing}`}
-                  />
+                  <RewardStatCard label="Scrap" value={`+${pendingReward.metaCurrency}`} />
+                  <RewardStatCard label="Recovery" value={`+${pendingReward.runHealing} HP`} />
                 </View>
-                <View style={styles.detailCard}>
-                  <DetailLine
-                    label="Source"
-                    value={
-                      pendingReward.sourceKind === 'battle-victory'
-                        ? 'Battle Win'
-                        : 'Reward Room'
-                    }
-                  />
-                  <DetailLine
-                    label="Origin Node"
-                    value={pendingReward.sourceNodeId}
-                  />
-                  <DetailLine
-                    label="Current Node"
-                    value={currentNode?.label ?? 'Not required'}
-                  />
-                  <DetailLine
-                    label="Selected Package"
-                    value={selectedRewardOption?.label ?? 'Standard payout'}
-                  />
-                  {selectedRewardOption?.companionBonusLabel ? (
-                    <DetailLine
-                      label="Companion Edge"
-                      value={selectedRewardOption.companionBonusLabel}
-                    />
-                  ) : null}
-                  {selectedRewardOption?.synergyBonusLabel ? (
-                    <DetailLine
-                      label="Synergy Edge"
-                      value={selectedRewardOption.synergyBonusLabel}
-                    />
+                <View style={styles.previewCard}>
+                  <Text style={styles.previewLabel}>Selected Package</Text>
+                  <Text style={styles.previewValue}>
+                    {selectedRewardOption?.label ?? 'Standard payout'}
+                  </Text>
+                  <Text style={styles.previewBody}>
+                    {selectedRewardOption?.description ??
+                      'A straightforward haul: keep the run alive now and the profile stronger later.'}
+                  </Text>
+                  {(selectedRewardOption?.companionBonusLabel ||
+                    selectedRewardOption?.synergyBonusLabel) ? (
+                    <Text style={styles.previewEdge}>
+                      {[selectedRewardOption?.companionBonusLabel, selectedRewardOption?.synergyBonusLabel]
+                        .filter(Boolean)
+                        .join(' / ')}
+                    </Text>
                   ) : null}
                 </View>
               </View>
 
               {hasSelectableOptions ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Choose A Haul</Text>
+                  <Text style={styles.panelTitle}>Choose One Package</Text>
                   <Text style={styles.panelBody}>
-                    Reward rooms now branch into biome-specific payout packages.
-                    Pick one, preview the exact run impact, then claim it.
-                    Companion edges now appear directly on the haul card when
-                    your current pair or a live team synergy knows how to work
-                    that package harder.
+                    Keep the decision readable: what helps this run the most right now?
                   </Text>
                   <View style={styles.optionList}>
                     {pendingReward.options?.map((option) => {
@@ -236,6 +207,7 @@ export default function RewardScreen() {
                             void handleSelectOption(option.optionId);
                           }}
                           disabled={isClaimingReward || isSelectingRewardOption}
+                          accessibilityRole="button"
                         >
                           <View style={styles.optionHeader}>
                             <Text style={styles.optionTitle}>{option.label}</Text>
@@ -243,33 +215,22 @@ export default function RewardScreen() {
                               <Text style={styles.optionBadge}>Selected</Text>
                             ) : null}
                           </View>
-                          <Text style={styles.optionBody}>
-                            {option.description}
-                          </Text>
+                          <Text style={styles.optionBody}>{option.description}</Text>
+                          <View style={styles.optionStats}>
+                            <RewardOptionPill label="Scrap" value={`+${option.metaCurrency}`} />
+                            <RewardOptionPill label="HP" value={`+${option.runHealing}`} />
+                            <RewardOptionPill label="Item" value={optionItem?.name ?? 'None'} />
+                          </View>
                           {option.companionBonusLabel ? (
                             <Text style={styles.optionEdge}>
-                              Companion Edge: {option.companionBonusLabel}
+                              Crew edge: {option.companionBonusLabel}
                             </Text>
                           ) : null}
                           {option.synergyBonusLabel ? (
                             <Text style={styles.optionEdge}>
-                              Synergy Edge: {option.synergyBonusLabel}
+                              Synergy edge: {option.synergyBonusLabel}
                             </Text>
                           ) : null}
-                          <View style={styles.optionStats}>
-                            <RewardOptionPill
-                              label="Scrap"
-                              value={`+${option.metaCurrency}`}
-                            />
-                            <RewardOptionPill
-                              label="HP"
-                              value={`+${option.runHealing}`}
-                            />
-                            <RewardOptionPill
-                              label="Item"
-                              value={optionItem?.name ?? 'None'}
-                            />
-                          </View>
                         </Pressable>
                       );
                     })}
@@ -278,47 +239,55 @@ export default function RewardScreen() {
               ) : null}
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>
-                  {selectedRewardOption?.label ?? 'Progression Payload'}
-                </Text>
-                <Text style={styles.panelBody}>
-                  {selectedRewardOption?.description ??
-                    "The meta payout is applied immediately on claim. The same reward also patches up the current run and can add the item to this run's active loadout right away."}
-                </Text>
-                <View style={styles.rewardPayload}>
-                  <View style={styles.rewardCard}>
-                    <Text style={styles.rewardLabel}>Meta Currency</Text>
-                    <Text style={styles.rewardValue}>+{pendingReward.metaCurrency}</Text>
-                  </View>
-                  <View style={styles.rewardCard}>
-                    <Text style={styles.rewardLabel}>Run Recovery</Text>
-                    <Text style={styles.rewardValue}>
-                      {rewardPreview
-                        ? `${run.hero.currentHp}/${run.hero.maxHp} -> ${rewardPreview.run.hero.currentHp}/${rewardPreview.run.hero.maxHp}`
-                        : 'Preview unavailable'}
-                    </Text>
-                    <Text style={styles.rewardBody}>
-                      {rewardPreview
-                        ? rewardPreview.maxHpDelta > 0
-                          ? `This claim also adds ${rewardPreview.maxHpDelta} max HP to the run.`
-                          : `This claim restores ${rewardPreview.healingApplied} HP in the active run.`
-                        : 'The run recovery preview could not be prepared.'}
-                    </Text>
-                  </View>
-                  <View style={styles.rewardCard}>
-                    <Text style={styles.rewardLabel}>Item Pickup</Text>
-                    <Text style={styles.rewardValue}>
-                      {rewardItem?.name ?? 'No item attached'}
-                    </Text>
-                    <Text style={styles.rewardBody}>
-                      {rewardItem
-                        ? rewardPreview?.addedRunItemId
-                          ? `${rewardItem.effectSummary} It will also join this run immediately.`
-                          : `${rewardItem.effectSummary} You already carry one this run, so this is mostly a meta unlock.`
-                        : 'This payout is all cash, no contraband.'}
-                    </Text>
-                  </View>
-                </View>
+                <Pressable
+                  style={styles.toggleRow}
+                  onPress={() => {
+                    setShowDetails((current) => !current);
+                  }}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.panelTitle}>Reward Details</Text>
+                  <Text style={styles.toggleLabel}>{showDetails ? 'Hide' : 'Show'}</Text>
+                </Pressable>
+                {showDetails ? (
+                  <>
+                    <View style={styles.detailCard}>
+                      <DetailLine
+                        label="Source"
+                        value={
+                          pendingReward.sourceKind === 'battle-victory'
+                            ? 'Battle win'
+                            : 'Reward room'
+                        }
+                      />
+                      <DetailLine label="Origin node" value={pendingReward.sourceNodeId} />
+                      <DetailLine label="Current node" value={currentNode?.label ?? 'Not required'} />
+                      <DetailLine
+                        label="Item pickup"
+                        value={rewardItem?.name ?? 'No item attached'}
+                      />
+                    </View>
+                    <View style={styles.detailCard}>
+                      <Text style={styles.detailCardTitle}>Run Impact Preview</Text>
+                      <Text style={styles.detailCardBody}>
+                        {rewardPreview
+                          ? `${run.hero.currentHp}/${run.hero.maxHp} HP -> ${rewardPreview.run.hero.currentHp}/${rewardPreview.run.hero.maxHp} HP`
+                          : 'Preview unavailable'}
+                      </Text>
+                      <Text style={styles.detailCardBody}>
+                        {rewardItem
+                          ? rewardPreview?.addedRunItemId
+                            ? `${rewardItem.effectSummary} It joins this run immediately.`
+                            : `${rewardItem.effectSummary} You already carry one, so this mostly strengthens the meta pool.`
+                          : 'This package is all resources and no gear.'}
+                      </Text>
+                    </View>
+                  </>
+                ) : (
+                  <Text style={styles.panelBody}>
+                    Extra source and preview notes stay hidden unless you want the paperwork.
+                  </Text>
+                )}
                 <View style={styles.actionGroup}>
                   <GameButton
                     label={
@@ -374,14 +343,12 @@ function ErrorPanel({ message }: { message: string | null }) {
       <Text style={styles.errorBody}>
         {message ?? 'The reward payload could not be prepared.'}
       </Text>
-      <View style={styles.actionGroup}>
-        <GameButton
-          label="Return to Map"
-          onPress={() => {
-            router.replace('/run-map' as Href);
-          }}
-        />
-      </View>
+      <GameButton
+        label="Return to Map"
+        onPress={() => {
+          router.replace('/run-map' as Href);
+        }}
+      />
     </View>
   );
 }
@@ -470,237 +437,272 @@ function createStyles(
   colors: ReturnType<typeof useAppTheme>['colors']
 ) {
   return StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '800',
-    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(34, settings),
-    fontWeight: '900',
-    lineHeight: scaleLineHeight(38, settings),
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: scaleFontSize(16, settings),
-    fontWeight: '800',
-    lineHeight: scaleLineHeight(22, settings),
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(15, settings),
-    lineHeight: scaleLineHeight(22, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(17, settings),
-    fontWeight: '800',
-    lineHeight: scaleLineHeight(21, settings),
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(14, settings),
-    lineHeight: scaleLineHeight(21, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  errorBody: {
-    color: colors.errorMuted,
-    fontSize: scaleFontSize(14, settings),
-    lineHeight: scaleLineHeight(20, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: scaleFontSize(22, settings),
-    fontWeight: '900',
-    lineHeight: scaleLineHeight(26, settings),
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-  },
-  detailCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  detailLine: {
-    color: colors.textSecondary,
-    fontSize: scaleFontSize(14, settings),
-    lineHeight: scaleLineHeight(20, settings),
-  },
-  detailLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  rewardPayload: {
-    gap: spacing.sm + 2,
-  },
-  optionList: {
-    gap: spacing.sm + 2,
-  },
-  optionCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 14,
-    gap: spacing.sm,
-  },
-  optionCardSelected: {
-    borderColor: colors.accent,
-    backgroundColor: colors.surfaceRaised,
-  },
-  optionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  optionTitle: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(16, settings),
-    fontWeight: '800',
-    flex: 1,
-    lineHeight: scaleLineHeight(20, settings),
-  },
-  optionBadge: {
-    color: colors.background,
-    backgroundColor: colors.accent,
-    fontSize: scaleFontSize(11, settings),
-    fontWeight: '900',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-    overflow: 'hidden',
-  },
-  optionBody: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(13, settings),
-    lineHeight: scaleLineHeight(19, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  optionEdge: {
-    color: colors.textSecondary,
-    fontSize: scaleFontSize(13, settings),
-    lineHeight: scaleLineHeight(19, settings),
-  },
-  optionStats: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs + 2,
-  },
-  optionPill: {
-    backgroundColor: colors.background,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 2,
-  },
-  optionPillLabel: {
-    color: colors.textSubtle,
-    fontSize: scaleFontSize(10, settings),
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-  },
-  optionPillValue: {
-    color: colors.textSecondary,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '700',
-    lineHeight: scaleLineHeight(18, settings),
-  },
-  rewardCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 14,
-    gap: spacing.xs + 2,
-  },
-  rewardLabel: {
-    color: colors.textSubtle,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '700',
-    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-    textTransform: 'uppercase',
-  },
-  rewardValue: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(18, settings),
-    fontWeight: '800',
-    lineHeight: scaleLineHeight(22, settings),
-  },
-  rewardBody: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(13, settings),
-    lineHeight: scaleLineHeight(19, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    errorBody: {
+      color: colors.errorMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(22, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(26, settings),
+      textAlign: 'center',
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textAlign: 'center',
+    },
+    previewCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    previewLabel: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    previewValue: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    previewBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    previewEdge: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    optionList: {
+      gap: spacing.sm + 2,
+    },
+    optionCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: 14,
+      gap: spacing.sm,
+      minHeight: 88,
+    },
+    optionCardSelected: {
+      borderColor: colors.accent,
+      backgroundColor: colors.surfaceRaised,
+    },
+    optionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    optionTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      flex: 1,
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    optionBadge: {
+      color: colors.background,
+      backgroundColor: colors.accent,
+      fontSize: scaleFontSize(11, settings),
+      fontWeight: '900',
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+      overflow: 'hidden',
+    },
+    optionBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    optionEdge: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+    },
+    optionStats: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.xs + 2,
+    },
+    optionPill: {
+      backgroundColor: colors.background,
+      borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: 2,
+      minHeight: 36,
+      justifyContent: 'center',
+    },
+    optionPillLabel: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(10, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    optionPillValue: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(18, settings),
+    },
+    toggleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: spacing.sm,
+      minHeight: 48,
+    },
+    toggleLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    detailCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    detailLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    detailCardTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(14, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    detailCardBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
   });
 }

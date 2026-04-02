@@ -84,6 +84,16 @@ export type ArchivedRunOutcomeNote = {
   detail: string;
 };
 
+export type ArchivedRunDefeatSummary = {
+  nodeLabel: string;
+  enemyName: string;
+  enemyIntent: string;
+  finalBlow: string;
+  heroStatusLabels: string[];
+  enemyStatusLabels: string[];
+  recommendation: string;
+};
+
 export type ArchivedRunBondGain = {
   companionId: string;
   role: 'active' | 'reserve';
@@ -99,6 +109,7 @@ export type ArchivedRunRecap = {
   metaUpgradeLevels: MetaUpgradeLevels;
   stats: RunProgressStats;
   outcome: ArchivedRunOutcomeNote;
+  defeatSummary?: ArchivedRunDefeatSummary | null;
   bondGains: ArchivedRunBondGain[];
 };
 

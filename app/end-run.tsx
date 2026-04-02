@@ -18,6 +18,7 @@ import {
   loadLatestRunHistoryEntryAsync,
   loadRunHistoryEntryByRunIdAsync,
 } from '@/src/save/runRepo';
+import { useGameStore } from '@/src/state/gameStore';
 import { useRunStore } from '@/src/state/runStore';
 import {
   scaleFontSize,
@@ -32,9 +33,7 @@ import { formatSaveTimestampLabel } from '@/src/utils/time';
 
 type EndRunLoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 
-function pickSingleParam(
-  value: string | string[] | undefined
-): string | null {
+function pickSingleParam(value: string | string[] | undefined): string | null {
   if (Array.isArray(value)) {
     return value[0] ?? null;
   }
@@ -48,6 +47,8 @@ export default function EndRunScreen() {
   }>();
   const currentRunId = useRunStore((state) => state.currentRun?.runId ?? null);
   const clearCurrentRunState = useRunStore((state) => state.clearCurrentRunState);
+  const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
+  const profile = useGameStore((state) => state.profile);
   const [archivedRun, setArchivedRun] = useState<RunHistoryEntry | null>(null);
   const [loadStatus, setLoadStatus] = useState<EndRunLoadStatus>('loading');
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -157,10 +158,30 @@ export default function EndRunScreen() {
     () => formatSaveTimestampLabel(archivedRun?.updatedAt),
     [archivedRun?.updatedAt]
   );
+  const buildSummary = useMemo(() => {
+    if (!archivedRun?.recap) {
+      return null;
+    }
+
+    return [
+      archivedRun.className,
+      activeCompanionName ? `with ${activeCompanionName}` : null,
+      carriedItemNames.length > 0 ? `carrying ${carriedItemNames.join(', ')}` : null,
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }, [activeCompanionName, archivedRun, carriedItemNames]);
 
   const handleReturnToTitle = () => {
     clearCurrentRunState();
     router.replace('/' as Href);
+  };
+
+  const handleRunItBack = () => {
+    beginNewRunSetup();
+    clearCurrentRunState();
+    const hasSingleOpeningClass = (profile?.unlockedClassIds.length ?? 0) <= 1;
+    router.replace((hasSingleOpeningClass ? '/companion-select' : '/class-select') as Href);
   };
 
   return (
@@ -175,22 +196,22 @@ export default function EndRunScreen() {
         <View style={styles.shell}>
           <View style={styles.heroCard}>
             <Text style={styles.eyebrow}>RUN RESULT</Text>
-            <Text style={styles.title}>End Run</Text>
+            <Text style={styles.title}>
+              {isFailedRun ? 'Read The Wreckage' : 'End Run'}
+            </Text>
             <Text style={styles.subtitle}>
               {loadStatus === 'ready'
                 ? isAbandonedRun
-                  ? 'An abandoned climb still leaves a paper trail.'
+                  ? 'Even a retreat leaves a paper trail.'
                   : isFailedRun
-                  ? 'Defeat still leaves a record worth reading.'
-                  : 'Victory deserves a proper report.'
+                    ? 'A good postmortem should make the next run feel possible immediately.'
+                    : 'Victory is only useful if you know what made it work.'
                 : 'The archive is opening your latest result.'}
             </Text>
             <Text style={styles.body}>
               {loadStatus === 'ready'
-                ? archivedRun?.recap
-                  ? 'This recap is pulled from the run archive, so the result remains available after the climb itself is over.'
-                  : 'This older archived run still keeps the core outcome, even if it predates the fuller recap format.'
-                : 'The climb has already been cleared, so the archive is rebuilding the final report.'}
+                ? 'This recap is pulled from the run archive, so the climb is gone but the lesson remains.'
+                : 'The climb is already over. The archive is rebuilding the final report.'}
             </Text>
           </View>
 
@@ -211,8 +232,8 @@ export default function EndRunScreen() {
               title="No Archived Run Found"
               body={
                 requestedRunId
-                  ? 'No archived recap matched this run ID. The active slot has already been cleared, so the safest next step is to return to the title screen.'
-                  : 'There is no archived run recap available yet. Return to the title screen and start a new dive when you are ready.'
+                  ? 'No archived recap matched this run ID.'
+                  : 'There is no archived run recap available yet.'
               }
               primaryLabel="Return to Title"
               onPrimaryPress={handleReturnToTitle}
@@ -245,45 +266,60 @@ export default function EndRunScreen() {
                     }
                   />
                   <DetailLine label="Run ID" value={archivedRun.runId} />
-                  <DetailLine
-                    label="Result"
-                    value={humanizeId(archivedRun.result)}
-                  />
+                  <DetailLine label="Result" value={humanizeId(archivedRun.result)} />
                   <DetailLine label="Archived" value={archivedAtLabel} />
-                  <DetailLine
-                    label="Loadout"
-                    value={
-                      archivedRun.recap
-                        ? carriedItemNames.length > 0
-                          ? carriedItemNames.join(', ')
-                          : 'No carried contraband'
-                        : 'Unavailable in legacy archive'
-                    }
-                  />
                 </View>
-                <Text style={styles.panelBody}>
-                  {isAbandonedRun
-                    ? archivedRun.recap
-                      ? 'The abandon entry has already been written, and this recap is now being read back from persistence instead of the runtime store.'
-                      : 'The abandon entry exists in run history, but this older record does not include the richer persisted recap payload yet.'
-                    : isFailedRun
-                    ? archivedRun.recap
-                      ? 'The archive entry and failure stats have already been written, and this recap is now being read back from persistence instead of the runtime store.'
-                      : 'The failure entry exists in run history, but this older record does not include the richer persisted recap payload yet.'
-                    : archivedRun.recap
-                      ? 'The win entry and profile stats have already been written, and this recap is now grounded in archived run data.'
-                      : 'The victory entry exists in run history, but this older record does not include the richer persisted recap payload yet.'}
-                </Text>
+                {buildSummary ? (
+                  <Text style={styles.panelBody}>Build snapshot: {buildSummary}.</Text>
+                ) : null}
               </View>
+
+              {isFailedRun && archivedRun.recap?.defeatSummary ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>What Killed You</Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine
+                      label="Encounter"
+                      value={archivedRun.recap.defeatSummary.nodeLabel}
+                    />
+                    <DetailLine
+                      label="Enemy"
+                      value={archivedRun.recap.defeatSummary.enemyName}
+                    />
+                    <DetailLine
+                      label="Intent"
+                      value={archivedRun.recap.defeatSummary.enemyIntent}
+                    />
+                  </View>
+                  <Text style={styles.summaryLead}>Final exchange</Text>
+                  <Text style={styles.panelBody}>{archivedRun.recap.defeatSummary.finalBlow}</Text>
+                  {archivedRun.recap.defeatSummary.heroStatusLabels.length > 0 ? (
+                    <>
+                      <Text style={styles.summaryLead}>On you</Text>
+                      <Text style={styles.panelBody}>
+                        {archivedRun.recap.defeatSummary.heroStatusLabels.join(', ')}
+                      </Text>
+                    </>
+                  ) : null}
+                  {archivedRun.recap.defeatSummary.enemyStatusLabels.length > 0 ? (
+                    <>
+                      <Text style={styles.summaryLead}>On them</Text>
+                      <Text style={styles.panelBody}>
+                        {archivedRun.recap.defeatSummary.enemyStatusLabels.join(', ')}
+                      </Text>
+                    </>
+                  ) : null}
+                  <Text style={styles.summaryLead}>Next run idea</Text>
+                  <Text style={styles.panelBody}>
+                    {archivedRun.recap.defeatSummary.recommendation}
+                  </Text>
+                </View>
+              ) : null}
 
               {archivedRun.recap ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>
-                    {archivedRun.recap.outcome.title}
-                  </Text>
-                  <Text style={styles.panelBody}>
-                    {archivedRun.recap.outcome.detail}
-                  </Text>
+                  <Text style={styles.panelTitle}>{archivedRun.recap.outcome.title}</Text>
+                  <Text style={styles.panelBody}>{archivedRun.recap.outcome.detail}</Text>
                   <View style={styles.statGrid}>
                     <StatCard
                       label="Meta Earned"
@@ -305,10 +341,6 @@ export default function EndRunScreen() {
                     />
                   </View>
                   <View style={styles.detailCard}>
-                    <DetailLine
-                      label="Nodes Cleared"
-                      value={String(archivedRun.recap.stats.nodesResolved)}
-                    />
                     <DetailLine
                       label="Damage Taken"
                       value={String(archivedRun.recap.stats.damageTaken)}
@@ -360,21 +392,21 @@ export default function EndRunScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Next</Text>
                 <Text style={styles.panelBody}>
-                  This run is now safely archived. You can head back to title
-                  or open the progression archive to review saved recaps and
-                  lifetime totals.
+                  The run is safely archived. If the postmortem gave you an idea, run it back while it is still hot.
                 </Text>
                 <View style={styles.actionGroup}>
-                  <GameButton
-                    label="Return to Title"
-                    onPress={handleReturnToTitle}
-                  />
+                  <GameButton label="Run It Back" onPress={handleRunItBack} />
                   <GameButton
                     label="Open Run Archive"
                     onPress={() => {
                       clearCurrentRunState();
                       router.replace('/progression' as Href);
                     }}
+                    variant="secondary"
+                  />
+                  <GameButton
+                    label="Return to Title"
+                    onPress={handleReturnToTitle}
                     variant="secondary"
                   />
                 </View>
@@ -419,12 +451,7 @@ function InfoPanel({
     <View style={styles.panel}>
       <Text style={styles.panelTitle}>{title}</Text>
       <Text style={styles.panelBody}>{body}</Text>
-      <View style={styles.actionGroup}>
-        <GameButton
-          label={primaryLabel}
-          onPress={onPrimaryPress}
-        />
-      </View>
+      <GameButton label={primaryLabel} onPress={onPrimaryPress} />
     </View>
   );
 }
@@ -458,132 +485,142 @@ function createStyles(
   colors: ReturnType<typeof useAppTheme>['colors']
 ) {
   return StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  shell: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxl,
-    gap: spacing.lg,
-  },
-  heroCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 20,
-    padding: spacing.xl,
-    gap: spacing.sm + 2,
-  },
-  eyebrow: {
-    color: colors.textSubtle,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '800',
-    letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
-  },
-  title: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(34, settings),
-    fontWeight: '900',
-    lineHeight: scaleLineHeight(38, settings),
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: scaleFontSize(16, settings),
-    fontWeight: '800',
-    lineHeight: scaleLineHeight(22, settings),
-  },
-  body: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(15, settings),
-    lineHeight: scaleLineHeight(22, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  panel: {
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderRadius: 18,
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  panelTitle: {
-    color: colors.textPrimary,
-    fontSize: scaleFontSize(17, settings),
-    fontWeight: '800',
-    lineHeight: scaleLineHeight(21, settings),
-  },
-  panelBody: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(14, settings),
-    lineHeight: scaleLineHeight(21, settings),
-    letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-  },
-  loadingState: {
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  statGrid: {
-    flexDirection: 'row',
-    gap: spacing.sm + 2,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  statValue: {
-    color: colors.accent,
-    fontSize: scaleFontSize(22, settings),
-    fontWeight: '900',
-    lineHeight: scaleLineHeight(26, settings),
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: scaleFontSize(12, settings),
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-  },
-  detailCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: spacing.xs + 2,
-  },
-  detailLine: {
-    color: colors.textSecondary,
-    fontSize: scaleFontSize(14, settings),
-    lineHeight: scaleLineHeight(20, settings),
-  },
-  detailLabel: {
-    color: colors.textSubtle,
-    fontWeight: '700',
-  },
-  sectionLabel: {
-    color: colors.accent,
-    fontSize: scaleFontSize(13, settings),
-    fontWeight: '800',
-    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-    textTransform: 'uppercase',
-  },
-  actionGroup: {
-    gap: spacing.sm + 2,
-  },
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    shell: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.md,
+      paddingBottom: spacing.xxl,
+      gap: spacing.lg,
+    },
+    heroCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 20,
+      padding: spacing.xl,
+      gap: spacing.sm + 2,
+    },
+    eyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      letterSpacing: 1 + (settings.dyslexiaAssistEnabled ? 0.18 : 0),
+    },
+    title: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(34, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(38, settings),
+    },
+    subtitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    body: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(15, settings),
+      lineHeight: scaleLineHeight(22, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    panel: {
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 18,
+      padding: spacing.lg,
+      gap: spacing.md,
+    },
+    panelTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    loadingState: {
+      paddingVertical: spacing.lg,
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    statGrid: {
+      flexDirection: 'row',
+      gap: spacing.sm + 2,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      paddingVertical: 14,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+    },
+    statValue: {
+      color: colors.accent,
+      fontSize: scaleFontSize(22, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(26, settings),
+      textAlign: 'center',
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textAlign: 'center',
+    },
+    detailCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.xs + 2,
+    },
+    detailLine: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
+    },
+    summaryLead: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    sectionLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      textTransform: 'uppercase',
+    },
+    actionGroup: {
+      gap: spacing.sm + 2,
+    },
   });
 }

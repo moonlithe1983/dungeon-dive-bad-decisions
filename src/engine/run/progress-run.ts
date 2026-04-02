@@ -1,5 +1,4 @@
 import type {
-  RunFloorState,
   RunMapState,
   RunNodeKind,
   RunNodeState,
@@ -64,6 +63,14 @@ export function getRunResumeTarget(run: RunState): RunResumeTarget {
       route: '/run-map',
       buttonLabel: 'Deploy',
       summaryLabel: `Floor ${run.floorIndex} Deployment - ${currentNode.label}`,
+    };
+  }
+
+  if (getSelectableCurrentFloorNodes(run).length > 1) {
+    return {
+      route: '/run-map',
+      buttonLabel: 'Dive',
+      summaryLabel: `Choose Route - Floor ${run.floorIndex}`,
     };
   }
 
@@ -134,18 +141,55 @@ export function getCurrentRunFloor(run: RunState) {
   );
 }
 
+export function getSelectableCurrentFloorNodes(run: RunState) {
+  const currentFloor = getCurrentRunFloor(run);
+
+  if (!currentFloor) {
+    return [];
+  }
+
+  return currentFloor.nodes.filter((node) => node.status === 'active');
+}
+
 export function canRotateActiveCompanionAtFloorStart(run: RunState) {
-  const currentNode = getCurrentRunNode(run);
+  const currentFloor = getCurrentRunFloor(run);
 
   return Boolean(
-    currentNode &&
-      currentNode.sequence === 1 &&
+    currentFloor &&
       run.floorIndex > 1 &&
       run.runStatus === 'in_progress' &&
       !run.pendingReward &&
       !run.combatState &&
+      currentFloor.nodes.length > 0 &&
+      currentFloor.nodes.every((node) => node.status === 'active') &&
       getReserveCompanionId(run) !== run.activeCompanionId
   );
+}
+
+export function chooseCurrentRunNode(run: RunState, nodeId: string): RunState {
+  const currentFloor = getCurrentRunFloor(run);
+
+  if (!currentFloor) {
+    throw new Error('There is no active floor to choose from.');
+  }
+
+  if (run.pendingReward || run.combatState) {
+    throw new Error('Finish the current scene before changing route.');
+  }
+
+  const selectableNode = currentFloor.nodes.find(
+    (node) => node.id === nodeId && node.status === 'active'
+  );
+
+  if (!selectableNode) {
+    throw new Error('That route is not available right now.');
+  }
+
+  return {
+    ...run,
+    currentNodeId: selectableNode.id,
+    updatedAt: createTimestamp(),
+  };
 }
 
 export function rotateActiveCompanionAtFloorStart(run: RunState): RunState {
@@ -195,10 +239,6 @@ function findNodeLocation(map: RunMapState, nodeId: string): NodeLocation | null
   return null;
 }
 
-function getNextNodeInFloor(floor: RunFloorState, nodeIndex: number) {
-  return floor.nodes[nodeIndex + 1] ?? null;
-}
-
 export function resolveCurrentRunNode(run: RunState): ResolveCurrentNodeResult {
   if (!run.currentNodeId) {
     throw new Error('There is no active node to resolve.');
@@ -224,39 +264,54 @@ export function resolveCurrentRunNode(run: RunState): ResolveCurrentNodeResult {
 
   currentNode.status = 'resolved';
 
-  const nextNode = getNextNodeInFloor(currentFloor, location.nodeIndex);
+  const unresolvedBossNode =
+    currentFloor.nodes.find(
+      (node) =>
+        node.id !== currentNode.id &&
+        node.kind === 'boss' &&
+        node.status !== 'resolved'
+    ) ?? null;
 
-  if (nextNode) {
-    nextNode.status = 'active';
+  if (unresolvedBossNode && currentNode.kind !== 'boss') {
+    currentFloor.nodes.forEach((node) => {
+      if (node.id !== currentNode.id && node.id !== unresolvedBossNode.id && node.status !== 'resolved') {
+        node.status = 'resolved';
+      }
+    });
 
     return {
       run: {
         ...run,
-        currentNodeId: nextNode.id,
+        currentNodeId: unresolvedBossNode.id,
         map: nextMap,
         updatedAt: createTimestamp(),
       },
       resolvedNode: { ...currentNode },
-      nextNode: { ...nextNode },
+      nextNode: { ...unresolvedBossNode },
       advancedFloor: false,
       completedRun: false,
     };
   }
 
+  currentFloor.nodes.forEach((node) => {
+    if (node.status !== 'resolved') {
+      node.status = 'resolved';
+    }
+  });
   currentFloor.status = 'resolved';
 
   const nextFloor = nextMap.floors[location.floorIndex + 1] ?? null;
 
   if (nextFloor) {
     nextFloor.status = 'active';
-
+    nextFloor.nodes.forEach((node) => {
+      node.status = 'active';
+    });
     const nextFloorNode = nextFloor.nodes[0] ?? null;
 
     if (!nextFloorNode) {
       throw new Error('The next floor does not contain any nodes.');
     }
-
-    nextFloorNode.status = 'active';
 
     return {
       run: {

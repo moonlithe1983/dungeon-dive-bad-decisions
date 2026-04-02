@@ -80,6 +80,12 @@ The game already has the major MVP and release-candidate systems in place:
   - `SUPPORT.md`
   - `PRIVACY_POLICY.md`
 - A current Android visual sweep confirmed the latest onboarding/settings/support/privacy wording reads cleanly in context on the live debug build.
+- The active gameplay presentation was tightened:
+  - run map now focuses on the current floor and explicit route picks
+  - battle now surfaces intent, HP, statuses, and action tradeoffs before deeper rules text
+  - reward now centers the package choice before the payout paperwork
+  - end-run now includes a real defeat recap instead of only broad archive stats
+- The smoke simulation was updated so it validates the route-choice map structure and uses deterministic attempts instead of the older forced-path assumption.
 
 ## Automated checks confirmed on the April 2 repo state
 
@@ -108,14 +114,16 @@ Android validation already covered includes:
 
 Important note:
 
-- the current source still needs a focused gameplay regression on battle, reward, event, end-run, resume, and native `dev-smoke`
+- the current source still needs a focused gameplay regression on the route-choice run map, battle, reward, event, end-run, resume, and native `dev-smoke`
 - a fresh signed final artifact built from the latest accepted source is still desirable before store-facing testing
 
 ## Biggest current risks
 
 The biggest remaining risks are launch and release-process risks, not missing game systems:
 
-- the current source still needs a focused Android gameplay regression on the routes not covered by the April 2 visual sweep
+- the current source still needs a focused Android gameplay regression on the routes not covered by the earlier April 2 visual sweep and not yet re-checked after the newer route-choice / defeat-summary pass
+- the new route-choice flow needs real-device confirmation that it feels clearer and more compelling instead of simply shorter
+- the new defeat recap needs real-device confirmation that it actually increases restart impulse after losses
 - the final public support inbox is still not locked
 - support URL and privacy-policy URL still need to be finalized and hosted publicly before submission
 - store screenshots, store copy, icon, ratings answers, privacy answers, and support links are not all finalized yet
@@ -127,7 +135,7 @@ The biggest remaining risks are launch and release-process risks, not missing ga
 The game should be treated as ready for Google Play only when all of the following are true:
 
 - the current polished build has been checked on Android after the April 2 onboarding/docs pass
-- title, setup, map flow, rewards, events, bosses, archive recap, resume, and `dev-smoke` all still work on that current build
+- title, setup, route-choice map flow, rewards, events, bosses, archive recap, resume, and `dev-smoke` all still work on that current build
 - `npx tsc --noEmit` passes
 - `npm run lint` passes
 - `npm run smoke:sim` passes
@@ -165,7 +173,7 @@ These are the main remaining choices and blanks:
 
 In order:
 
-1. Run the focused Android gameplay regression on battle, reward, event, end-run, resume, and `dev-smoke`.
+1. Run the focused Android gameplay regression on route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke`.
 2. Fix only real blockers found during that regression.
 3. Produce a fresh signed build from a shorter-path or different environment if the Windows rebuild blocker still prevents a trustworthy final artifact on this machine.
 4. Finalize support identity, support email, and live URLs.
@@ -206,6 +214,8 @@ Important note:
 - the game already has the important game systems
 - this is still a release-hardening project, not a prototype
 - the opening flow is now more honest and more commercially presentable than it was on March 31
+- the active run flow is now more choice-first and less text-dense than it was earlier on April 2
+- archived losses are now more informative and should be tested specifically for restart impulse
 - Android only is still the current launch plan
 - Google Play only is still the current launch plan
 - paid upfront is still the current launch plan

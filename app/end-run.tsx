@@ -179,18 +179,18 @@ export default function EndRunScreen() {
             <Text style={styles.subtitle}>
               {loadStatus === 'ready'
                 ? isAbandonedRun
-                  ? 'Abandoned dives now archive their final state.'
+                  ? 'An abandoned climb still leaves a paper trail.'
                   : isFailedRun
-                  ? 'Defeat recap now survives app restarts.'
-                  : 'Victory recap now loads from the archive.'
-                : 'Archived results now drive this screen.'}
+                  ? 'Defeat still leaves a record worth reading.'
+                  : 'Victory deserves a proper report.'
+                : 'The archive is opening your latest result.'}
             </Text>
             <Text style={styles.body}>
               {loadStatus === 'ready'
                 ? archivedRun?.recap
-                  ? 'This route now rebuilds its recap from persisted run history instead of depending on whatever still happens to be in memory.'
-                  : 'This archived run predates recap payloads, so the screen can still recover the basic result record even though the richer summary was not stored yet.'
-                : 'The active run has already been cleared, so this screen now reconstructs the result from the archive layer instead of volatile runtime state.'}
+                  ? 'This recap is pulled from the run archive, so the result remains available after the climb itself is over.'
+                  : 'This older archived run still keeps the core outcome, even if it predates the fuller recap format.'
+                : 'The climb has already been cleared, so the archive is rebuilding the final report.'}
             </Text>
           </View>
 

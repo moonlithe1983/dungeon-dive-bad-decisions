@@ -198,7 +198,7 @@ export default function BattleScreen() {
             <Text style={styles.eyebrow}>RUN NODE</Text>
             <Text style={styles.title}>Battle</Text>
             <Text style={styles.subtitle}>
-              Persistent combat now carries live stakes and companion comms.
+              Every fight carries the cost of the floor before it.
             </Text>
             <Text style={styles.body}>
               {getCompanyDisasterSummary()}
@@ -225,7 +225,7 @@ export default function BattleScreen() {
           ) : wrongSceneRoute ? (
             <InfoPanel
               title="Wrong Route"
-              body={`The active node is a ${currentNode.kind} node, so this route is no longer the correct handoff.`}
+              body={`The active node is a ${currentNode.kind} node, so this encounter cannot be entered from here.`}
               primaryLabel="Open Correct Node"
               primaryHref={wrongSceneRoute}
               secondaryLabel="Return to Map"
@@ -246,7 +246,7 @@ export default function BattleScreen() {
             <>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>
-                  {currentNode.kind === 'boss' ? 'Boss Encounter' : 'Live Encounter'}
+                  {currentNode.kind === 'boss' ? 'Boss Encounter' : 'Encounter'}
                 </Text>
                 <Text style={styles.panelBody}>{currentNode.description}</Text>
                 {classNarrative ? (

@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: March 31, 2026
+Last updated: April 2, 2026
 
 ## Current Scope
 
@@ -40,4 +40,6 @@ Google Play or other platform providers may still collect their own install, pay
 
 A final public support inbox still needs to be confirmed before public release.
 
-Until that inbox is live, preview-build issues should be routed through the playtest channel or coordinator that delivered the build.
+Until that inbox is live, use the contact details listed with the storefront copy, distributor, or build channel that delivered the build.
+
+If a public privacy-policy URL is hosted for store submission later, it should mirror this repository copy and the released in-app policy text.

@@ -254,7 +254,7 @@ export default function CodexScreen() {
             <Text style={styles.eyebrow}>REFERENCE</Text>
             <Text style={styles.title}>Codex</Text>
             <Text style={styles.subtitle}>
-              The content reference is now a real in-game screen.
+              The tower keeps records, even when it should burn them.
             </Text>
             <Text style={styles.body}>
               Browse the current class, companion, item, event, enemy, and
@@ -281,9 +281,8 @@ export default function CodexScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Coverage</Text>
                 <Text style={styles.panelBody}>
-                  The codex is now sourced from the same content definitions the
-                  game loop uses, so it stays in step with live classes, loot,
-                  events, enemies, and status effects.
+                  Browse the known classes, loot, events, enemies, and status
+                  effects tied to your current profile.
                 </Text>
                 <View style={styles.statGrid}>
                   <StatCard

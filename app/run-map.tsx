@@ -28,6 +28,7 @@ import {
 } from '@/src/engine/run/progress-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
+import { useGameStore } from '@/src/state/gameStore';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -41,6 +42,7 @@ import { humanizeId } from '@/src/utils/strings';
 export default function RunMapScreen() {
   const { run, currentFloor, currentNode, loadState, error, recoveredFromBackup } =
     useHydratedRun();
+  const profile = useGameStore((state) => state.profile);
   const abandonCurrentRun = useRunStore((state) => state.abandonCurrentRun);
   const isAbandoningRun = useRunStore((state) => state.isAbandoningRun);
   const rotateActiveCompanionAtFloorStart = useRunStore(
@@ -185,10 +187,10 @@ export default function RunMapScreen() {
               {getCompanyDisasterSummary()}
             </Text>
             <Text style={styles.body}>
-              Floor starts still support real lead-companion rotation, but the
-              bigger problem is that every department in {COMPANY_NAME} now
-              lives somewhere inside {TOWER_NAME}, and leadership expects the
-              cleanup to look approved while you are doing it.
+              Every department in {COMPANY_NAME} now lives somewhere inside{' '}
+              {TOWER_NAME}, and leadership expects the cleanup to look approved
+              while you are doing it. Keep the right companion in front and
+              push upward before the tower turns another bad decision into law.
             </Text>
           </View>
 
@@ -218,8 +220,8 @@ export default function RunMapScreen() {
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>No Active Dive</Text>
               <Text style={styles.panelBody}>
-                No saved run was available to resume. Start a new descent from
-                the title screen to populate this route.
+                No active dive was found. Return to the title screen and start
+                a new descent.
               </Text>
               <View style={styles.actionGroup}>
                 <GameButton
@@ -229,9 +231,17 @@ export default function RunMapScreen() {
                   }}
                 />
                 <GameButton
-                  label="Class Select"
+                  label={
+                    (profile?.unlockedClassIds.length ?? 0) > 1
+                      ? 'Class Select'
+                      : 'Companion Select'
+                  }
                   onPress={() => {
-                    router.push('/class-select' as Href);
+                    router.push(
+                      ((profile?.unlockedClassIds.length ?? 0) > 1
+                        ? '/class-select'
+                        : '/companion-select') as Href
+                    );
                   }}
                   variant="secondary"
                 />
@@ -289,7 +299,7 @@ export default function RunMapScreen() {
                 ) : null}
                 {recoveredFromBackup ? (
                   <Text style={styles.recoveryNotice}>
-                    This run was recovered from the backup autosave.
+                    Your dive was recovered from an emergency save.
                   </Text>
                 ) : null}
               </View>
@@ -318,12 +328,12 @@ export default function RunMapScreen() {
 
               {canRotateAtFloorStart ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Floor Transition</Text>
-                  <Text style={styles.panelBody}>
-                    Floor {run.floorIndex} opens with a deployment handoff.
-                    Rotate the reserve in now if you want a different lead perk
-                    package, battle banter, and event voice for this stretch.
-                  </Text>
+                <Text style={styles.panelTitle}>Floor Transition</Text>
+                <Text style={styles.panelBody}>
+                    Floor {run.floorIndex} opens with a chance to change who
+                    leads the team. Rotate the reserve in now if you want a
+                    different edge for the stretch ahead.
+                </Text>
                   <View style={styles.detailCard}>
                     <DetailLine
                       label="Current Lead"
@@ -458,9 +468,9 @@ export default function RunMapScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Run Exit</Text>
                 <Text style={styles.panelBody}>
-                  Returning to title keeps this dive resumable. Abandoning it
-                  archives the current state as a finished entry and clears the
-                  active save slots.
+                  Returning to title keeps this dive available to resume.
+                  Abandoning it ends the run, records the outcome, and clears
+                  the current climb.
                 </Text>
                 {isAbandonConfirming ? (
                   <View style={styles.warningCard}>

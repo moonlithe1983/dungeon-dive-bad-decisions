@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Support
 
-Last updated: March 31, 2026
+Last updated: April 2, 2026
 
 ## Current Launch Defaults
 
@@ -14,7 +14,9 @@ Last updated: March 31, 2026
 
 A final public support inbox still needs to be confirmed before public release.
 
-Until that inbox is live, preview-build issues should be routed through the playtest channel or coordinator that delivered the build.
+Until that inbox is live, use the support contact listed with the storefront copy, distributor, or build channel that delivered the build.
+
+Support details may vary by region, storefront, or release channel.
 
 ## Helpful Bug Report Details
 
@@ -33,4 +35,5 @@ If you report a problem, include:
 - the game is currently being prepared as an offline single-player release
 - unfinished settings that do not affect real runtime behavior are intentionally hidden from the live UI
 - one full 10-floor Android release-build validation pass has already been completed on the prior candidate
-- the next device check should focus on the current polished build that includes the latest UI and copy updates
+- fresh-profile onboarding now starts with an assigned IT Support role and three default companion options
+- the next device check should focus on the current polished build that includes the latest onboarding and copy updates

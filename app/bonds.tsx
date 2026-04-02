@@ -328,12 +328,11 @@ export default function BondsScreen() {
             <Text style={styles.eyebrow}>META</Text>
             <Text style={styles.title}>Companion Bonds</Text>
             <Text style={styles.subtitle}>
-              Relationship state is now visible, profile-backed, and combat-relevant.
+              Shared disasters leave a mark on the crew.
             </Text>
             <Text style={styles.body}>
-              Bond levels already live in the profile now surface real lead and
-              reserve support perks, alongside roster status and active-run
-              companion context.
+              Bond levels shape lead and reserve support perks, unlock scenes,
+              and show how each companion has learned to survive beside you.
             </Text>
           </View>
 
@@ -370,9 +369,8 @@ export default function BondsScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Bond Program</Text>
                 <Text style={styles.panelBody}>
-                  This screen now exposes the current relationship state in a
-                  way live support perks, future scenes, and banter unlocks can
-                  build on without replacing the profile model again.
+                  This screen tracks who trusts you, who tolerates you, and who
+                  is one bad floor away from saying it out loud.
                 </Text>
                 <View style={styles.statGrid}>
                   <StatCard

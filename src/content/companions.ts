@@ -23,6 +23,7 @@ export const companionDefinitions: CompanionDefinition[] = [
     specialty: 'Guard / counter support',
     description:
       'Deadpan Meridian enforcement with a literal bone-deep commitment to containing executive fallout.',
+    unlockedByDefault: true,
     unlockCost: 28,
   },
   {

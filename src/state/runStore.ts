@@ -128,6 +128,17 @@ async function refreshBootstrapState() {
   await useGameStore.getState().refreshBootstrap();
 }
 
+function getOnlyUnlockedClassId() {
+  const profile =
+    useProfileStore.getState().profile ?? useGameStore.getState().profile;
+
+  if (!profile || profile.unlockedClassIds.length !== 1) {
+    return null;
+  }
+
+  return profile.unlockedClassIds[0] ?? null;
+}
+
 function setCurrentRunReady(set: (next: Partial<RunStoreState>) => void, run: RunState) {
   set({
     currentRun: run,
@@ -181,11 +192,13 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
   isAbandoningRun: false,
   setupError: null,
   beginNewRunSetup: () => {
+    const onlyUnlockedClassId = getOnlyUnlockedClassId();
+
     set({
       currentRun: null,
       currentRunLoadStatus: 'idle',
       currentRunError: null,
-      selectedClassId: null,
+      selectedClassId: onlyUnlockedClassId,
       selectedCompanionIds: [],
       isCreatingRun: false,
       isResolvingNode: false,
@@ -262,8 +275,9 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
   },
   createRunFromSetup: async () => {
     const { selectedClassId, selectedCompanionIds } = get();
+    const resolvedClassId = selectedClassId ?? getOnlyUnlockedClassId();
 
-    if (!selectedClassId) {
+    if (!resolvedClassId) {
       throw new Error('Pick a class before starting a new dive.');
     }
 
@@ -280,7 +294,7 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
       const profileStore = useProfileStore.getState();
       const profile = profileStore.profile ?? (await profileStore.refreshProfile());
       const initialRun = createInitialRun({
-        heroClassId: selectedClassId,
+        heroClassId: resolvedClassId,
         chosenCompanionIds: selectedCompanionIds,
         companionBondLevels: selectedCompanionIds.reduce<Record<string, number>>(
           (totals, companionId) => {
@@ -300,6 +314,7 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
         currentRun: savedRun,
         currentRunLoadStatus: 'ready',
         currentRunError: null,
+        selectedClassId: resolvedClassId,
         isCreatingRun: false,
         setupError: null,
       });

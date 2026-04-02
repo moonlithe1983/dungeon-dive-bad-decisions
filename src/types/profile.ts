@@ -84,12 +84,14 @@ export const DEFAULT_PROFILE_STATE: Omit<
   unlockedCompanionIds: [
     'former-executive-assistant',
     'facilities-goblin',
+    'security-skeleton',
   ],
   unlockedItemIds: [],
   unlockedEventIds: [],
   bondLevels: {
     'former-executive-assistant': 1,
     'facilities-goblin': 1,
+    'security-skeleton': 1,
   },
   metaUpgradeLevels: DEFAULT_META_UPGRADE_LEVELS,
   settings: DEFAULT_PROFILE_SETTINGS,

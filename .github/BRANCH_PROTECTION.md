@@ -1,4 +1,4 @@
-# Branch Protection Runbook
+# Branch Protection / Ruleset Runbook
 
 Use this runbook to make GitHub require CI before anything lands on `main`.
 
@@ -10,34 +10,40 @@ Current required workflow check:
 
 - `validate`
 
+Current repository status:
+
+- the canonical repo now has an active `main` ruleset as of April 2, 2026
+- use this document to audit or recreate that ruleset if settings drift later
+
 ## Recommended GitHub Settings
 
 Open:
 
-- `GitHub -> Settings -> Branches -> Add branch protection rule`
+- `GitHub -> Settings -> Rules -> Rulesets`
+- create or edit the branch ruleset that targets `main`
 
 Apply the rule to:
 
-- `main`
+- branch targeting pattern `main`
 
 Turn on:
 
 - `Require a pull request before merging`
-- `Require approvals`
 - `Dismiss stale pull request approvals when new commits are pushed`
 - `Require status checks to pass before merging`
 - `Require branches to be up to date before merging`
 - `Require conversation resolution before merging`
+- `Block force pushes`
+- `Restrict deletions`
+
+Approval guidance:
+
+- for a solo-maintained workflow, `Required approvals` may stay at `0`
+- if a second real reviewer/account will be used, raise `Required approvals` to `1`
 
 Required status checks:
 
 - `validate`
-
-Recommended merge restrictions:
-
-- disable direct pushes to `main`
-- allow force pushes: off
-- allow deletions: off
 
 ## Notes
 

@@ -63,6 +63,19 @@ export default function CompanionSelectScreen() {
   const unlockedCompanions = companionDefinitions.filter((companion) =>
     profile?.unlockedCompanionIds.includes(companion.id)
   );
+  const hasMultipleClassChoices = (profile?.unlockedClassIds.length ?? 0) > 1;
+
+  useEffect(() => {
+    if (!profile || profile.unlockedClassIds.length !== 1 || selectedClassId) {
+      return;
+    }
+
+    const onlyUnlockedClassId = profile.unlockedClassIds[0] ?? null;
+
+    if (onlyUnlockedClassId) {
+      useRunStore.getState().setSelectedClassId(onlyUnlockedClassId);
+    }
+  }, [profile, selectedClassId]);
 
   if (!selectedClassId) {
     return (
@@ -77,23 +90,14 @@ export default function CompanionSelectScreen() {
             <View style={styles.heroCard}>
               <Text style={styles.eyebrow}>RUN SETUP</Text>
               <Text style={styles.title}>Companion Select</Text>
-              <Text style={styles.subtitle}>
-                A class choice has to come first.
-              </Text>
+              <Text style={styles.subtitle}>The climb needs a crew.</Text>
               <Text style={styles.body}>
-                The setup store does not currently have a selected class. Head
-                back to the previous step and pick one before choosing
-                companions.
+                The opening paperwork is still settling. Give the tower a
+                second, or head back and start the dive again.
               </Text>
             </View>
             <View style={styles.panel}>
               <View style={styles.actionGroup}>
-                <GameButton
-                  label="Back to Class Select"
-                  onPress={() => {
-                    router.push('/class-select' as Href);
-                  }}
-                />
                 <GameButton
                   label="Return to Title"
                   onPress={() => {
@@ -126,8 +130,9 @@ export default function CompanionSelectScreen() {
               First pick is active. Second pick is reserve.
             </Text>
             <Text style={styles.body}>
-              Current class: {selectedClass?.name ?? selectedClassId}. Choose
-              exactly two companions to build the first real persisted run.
+              {hasMultipleClassChoices
+                ? `Current class: ${selectedClass?.name ?? selectedClassId}. Choose exactly two companions to build your crew for the climb.`
+                : `${selectedClass?.name ?? selectedClassId} is already carrying the ticket. Choose exactly two companions to decide how this climb feels.`}
             </Text>
           </View>
 
@@ -136,7 +141,7 @@ export default function CompanionSelectScreen() {
               <View style={styles.loadingState}>
                 <ActivityIndicator size="small" color={colors.accent} />
                 <Text style={styles.panelBody}>
-                  Pulling your companion roster...
+                  Gathering your companion roster...
                 </Text>
               </View>
             </View>
@@ -248,9 +253,9 @@ export default function CompanionSelectScreen() {
                         .join(' | ')}
                 </Text>
                 <Text style={styles.hintText}>
-                  Bond growth persists between failed runs, and these support perks
-                  now scale hard enough to change your opening turns, reward recovery,
-                  and class-specific action lines.
+                  Bonds carry forward between dives. The stronger those ties
+                  get, the more they can shape your opening turns, recovery,
+                  and party identity.
                 </Text>
                 <View style={styles.selectionDetailCard}>
                   <Text style={styles.selectionDetailTitle}>Team Synergies</Text>
@@ -267,8 +272,8 @@ export default function CompanionSelectScreen() {
                     ))
                   ) : (
                     <Text style={styles.selectionDetailBody}>
-                      No authored team synergy is active yet. Selection order
-                      matters for class-plus-lead combinations.
+                      No known team synergy is active yet. Selection order still
+                      matters for class and lead-companion pairings.
                     </Text>
                   )}
                 </View>
@@ -295,7 +300,11 @@ export default function CompanionSelectScreen() {
                     disabled={selectedCompanionIds.length !== 2 || isCreatingRun}
                   />
                   <GameButton
-                    label="Back to Class Select"
+                    label={
+                      hasMultipleClassChoices
+                        ? 'Back to Class Select'
+                        : 'Review Assigned Role'
+                    }
                     onPress={() => {
                       router.push('/class-select' as Href);
                     }}

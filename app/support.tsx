@@ -15,12 +15,11 @@ import type { ProfileSettingsState } from '@/src/types/profile';
 
 const sections = [
   {
-    title: 'Current Support Status',
+    title: 'Getting Help',
     body: [
-      'The public developer name is currently set to Moonlithe.',
-      'The game is currently being prepared for an Android-only, Google Play-only launch with English-speaking regions first.',
-      'A real public support inbox still needs final owner confirmation before store submission.',
-      'For preview builds, route issues through the playtest channel or coordinator that delivered the build until the public inbox goes live.',
+      'If you run into trouble, use the support contact listed with your storefront copy, distributor, or build channel.',
+      'Support details may vary by region, storefront, or release channel.',
+      'When available, check the latest listing notes or storefront page for updated contact information.',
     ],
   },
   {
@@ -32,12 +31,11 @@ const sections = [
     ],
   },
   {
-    title: 'Current Launch Defaults',
+    title: 'What To Include',
     body: [
-      'Platform: Android only.',
-      'Store: Google Play only.',
-      'Working price default: US$3.99 unless external testing later clearly supports US$4.99.',
-      'Unfinished settings that do not affect live runtime behavior are intentionally hidden instead of being left as fake controls.',
+      'Device model, Android version, and app version or build number.',
+      'What you expected to happen, what happened instead, and whether the issue can be repeated.',
+      'For save or resume issues, mention the last screen you visited before the problem appeared.',
     ],
   },
 ];
@@ -60,11 +58,12 @@ export default function SupportScreen() {
             <Text style={styles.eyebrow}>SUPPORT</Text>
             <Text style={styles.title}>Help And Contact</Text>
             <Text style={styles.subtitle}>
-              Drafted for the current release-candidate hardening pass.
+              When the tower fights dirty, a good report helps.
             </Text>
             <Text style={styles.body}>
-              This page is meant to become a public-facing support reference
-              once the final inbox and hosting URL are locked.
+              Share enough detail for someone to reproduce the problem quickly
+              and tell whether it came from combat, rewards, events, saves, or
+              device-specific behavior.
             </Text>
           </View>
 

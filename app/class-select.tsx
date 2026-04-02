@@ -53,6 +53,8 @@ export default function ClassSelectScreen() {
   const unlockedClasses = classDefinitions.filter((classDefinition) =>
     profile?.unlockedClassIds.includes(classDefinition.id)
   );
+  const hasMultipleClassChoices = unlockedClasses.length > 1;
+  const assignedClassDefinition = unlockedClasses[0] ?? null;
   const selectedClassDefinition =
     classDefinitions.find((item) => item.id === selectedClassId) ?? null;
   const metaUpgradeCatalog = profile ? buildMetaUpgradeCatalog(profile) : [];
@@ -70,6 +72,18 @@ export default function ClassSelectScreen() {
     ? getClassNarrative(selectedClassId)
     : null;
 
+  useEffect(() => {
+    if (!profile || unlockedClasses.length !== 1) {
+      return;
+    }
+
+    const onlyUnlockedClassId = unlockedClasses[0]?.id ?? null;
+
+    if (onlyUnlockedClassId && selectedClassId !== onlyUnlockedClassId) {
+      setSelectedClassId(onlyUnlockedClassId);
+    }
+  }, [profile, selectedClassId, setSelectedClassId, unlockedClasses]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="light" />
@@ -82,17 +96,21 @@ export default function ClassSelectScreen() {
         <View style={styles.shell}>
           <View style={styles.heroCard}>
             <Text style={styles.eyebrow}>RUN SETUP</Text>
-            <Text style={styles.title}>Choose Your Class</Text>
+            <Text style={styles.title}>
+              {hasMultipleClassChoices ? 'Choose Your Class' : 'Assigned Role'}
+            </Text>
             <Text style={styles.subtitle}>
-              Pick the employee identity that has to survive the climb.
+              {hasMultipleClassChoices
+                ? 'Pick the employee identity that has to survive the climb.'
+                : `${assignedClassDefinition?.name ?? 'IT Support'} drew the short straw.`}
             </Text>
             <Text style={styles.body}>
               {getCompanyDisasterSummary()}
             </Text>
             <Text style={styles.body}>
-              Your class choice decides who you are at {COMPANY_NAME}, why
-              leadership needs you, who they are ready to blame, and what kind
-              of disaster language you bring into the tower.
+              {hasMultipleClassChoices
+                ? `Your class choice decides who you are at ${COMPANY_NAME}, why leadership needs you, who they are ready to blame, and what kind of disaster language you bring into the tower.`
+                : `For now, ${COMPANY_NAME} only trusts one department to carry this mess uphill. Your role is already decided, so the choice that matters here is who climbs beside you.`}
             </Text>
           </View>
 
@@ -101,14 +119,16 @@ export default function ClassSelectScreen() {
               <View style={styles.loadingState}>
                 <ActivityIndicator size="small" color={colors.accent} />
                 <Text style={styles.panelBody}>
-                  Pulling your unlocked class roster...
+                  Checking your personnel roster...
                 </Text>
               </View>
             </View>
           ) : (
             <>
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Unlocked Classes</Text>
+                <Text style={styles.panelTitle}>
+                  {hasMultipleClassChoices ? 'Unlocked Classes' : 'Assigned Class'}
+                </Text>
                 <View style={styles.cardGrid}>
                   {unlockedClasses.map((classDefinition) => {
                     const isSelected = selectedClassId === classDefinition.id;
@@ -116,13 +136,18 @@ export default function ClassSelectScreen() {
                     return (
                       <Pressable
                         key={classDefinition.id}
+                        disabled={!hasMultipleClassChoices}
                         onPress={() => {
+                          if (!hasMultipleClassChoices) {
+                            return;
+                          }
+
                           setSelectedClassId(classDefinition.id);
                         }}
                         style={({ pressed }) => [
                           styles.optionCard,
                           isSelected && styles.optionCardSelected,
-                          pressed && styles.optionCardPressed,
+                          pressed && hasMultipleClassChoices && styles.optionCardPressed,
                         ]}
                       >
                         <Text style={styles.optionTitle}>
@@ -159,7 +184,11 @@ export default function ClassSelectScreen() {
                           ))}
                         </View>
                         <Text style={styles.optionFooter}>
-                          {isSelected ? 'Selected for this dive' : 'Tap to select'}
+                          {hasMultipleClassChoices
+                            ? isSelected
+                              ? 'Selected for this dive'
+                              : 'Tap to select'
+                            : 'Assigned for this dive'}
                         </Text>
                       </Pressable>
                     );
@@ -168,7 +197,9 @@ export default function ClassSelectScreen() {
               </View>
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Current Selection</Text>
+                <Text style={styles.panelTitle}>
+                  {hasMultipleClassChoices ? 'Current Selection' : 'Role Briefing'}
+                </Text>
                 <Text style={styles.panelBody}>
                   {selectedClassId
                     ? selectedClassDefinition?.name ?? selectedClassId
@@ -234,7 +265,7 @@ export default function ClassSelectScreen() {
                 ) : null}
                 {profile ? (
                   <View style={styles.selectionDetailCard}>
-                    <Text style={styles.selectionIdentity}>Operations Forecast</Text>
+                    <Text style={styles.selectionIdentity}>Run Forecast</Text>
                     <Text style={styles.selectionActionLine}>
                       <Text style={styles.selectionActionLabel}>
                         Reward Chits:{' '}
@@ -263,8 +294,8 @@ export default function ClassSelectScreen() {
                 ) : null}
                 {profile.unlockedClassIds.length < classDefinitions.length ? (
                   <Text style={styles.hintText}>
-                    Need more roles? Spend breakroom chits in the hub to requisition
-                    more doomed employees before the next attempt up {TOWER_NAME}.
+                    Additional departments can be requisitioned from the hub
+                    before future attempts up {TOWER_NAME}.
                   </Text>
                 ) : null}
                 <View style={styles.actionGroup}>

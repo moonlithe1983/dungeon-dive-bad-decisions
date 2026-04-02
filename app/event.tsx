@@ -133,7 +133,7 @@ export default function EventScreen() {
           ) : wrongSceneRoute ? (
             <InfoPanel
               title="Wrong Route"
-              body={`The active node is a ${currentNode.kind} node, so this route is no longer the correct handoff.`}
+              body={`The active node is a ${currentNode.kind} node, so this room must be entered from the matching screen.`}
               primaryLabel="Open Correct Node"
               primaryHref={wrongSceneRoute}
               secondaryLabel="Return to Map"
@@ -219,10 +219,9 @@ export default function EventScreen() {
                 <Text style={styles.panelTitle}>Choices</Text>
                 <Text style={styles.panelBody}>
                   Pick one path. The choice resolves immediately, updates the
-                  run and profile, then moves the dive forward. Classes and
-                  companions can now both quietly tune specific options, and a
-                  few authored team combinations can push those rooms even
-                  further.
+                  run and your long-term record, then moves the dive forward.
+                  Classes, companions, and strong team pairings can all tilt
+                  certain options in your favor.
                 </Text>
                 <View style={styles.choiceList}>
                   {eventScene.choices.map((choice) => {

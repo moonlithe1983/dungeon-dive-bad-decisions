@@ -10,10 +10,12 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> class select -> companion select -> run map -> battle / reward / event -> archive recap -> progression
+- Core loop: title -> companion select on fresh profiles -> run map -> battle / reward / event -> archive recap -> progression
+- Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
+- Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
-- Story framing: class-specific role fantasy and stake language now feed class select, run map, battle intros, and event class reads
+- Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
 - Accessibility foundation: persisted theme presets, text-size controls, contrast/motion toggles, dyslexia-friendly spacing, and screen-reader hints are now in the live settings route
 - Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation
 
@@ -153,8 +155,11 @@ Important folders:
 The game is in release-candidate hardening mode:
 
 - feature freeze is recommended
+- fresh-profile onboarding now skips fake class selection until more classes are unlocked
+- the opening roster now shows 3 companions so the first team pick is a real choice
 - Android dev-smoke win/loss validation is covered
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
+- an April 2 Android visual sweep confirmed the updated title, onboarding, settings, support, privacy, and no-active-run map copy in-context on the current debug build
 - local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
@@ -165,10 +170,10 @@ The game is in release-candidate hardening mode:
 - companion bond growth now has visibly stronger run impact and is surfaced in companion selection
 - baseline combat/reward tuning is less forgiving than the earlier release-candidate pass
 - tester-facing support/privacy/settings copy no longer exposes placeholder or future-feature language
-- the GitHub `validate` workflow check is stable and ready to be required by branch protection on `main`
+- the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
-- the current polished build still needs a shorter Android regression pass before broader playtesting and upload
+- the current code/docs state still needs a focused Android regression across battle, reward, event, end-run, resume, and `dev-smoke` before broader playtesting and upload
 
 ## Launch Defaults
 
@@ -187,8 +192,8 @@ The game is in release-candidate hardening mode:
 ## GitHub Automation
 
 - `.github/workflows/validate.yml` runs `npm run lint`, `npx tsc --noEmit`, and `npm run smoke:sim` on pushes to `main` and on pull requests
-- branch protection should require the `validate` check before merges into `main`
-- use `.github/BRANCH_PROTECTION.md` for the exact GitHub settings to turn on
+- the repo's `main` ruleset should continue requiring the `validate` check before merges into `main`
+- use `.github/BRANCH_PROTECTION.md` to audit or recreate the current GitHub ruleset configuration
 
 ## License
 
@@ -197,6 +202,8 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-04-02.md`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-02.md`
 - `PROJECT_HANDOFF_2026-03-31.md`
 - `DUNGEON_DIVE_APP_NEEDS_2026-03-31.md`
 - `PROJECT_HANDOFF_2026-03-30.md`

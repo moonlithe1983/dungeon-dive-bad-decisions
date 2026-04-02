@@ -81,15 +81,13 @@ export default function SettingsScreen() {
             <Text style={styles.eyebrow}>SYSTEM</Text>
             <Text style={styles.title}>Accessibility & Theme</Text>
             <Text style={styles.subtitle}>
-              ADA support lives in the main product, not in a future backlog.
+              Set the tower up so you can read it on your terms.
             </Text>
             <Text style={styles.body}>
               Pick a color preset, raise readability, reduce motion, keep words
               from splitting badly on Android, and turn on extra assistive cues
-              before the next climb. Shared controls plus the main gameplay and
-              meta routes already respect these settings, and the remaining work
-              is smaller polish on secondary surfaces instead of a broad route
-              migration.
+              before the next climb. These choices follow you through the main
+              menus, the climb itself, and the game&apos;s archive screens.
             </Text>
           </View>
 
@@ -105,10 +103,10 @@ export default function SettingsScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Color Presets</Text>
                 <Text style={styles.panelBody}>
-                  All presets stay readable in dark conditions. `ADA Contrast`
+                  All presets stay readable in dark conditions. ADA Contrast
                   pushes the strongest edge separation. Shared controls update
-                  immediately, and the current title, setup, run, recap, and
-                  reference routes already use the same live theme profile.
+                  immediately, and your chosen theme carries across the game&apos;s
+                  primary screens.
                 </Text>
                 <View style={styles.optionGrid}>
                   {getThemePresetDefinitions().map((preset) => {

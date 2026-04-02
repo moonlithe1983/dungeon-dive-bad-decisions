@@ -507,7 +507,7 @@ export default function HubScreen() {
                       {recoveredFromBackup ? (
                         <DetailLine
                           label="Recovery"
-                          value="Recovered from backup autosave on the latest bootstrap."
+                          value="Recovered from your latest emergency save."
                         />
                       ) : null}
                     </View>

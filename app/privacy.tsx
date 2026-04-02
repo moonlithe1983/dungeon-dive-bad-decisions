@@ -15,33 +15,33 @@ import type { ProfileSettingsState } from '@/src/types/profile';
 
 const sections = [
   {
-    title: 'Current App Behavior',
+    title: 'How The Game Works',
     body: [
-      'Dungeon Dive: Bad Decisions is currently designed as an offline single-player game.',
-      'The app does not require account creation, cloud sync, multiplayer identity, or third-party sign-in in the current version.',
-      'Normal play is centered around on-device SQLite persistence for profile, active run, backup save, and archive history.',
+      'Dungeon Dive: Bad Decisions is an offline single-player game.',
+      'The app does not require account creation, cloud saves, multiplayer identity, or third-party sign-in to play.',
+      'Your progress is stored on your device so the game can remember unlocks, runs, settings, and archived results.',
     ],
   },
   {
     title: 'Data Stored On Device',
     body: [
-      'The current build stores gameplay-related information locally on the device, including profile progression, unlocked content, active run state, backup save state, archive history, and reserved settings flags.',
-      'This local data exists so the app can resume runs, preserve unlocks, and show progression history without needing a remote account.',
+      'The game stores gameplay-related information locally on your device, including profile progression, unlocked content, active run state, backup recovery data, archive history, and settings.',
+      'This local data exists so the app can resume dives, preserve unlocks, and show progression history without needing a remote account.',
     ],
   },
   {
-    title: 'Data The App Does Not Intentionally Send To Moonlithe',
+    title: 'Data Sharing',
     body: [
-      'In the current offline build, gameplay data is not intentionally transmitted to Moonlithe-operated servers during normal play.',
-      'The app does not currently require a player email, payment profile, cloud save account, or location sharing to use the core game loop.',
-      'Platform providers such as Google Play may still collect their own store, install, payment, or diagnostic information under their own policies.',
+      'Gameplay data is not intentionally sent to developer-operated servers during normal play.',
+      'The app does not require a player email, payment profile, cloud-save account, or location sharing for the core game loop.',
+      'Platform providers such as Google Play may still collect store, install, payment, or diagnostic information under their own policies.',
     ],
   },
   {
-    title: 'Support And Updates',
+    title: 'Questions And Support',
     body: [
-      'A final public support inbox still needs to be locked before public store release.',
-      'For preview builds, use the playtest channel that delivered the build until the public inbox and hosted policy URL are finalized.',
+      'For privacy or support questions, use the contact information listed with your storefront copy, distributor, or build channel.',
+      'If this policy changes, the in-app text and any public policy page should be updated to match the released version of the game.',
     ],
   },
 ];
@@ -64,12 +64,11 @@ export default function PrivacyScreen() {
             <Text style={styles.eyebrow}>POLICY</Text>
             <Text style={styles.title}>Privacy Policy</Text>
             <Text style={styles.subtitle}>
-              Drafted for the current offline Android launch scope.
+              How your device data is used in the tower.
             </Text>
             <Text style={styles.body}>
-              This page is written to match the app&apos;s current known
-              behavior. It should be kept aligned with the live build and hosted
-              at a public URL before store submission.
+              This policy describes the game&apos;s offline behavior and the
+              information it stores on your device during normal play.
             </Text>
           </View>
 

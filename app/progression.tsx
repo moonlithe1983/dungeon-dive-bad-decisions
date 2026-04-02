@@ -148,8 +148,8 @@ export default function ProgressionScreen() {
     ? getMetaUpgradeRewardHealingBonus(resolvedProfile.metaUpgradeLevels)
     : 0;
   const historyBodyCopy = latestArchivedRun
-    ? 'Run history is now browsable here, with archived recaps, final loadouts, and lifetime run totals grounded in saved data.'
-    : 'This screen now owns the archive layer. As runs finish, their persisted recaps and lifetime totals will collect here.';
+    ? 'Run history is gathered here, with archived recaps, final loadouts, and lifetime totals from every finished climb.'
+    : 'Finished dives will collect here as they are completed, along with their recaps and lifetime totals.';
 
   const handleRefresh = async () => {
     setLoadStatus('loading');
@@ -257,10 +257,8 @@ export default function ProgressionScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Unlock Coverage</Text>
                 <Text style={styles.panelBody}>
-                  The archive now acts like a real Meridian incident ledger,
-                  while the hub covers the first requisition pass. Future
-                  progression can deepen from here without replacing the saved
-                  history view testers already rely on.
+                  The archive tracks what you have earned, lost, and dragged
+                  back out of Meridian Spire so far.
                 </Text>
                 <View style={styles.detailCard}>
                   <DetailLine
@@ -285,9 +283,8 @@ export default function ProgressionScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Permanent Upgrades</Text>
                 <Text style={styles.panelBody}>
-                  The new operations layer now persists real between-run upgrades.
-                  This is the current long-term forecast for every future dive on
-                  the profile.
+                  These upgrades strengthen every future climb, even after a
+                  bad run ends in paperwork and smoke.
                 </Text>
                 <View style={styles.detailCard}>
                   <DetailLine

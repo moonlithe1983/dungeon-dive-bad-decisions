@@ -35,6 +35,7 @@ const validClassIds = new Set(classDefinitions.map((item) => item.id));
 const validCompanionIds = new Set(companionDefinitions.map((item) => item.id));
 const validItemIds = new Set(itemDefinitions.map((item) => item.id));
 const MAX_BOND_LEVEL = 5;
+const minimumUnlockedCompanionIds = defaultUnlockedCompanionIds;
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
@@ -102,6 +103,18 @@ function sanitizeIds(
 
 function sanitizeFreeformIds(value: string[]) {
   return Array.from(new Set(value.filter((item) => item.trim().length > 0)));
+}
+
+function ensureMinimumUnlockedCompanions(value: string[]) {
+  const nextIds = [...value];
+
+  for (const companionId of minimumUnlockedCompanionIds) {
+    if (!nextIds.includes(companionId)) {
+      nextIds.push(companionId);
+    }
+  }
+
+  return nextIds;
 }
 
 function normalizeBondLevels(value: Record<string, number>) {
@@ -174,7 +187,7 @@ function normalizeProfileState(profile: ProfileState): ProfileState {
       defaultUnlockedClassIds
     ),
     unlockedCompanionIds: sanitizeIds(
-      profile.unlockedCompanionIds,
+      ensureMinimumUnlockedCompanions(profile.unlockedCompanionIds),
       validCompanionIds,
       defaultUnlockedCompanionIds
     ),

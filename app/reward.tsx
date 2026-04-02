@@ -122,13 +122,13 @@ export default function RewardScreen() {
             <Text style={styles.title}>Reward</Text>
             <Text style={styles.subtitle}>
               {hasSelectableOptions
-                ? 'Reward rooms now offer biome-specific haul packages with different tradeoffs, companion-tuned edges, and team synergies.'
-                : 'Victory and loot now hit both meta and run progression.'}
+                ? 'Each haul offers a different way to keep the climb alive.'
+                : 'Victory pays out in both short-term survival and long-term leverage.'}
             </Text>
             <Text style={styles.body}>
               {hasSelectableOptions
-                ? 'Choose one package before claiming it. The package themes now change by biome, and the selected option is what gets written into both the profile and the active run save. Your chosen companion pair and a few authored team combinations can now quietly improve specific haul options.'
-                : 'Claiming rewards now writes meta currency and item unlocks into the saved profile while also healing and updating the active run.'}
+                ? 'Choose one package before claiming it. Different floors offer different kinds of haul, and the right crew can tilt certain rewards in your favor.'
+                : 'Claiming rewards can strengthen the current dive while adding new leverage for the next one.'}
             </Text>
           </View>
 
@@ -150,7 +150,7 @@ export default function RewardScreen() {
           ) : !pendingReward ? (
             <InfoPanel
               title="Nothing To Claim"
-              body="This route does not currently have a pending reward. If a battle win or reward node generated loot, it will show up here."
+              body="There is no reward waiting right now. If a battle or reward node produced loot, it will appear here."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
               secondaryLabel="Return to Title"

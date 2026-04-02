@@ -26,6 +26,7 @@ import type { BootstrapSnapshot } from '@/src/types/save';
 export default function IndexScreen() {
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const snapshot = useGameStore((state) => state.bootstrapSnapshot);
+  const profile = useGameStore((state) => state.profile);
   const activeRun = useGameStore((state) => state.activeRun);
   const recoveredFromBackup = useGameStore((state) => state.recoveredFromBackup);
   const error = useGameStore((state) => state.error);
@@ -71,7 +72,12 @@ export default function IndexScreen() {
 
   const handleNewDive = () => {
     beginNewRunSetup();
-    router.push('/class-select' as Href);
+    const hasSingleOpeningClass =
+      (profile?.unlockedClassIds.length ?? snapshot?.unlockedClasses ?? 0) <= 1;
+
+    router.push(
+      (hasSingleOpeningClass ? '/companion-select' : '/class-select') as Href
+    );
   };
 
   const handleHub = () => {
@@ -182,7 +188,7 @@ export default function IndexScreen() {
                       />
                       {recoveredFromBackup ? (
                         <Text style={styles.recoveryNotice}>
-                          Recovered from the latest backup autosave.
+                          Recovered from your latest emergency save.
                         </Text>
                       ) : null}
                     </>
@@ -192,8 +198,8 @@ export default function IndexScreen() {
                         No active dive found.
                       </Text>
                       <Text style={styles.runCardHint}>
-                        Start a new descent and the game will autosave after
-                        node transitions, rewards, and major decisions.
+                        Start a new descent and your progress will be saved as
+                        the climb unfolds.
                       </Text>
                     </>
                   )}

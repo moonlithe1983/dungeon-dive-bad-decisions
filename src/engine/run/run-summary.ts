@@ -1,3 +1,4 @@
+import { createAuthoredDefeatRecommendation } from '@/src/content/authored-voice';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import type { CombatState } from '@/src/types/combat';
 import type {
@@ -163,29 +164,7 @@ function pickDefeatFinalBlow(combat: CombatState) {
 }
 
 function createDefeatRecommendation(combat: CombatState) {
-  const heroStatusIds = combat.heroStatuses.map((status) => status.id);
-
-  if (heroStatusIds.includes('on-hold')) {
-    return 'Tempo killed this run. Bring cleaner control or burst so the enemy cannot dictate the turn order.';
-  }
-
-  if (heroStatusIds.includes('micromanaged')) {
-    return 'Action taxes stacked up. Cleanse sooner or pick safer, lower-friction turns.';
-  }
-
-  if (heroStatusIds.includes('burnout')) {
-    return 'You got dragged into attrition. Lean harder into recovery or shorter fights.';
-  }
-
-  if (heroStatusIds.includes('escalated')) {
-    return 'The fight snowballed. Either stabilize earlier or commit to ending the exchange faster.';
-  }
-
-  if (heroStatusIds.includes('ccd')) {
-    return 'Too much spillover pressure landed at once. Mitigation and focused takedowns will help.';
-  }
-
-  return 'You ran out of runway before the encounter broke. Try a cleaner build direction earlier and protect your HP before the last exchange.';
+  return createAuthoredDefeatRecommendation(combat);
 }
 
 export function createArchivedRunDefeatSummary(input: {

@@ -12,6 +12,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import {
+  getPartyScene,
+  getRewardPackagePitch,
+} from '@/src/content/authored-voice';
 import { getItemDefinition } from '@/src/content/items';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import { useRunStore } from '@/src/state/runStore';
@@ -83,6 +87,17 @@ export default function RewardScreen() {
 
     return applyPendingRewardToRun(run, pendingReward);
   }, [pendingReward, run]);
+  const rewardScene = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getPartyScene('suspicious-reward-screen', run.chosenCompanionIds);
+  }, [run]);
+  const rewardPackagePitch = useMemo(
+    () => getRewardPackagePitch(selectedRewardOption?.optionId),
+    [selectedRewardOption?.optionId]
+  );
 
   const handleSelectOption = async (optionId: string) => {
     if (
@@ -179,6 +194,11 @@ export default function RewardScreen() {
                         .join(' / ')}
                     </Text>
                   ) : null}
+                  {rewardPackagePitch ? (
+                    <Text style={styles.previewEdge}>
+                      Build lane: {rewardPackagePitch.name}. {rewardPackagePitch.description}
+                    </Text>
+                  ) : null}
                 </View>
               </View>
 
@@ -188,6 +208,15 @@ export default function RewardScreen() {
                   <Text style={styles.panelBody}>
                     Keep the decision readable: what helps this run the most right now?
                   </Text>
+                  {rewardScene ? (
+                    <View style={styles.detailCard}>
+                      {rewardScene.lines.map((line) => (
+                        <Text key={line.speakerId} style={styles.panelBody}>
+                          {line.speakerName}: {line.text}
+                        </Text>
+                      ))}
+                    </View>
+                  ) : null}
                   <View style={styles.optionList}>
                     {pendingReward.options?.map((option) => {
                       const optionItem = option.itemId

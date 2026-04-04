@@ -13,6 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
 import { getClassActionKit } from '@/src/content/class-actions';
+import {
+  getAuthoredClassCodexCard,
+  getAuthoredCompanionCodexCard,
+} from '@/src/content/authored-voice';
 import { classDefinitions } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
 import { enemyDefinitions } from '@/src/content/enemies';
@@ -451,15 +455,25 @@ function buildCodexEntries(
   if (categoryId === 'classes') {
     return classDefinitions.map((item) => {
       const locked = !profile?.unlockedClassIds.includes(item.id);
+      const authoredCard = getAuthoredClassCodexCard(item.id);
       const actionSummary = getClassActionKit(item.id).actions
         .map((action) => `${action.label}: ${action.summary}`)
         .join('\n');
+      const bodyParts = [
+        authoredCard?.codexBody ?? item.description,
+        authoredCard?.firstSeenLine ? `First Seen\n${authoredCard.firstSeenLine}` : null,
+        authoredCard?.optionalUnlockFlavor
+          ? `Archive Note\n${authoredCard.optionalUnlockFlavor}`
+          : null,
+        authoredCard?.expandedEntry ?? null,
+        `Action Kit\n${actionSummary}`,
+      ].filter(Boolean);
 
       return {
         id: item.id,
         title: item.name,
         subtitle: item.combatIdentity,
-        body: `${item.description}\n\nAction Kit\n${actionSummary}`,
+        body: bodyParts.join('\n\n'),
         tag: locked ? 'Classified' : 'Unlocked',
         locked,
         lockHint: 'This class has not been unlocked on the current profile yet.',
@@ -470,12 +484,21 @@ function buildCodexEntries(
   if (categoryId === 'companions') {
     return companionDefinitions.map((item) => {
       const locked = !profile?.unlockedCompanionIds.includes(item.id);
+      const authoredCard = getAuthoredCompanionCodexCard(item.id);
+      const bodyParts = [
+        authoredCard?.codexBody ?? item.description,
+        authoredCard?.firstSeenLine ? `First Seen\n${authoredCard.firstSeenLine}` : null,
+        authoredCard?.optionalUnlockFlavor
+          ? `Archive Note\n${authoredCard.optionalUnlockFlavor}`
+          : null,
+        authoredCard?.expandedEntry ?? null,
+      ].filter(Boolean);
 
       return {
         id: item.id,
         title: item.name,
         subtitle: item.specialty,
-        body: item.description,
+        body: bodyParts.join('\n\n'),
         tag: locked ? 'Classified' : 'Unlocked',
         locked,
         lockHint:

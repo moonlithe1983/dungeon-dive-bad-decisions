@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
 import { getCompanionRewardEdgePreview } from '@/src/content/reward-companion-hooks';
@@ -60,6 +61,7 @@ export default function CompanionSelectScreen() {
         activeCompanionId: selectedCompanionIds[0] ?? null,
       })
     : [];
+  const openingScene = useMemo(() => getPartyScene('first-meeting'), []);
   const unlockedCompanions = companionDefinitions.filter((companion) =>
     profile?.unlockedCompanionIds.includes(companion.id)
   );
@@ -135,6 +137,22 @@ export default function CompanionSelectScreen() {
                 : `${selectedClass?.name ?? selectedClassId} is already carrying the ticket. Choose exactly two companions to decide how this climb feels.`}
             </Text>
           </View>
+
+          {openingScene ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>{openingScene.title}</Text>
+              <Text style={styles.panelBody}>
+                The first impression should feel like a bad team-up and a real rescue attempt at the same time.
+              </Text>
+              <View style={styles.selectionDetailCard}>
+                {openingScene.lines.map((line) => (
+                  <Text key={line.speakerId} style={styles.panelBody}>
+                    {line.speakerName}: {line.text}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          ) : null}
 
           {!profile ? (
             <View style={styles.panel}>

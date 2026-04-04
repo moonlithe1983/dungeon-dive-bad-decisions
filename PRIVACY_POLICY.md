@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: April 2, 2026
+Last updated: April 4, 2026
 
 ## Current Scope
 
@@ -25,6 +25,7 @@ This local data currently includes:
 - backup autosave state
 - archive history
 - saved settings flags for accessibility, readability, and comfort preferences
+- authored codex/event/lore progress that is unlocked locally through play remains part of that on-device profile/archive data
 
 ## Data The App Does Not Intentionally Send To Moonlithe
 

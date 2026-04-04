@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { getCompanyDisasterSummary } from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
@@ -66,6 +67,13 @@ export default function EventScreen() {
       return null;
     }
   }, [currentNode, run]);
+  const eventCrewScene = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getPartyScene('creepy-event-prompt', run.chosenCompanionIds);
+  }, [run]);
 
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'event'
@@ -99,16 +107,11 @@ export default function EventScreen() {
             <Text style={styles.eyebrow}>RUN NODE</Text>
             <Text style={styles.title}>Event</Text>
             <Text style={styles.subtitle}>
-              Office disasters now offer real choices and real blame.
+              Read the room, choose once, and live with the paperwork.
             </Text>
             <Text style={styles.body}>
-              {getCompanyDisasterSummary()}
-            </Text>
-            <Text style={styles.body}>
-              Event rooms still resolve through deterministic options that can
-              heal the run, rotate companions, and hand out contraband, but
-              now the room also speaks back to your class fantasy, your bond
-              pair, and the awful approval chain waiting upstairs.
+              {eventScene?.description ??
+                getCompanyDisasterSummary()}
             </Text>
           </View>
 
@@ -150,7 +153,9 @@ export default function EventScreen() {
             <>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>{eventScene.title}</Text>
-                <Text style={styles.panelBody}>{eventScene.description}</Text>
+                <Text style={styles.panelBody}>
+                  Pick the line that keeps the crew alive and the tower slightly less in control.
+                </Text>
                 <View style={styles.statGrid}>
                   <StatCard
                     label={`${className ?? 'Hero'} HP`}
@@ -166,14 +171,21 @@ export default function EventScreen() {
                   <DetailLine label="Node" value={currentNode.label} />
                   <DetailLine label="Run ID" value={run.runId} />
                 </View>
+                {eventCrewScene ? (
+                  <View style={styles.detailCard}>
+                    {eventCrewScene.lines.map((line) => (
+                      <Text key={line.speakerId} style={styles.panelBody}>
+                        {line.speakerName}: {line.text}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Class Read</Text>
                 <Text style={styles.panelBody}>
-                  Your class now reads each event like a person whose job
-                  actually depends on getting this one right and making the
-                  win look executive-approved.
+                  Your role should clarify the risk, not bury it in another memo.
                 </Text>
                 <View style={styles.classReadCard}>
                   <Text style={styles.classReadName}>
@@ -191,8 +203,7 @@ export default function EventScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Companion Readouts</Text>
                 <Text style={styles.panelBody}>
-                  Active and reserve companions now react to live event scenes
-                  based on who they are and how deep the bond has become.
+                  Active and reserve reads stay short so the choice remains the center of the screen.
                 </Text>
                 <View style={styles.banterList}>
                   {eventScene.companionMoments.map((moment) => (
@@ -218,10 +229,7 @@ export default function EventScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Choices</Text>
                 <Text style={styles.panelBody}>
-                  Pick one path. The choice resolves immediately, updates the
-                  run and your long-term record, then moves the dive forward.
-                  Classes, companions, and strong team pairings can all tilt
-                  certain options in your favor.
+                  Pick one path. Classes, companions, and good pairings can tilt the result, but the risk still belongs to you.
                 </Text>
                 <View style={styles.choiceList}>
                   {eventScene.choices.map((choice) => {

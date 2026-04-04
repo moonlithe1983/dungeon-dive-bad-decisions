@@ -1,26 +1,36 @@
 import type { EventDefinition, RunBiomeId } from '@/src/types/content';
+import { getAuthoredEventOverlay } from '@/src/content/authored-voice';
 
 export const eventDefinitions: EventDefinition[] = [
   {
     id: 'unsafe-team-building',
-    title: 'Unsafe Team-Building',
+    title:
+      getAuthoredEventOverlay('unsafe-team-building')?.title ??
+      'Unsafe Team-Building',
     description:
+      getAuthoredEventOverlay('unsafe-team-building')?.description ??
       'Human Resources insists morale can still be improved with one more terrible idea.',
-    biomes: ['team-building-catacombs'],
+    biomes: ['open-plan-pits'],
   },
   {
     id: 'mandatory-feedback-loop',
-    title: 'Mandatory Feedback Loop',
+    title:
+      getAuthoredEventOverlay('mandatory-feedback-loop')?.title ??
+      'Mandatory Feedback Loop',
     description:
+      getAuthoredEventOverlay('mandatory-feedback-loop')?.description ??
       'A hallway conversation threatens to become a permanent institutional curse.',
-    biomes: ['open-plan-pits', 'executive-suite'],
+    biomes: ['open-plan-pits'],
   },
   {
     id: 'suspicious-elevator-pitch',
-    title: 'Suspicious Elevator Pitch',
+    title:
+      getAuthoredEventOverlay('suspicious-elevator-pitch')?.title ??
+      'Suspicious Elevator Pitch',
     description:
+      getAuthoredEventOverlay('suspicious-elevator-pitch')?.description ??
       'A stranger offers shortcuts, synergy, and consequences in equal measure.',
-    biomes: ['team-building-catacombs', 'executive-suite'],
+    biomes: ['open-plan-pits', 'team-building-catacombs'],
   },
   {
     id: 'fire-drill-evangelism',

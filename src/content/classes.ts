@@ -6,7 +6,7 @@ export const classDefinitions: ClassDefinition[] = [
     name: 'IT Support',
     combatIdentity: 'Control / cleanse / disruption',
     description:
-      'Keeps executive stupidity limping forward by locking enemies down and stripping the mess off the board.',
+      'The overqualified fixer assigned to impossible failures and finally willing to interrupt the system instead of just patching it.',
     unlockedByDefault: true,
   },
   {

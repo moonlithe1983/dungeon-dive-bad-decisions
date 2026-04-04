@@ -14,6 +14,7 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 - Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
+- Authored voice layer: early-floor lore beats, starting-trio chemistry, early event overlays, codex bios, reward build-lane cues, and defeat advice now use the April 4 narrative pack instead of lighter placeholder prose
 - Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
@@ -106,6 +107,13 @@ Expected output:
 
 - `android/app/build/outputs/apk/release/app-release.apk`
 
+Important notes:
+
+- the canonical working repo is now the short-path workspace `C:\ddbd`
+- a locally built release artifact currently exists at `android/app/build/outputs/apk/release/app-release.apk`
+- if you rebuild from any legacy long-path copy of the repo, Windows native path-length failures may still occur during packaging
+- before handing builds to testers or the store, rebuild the release APK from the final accepted source in `C:\ddbd` so the artifact is known current
+
 ## Save Model
 
 SQLite is the source of truth.
@@ -162,11 +170,17 @@ The game is in release-candidate hardening mode:
 - the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
 - battle and reward screens now hide deeper mechanical detail behind toggles so the first read is shorter and more phone-friendly
 - archived defeat recaps now call out the enemy, final exchange, live statuses, and a suggested next-run adjustment
+- the April 4 authored-content pass now feeds:
+  - floors 1 to 3 lore beats on the run map
+  - starting-trio chemistry on setup, route choice, rewards, events, and danger states
+  - companion/class codex entries with stronger first-seen and archive flavor
+  - the first three orientation-phase authored event sheets in the live event pool
+  - stronger voiced defeat recommendations after losses
 - Android dev-smoke win/loss validation is covered
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
 - an April 2 Android visual sweep confirmed the updated title, onboarding, settings, support, privacy, and no-active-run map copy in-context on the current debug build
+- an April 4 repo smoke pass confirmed the current source still passes `tsc`, `lint`, and `smoke:sim` after the authored writing integration
 - automated smoke validation now also covers the route-choice map structure deterministically instead of assuming a single forced floor path
-- local Android release APK and AAB are still present under `android/app/build/outputs`
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
 - the primary gameplay, recap, reference, and test routes now respect the saved accessibility/theme profile rather than only the shared chrome
@@ -178,8 +192,10 @@ The game is in release-candidate hardening mode:
 - tester-facing support/privacy/settings copy no longer exposes placeholder or future-feature language
 - the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
-- a fresh Windows release rebuild after the March 24 reward-diagnostic patch is still blocked by the current long-path native build failure
-- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke` before broader playtesting and upload
+- the canonical short-path workspace `C:\ddbd` can produce a local release APK and currently contains `android/app/build/outputs/apk/release/app-release.apk`
+- the legacy long-path workspace may still fail native packaging because of Windows path-length limits
+- before tester or store distribution after future source changes, rebuild from the final accepted `C:\ddbd` source and re-verify install behavior
+- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke`, now also including the authored lore/voice surfaces, before broader playtesting and upload
 
 ## Launch Defaults
 
@@ -208,6 +224,8 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-04-04.md`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-04.md`
 - `PROJECT_HANDOFF_2026-04-02.md`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-02.md`
 - `PROJECT_HANDOFF_2026-03-31.md`
@@ -215,3 +233,4 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 - `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`
+

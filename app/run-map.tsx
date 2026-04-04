@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
+import { getEarlyFloorBeat, getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import {
   COMPANY_NAME,
@@ -167,6 +168,20 @@ export default function RunMapScreen() {
 
     return getSelectableCurrentFloorNodes(run);
   }, [run]);
+  const floorBeat = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getEarlyFloorBeat(run.floorIndex);
+  }, [run]);
+  const routeScene = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return getPartyScene('first-route-choice', run.chosenCompanionIds);
+  }, [run]);
   const currentNodeRoute = currentNode ? getRunNodeRoute(currentNode.kind) : null;
   const pendingRewardItem = run?.pendingReward?.itemId
     ? getItemDefinition(run.pendingReward.itemId)
@@ -310,6 +325,13 @@ export default function RunMapScreen() {
                 ) : null}
               </View>
 
+              {floorBeat ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>{floorBeat.title}</Text>
+                  <Text style={styles.panelBody}>{floorBeat.summary}</Text>
+                </View>
+              ) : null}
+
               {canRotateAtFloorStart ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Floor Handoff</Text>
@@ -370,6 +392,15 @@ export default function RunMapScreen() {
                   <Text style={styles.panelBody}>
                     Keep the route simple: pick one door, read the risk, then go.
                   </Text>
+                  {routeScene ? (
+                    <View style={styles.detailCard}>
+                      {routeScene.lines.map((line) => (
+                        <Text key={line.speakerId} style={styles.panelBody}>
+                          {line.speakerName}: {line.text}
+                        </Text>
+                      ))}
+                    </View>
+                  ) : null}
                   <View style={styles.choiceList}>
                     {floorChoices.map((node) => {
                       const isSelected = node.id === currentNode?.id;

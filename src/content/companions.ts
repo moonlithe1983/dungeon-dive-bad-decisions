@@ -6,7 +6,7 @@ export const companionDefinitions: CompanionDefinition[] = [
     name: 'Facilities Goblin',
     specialty: 'Traps / maintenance utility',
     description:
-      'A grime-coated Meridian Spire survivalist who treats every hazard like a maintenance dare.',
+      'Lives in the walls, reads the building like an injury report, and treats survival like practical maintenance.',
     unlockedByDefault: true,
   },
   {
@@ -14,7 +14,7 @@ export const companionDefinitions: CompanionDefinition[] = [
     name: 'Former Executive Assistant',
     specialty: 'Cooldown manipulation / boss reading',
     description:
-      'Spent years reading Crown Meridian panic before it hit the room and now weaponizes that foresight.',
+      'Knows the private panic behind polished statements and turns that foresight into clean, vicious timing.',
     unlockedByDefault: true,
   },
   {
@@ -22,7 +22,7 @@ export const companionDefinitions: CompanionDefinition[] = [
     name: 'Security Skeleton',
     specialty: 'Guard / counter support',
     description:
-      'Deadpan Meridian enforcement with a literal bone-deep commitment to containing executive fallout.',
+      'A dead guard the building still recognizes, with badge clearance, dry patience, and very little respect left.',
     unlockedByDefault: true,
     unlockCost: 28,
   },

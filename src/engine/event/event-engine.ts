@@ -1,4 +1,5 @@
 import { getCompanionDefinition } from '@/src/content/companions';
+import { getAuthoredEventOverlay } from '@/src/content/authored-voice';
 import {
   createEventClassMoment,
   getEventClassChoiceBonus,
@@ -108,6 +109,25 @@ function createRewardPayload(
     runHealing: choice.effect.runHealing,
     itemId: choice.effect.itemId,
     createdAt: run.updatedAt,
+  };
+}
+
+function applyAuthoredEventChoiceCopy(
+  eventId: string,
+  choice: EventChoice
+): EventChoice {
+  const overlay = getAuthoredEventOverlay(eventId);
+  const choiceCopy = overlay?.choices[choice.id] ?? null;
+
+  if (!choiceCopy) {
+    return choice;
+  }
+
+  return {
+    ...choice,
+    label: choiceCopy.label,
+    description: choiceCopy.description,
+    outcomeText: choiceCopy.outcomeText,
   };
 }
 
@@ -1043,8 +1063,10 @@ export function getEventSceneForCurrentNode(run: RunState): EventScene {
 
   return {
     eventId: eventDefinition.id,
-    title: eventDefinition.title,
-    description: eventDefinition.description,
+    title: getAuthoredEventOverlay(eventDefinition.id)?.title ?? eventDefinition.title,
+    description:
+      getAuthoredEventOverlay(eventDefinition.id)?.description ??
+      eventDefinition.description,
     classMoment: createEventClassMoment(eventDefinition.id, run.heroClassId),
     companionMoments: createEventCompanionMoments({
       eventId: eventDefinition.id,
@@ -1052,17 +1074,19 @@ export function getEventSceneForCurrentNode(run: RunState): EventScene {
       reserveCompanionId: getReserveCompanionState(run).reserveCompanionId,
       companionBondLevels: run.companionBondLevels,
     }),
-    choices: createChoicesForEvent(run, eventDefinition.id).map((choice) =>
-      applyEventTeamSynergyBonusesToChoice(
+    choices: createChoicesForEvent(run, eventDefinition.id).map((choice) => {
+      const withOverlay = applyAuthoredEventChoiceCopy(eventDefinition.id, choice);
+
+      return applyEventTeamSynergyBonusesToChoice(
         run,
         eventDefinition.id,
         applyEventCompanionBonusesToChoice(
           run,
           eventDefinition.id,
-          applyEventClassBonusToChoice(run, eventDefinition.id, choice)
+          applyEventClassBonusToChoice(run, eventDefinition.id, withOverlay)
         )
-      )
-    ),
+      );
+    }),
   };
 }
 

@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { getPartyScene } from '@/src/content/authored-voice';
 import { getCombatActionDefinitions } from '@/src/engine/battle/combat-engine';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
@@ -182,6 +183,16 @@ export default function BattleScreen() {
     const entries = combatState.log.slice().reverse();
     return showFullLog ? entries : entries.slice(0, 4);
   }, [combatState, showFullLog]);
+  const crewChannelScene = useMemo(() => {
+    if (!run || !combatState) {
+      return null;
+    }
+
+    return getPartyScene(
+      combatState.heroHp * 2 <= combatState.heroMaxHp ? 'low-health' : 'battle-intro',
+      run.chosenCompanionIds
+    );
+  }, [combatState, run]);
 
   const handleAction = async (actionId: CombatActionId) => {
     const result = await performCombatAction(actionId);
@@ -299,6 +310,16 @@ export default function BattleScreen() {
                         </Text>
                       </View>
                     ) : null}
+                  </View>
+                ) : null}
+                {crewChannelScene ? (
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>{crewChannelScene.title}</Text>
+                    {crewChannelScene.lines.map((line) => (
+                      <Text key={line.speakerId} style={styles.detailCardBody}>
+                        {line.speakerName}: {line.text}
+                      </Text>
+                    ))}
                   </View>
                 ) : null}
               </View>

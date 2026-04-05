@@ -26,6 +26,7 @@ import { getActiveTeamSynergyCards } from '@/src/content/team-synergies';
 import { getStatusDefinition } from '@/src/content/statuses';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -34,6 +35,16 @@ import {
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
 import type { CombatActionId } from '@/src/types/combat';
+
+function hashString(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
 
 function splitActionDescription(description: string) {
   const [core, modifiers] = description.split(' Active modifiers: ');
@@ -50,6 +61,7 @@ export default function BattleScreen() {
     (state) => state.prepareCombatForCurrentNode
   );
   const performCombatAction = useRunStore((state) => state.performCombatAction);
+  const recordCrewScene = useUxTelemetryStore((state) => state.recordCrewScene);
   const isPreparingCombat = useRunStore((state) => state.isPreparingCombat);
   const isPerformingCombatAction = useRunStore(
     (state) => state.isPerformingCombatAction
@@ -183,16 +195,38 @@ export default function BattleScreen() {
     const entries = combatState.log.slice().reverse();
     return showFullLog ? entries : entries.slice(0, 4);
   }, [combatState, showFullLog]);
-  const crewChannelScene = useMemo(() => {
-    if (!run || !combatState) {
+  const crewChannelSceneId = useMemo(() => {
+    if (!run || !combatState || !currentNode) {
       return null;
     }
 
-    return getPartyScene(
-      combatState.heroHp * 2 <= combatState.heroMaxHp ? 'low-health' : 'battle-intro',
-      run.chosenCompanionIds
-    );
-  }, [combatState, run]);
+    const lowHealth = combatState.heroHp * 2 <= combatState.heroMaxHp;
+    const sceneOptions = lowHealth
+      ? ['low-health', 'low-health-alt-1', 'low-health-alt-2']
+      : ['battle-intro', 'battle-intro-alt-1', 'battle-intro-alt-2'];
+    const key = `${run.runId}:${currentNode.id}:${combatState.enemy.enemyId}:${lowHealth ? 'low' : 'normal'}`;
+
+    return sceneOptions[hashString(key) % sceneOptions.length] ?? sceneOptions[0];
+  }, [combatState, currentNode, run]);
+  const crewChannelScene = useMemo(() => {
+    if (!run || !crewChannelSceneId) {
+      return null;
+    }
+
+    return getPartyScene(crewChannelSceneId, run.chosenCompanionIds);
+  }, [crewChannelSceneId, run]);
+
+  useEffect(() => {
+    if (!run || !currentNode || !crewChannelSceneId) {
+      return;
+    }
+
+    recordCrewScene({
+      runId: run.runId,
+      encounterId: currentNode.id,
+      sceneId: crewChannelSceneId,
+    });
+  }, [crewChannelSceneId, currentNode, recordCrewScene, run]);
 
   const handleAction = async (actionId: CombatActionId) => {
     const result = await performCombatAction(actionId);
@@ -296,30 +330,30 @@ export default function BattleScreen() {
                   <View style={styles.statusStack}>
                     {heroStatusCards.length > 0 ? (
                       <View style={styles.statusCard}>
-                        <Text style={styles.statusHeading}>On You</Text>
-                        <Text style={styles.statusBody}>
-                          {heroStatusCards.map((status) => status.label).join(', ')}
-                        </Text>
+                        <Text style={styles.statusHeading}>Your Status</Text>
+                        <View style={styles.statusList}>
+                          {heroStatusCards.map((status) => (
+                            <View key={`hero-${status.id}`} style={styles.statusItem}>
+                              <Text style={styles.statusLabel}>{status.label}</Text>
+                              <Text style={styles.statusBody}>{status.summary}</Text>
+                            </View>
+                          ))}
+                        </View>
                       </View>
                     ) : null}
                     {enemyStatusCards.length > 0 ? (
                       <View style={styles.statusCard}>
-                        <Text style={styles.statusHeading}>On Them</Text>
-                        <Text style={styles.statusBody}>
-                          {enemyStatusCards.map((status) => status.label).join(', ')}
-                        </Text>
+                        <Text style={styles.statusHeading}>Enemy Status</Text>
+                        <View style={styles.statusList}>
+                          {enemyStatusCards.map((status) => (
+                            <View key={`enemy-${status.id}`} style={styles.statusItem}>
+                              <Text style={styles.statusLabel}>{status.label}</Text>
+                              <Text style={styles.statusBody}>{status.summary}</Text>
+                            </View>
+                          ))}
+                        </View>
                       </View>
                     ) : null}
-                  </View>
-                ) : null}
-                {crewChannelScene ? (
-                  <View style={styles.detailCard}>
-                    <Text style={styles.detailCardTitle}>{crewChannelScene.title}</Text>
-                    {crewChannelScene.lines.map((line) => (
-                      <Text key={line.speakerId} style={styles.detailCardBody}>
-                        {line.speakerName}: {line.text}
-                      </Text>
-                    ))}
                   </View>
                 ) : null}
               </View>
@@ -423,6 +457,16 @@ export default function BattleScreen() {
                           id: card.companionId,
                           title: `${card.companionName} (${card.role === 'active' ? 'Lead' : 'Reserve'})`,
                           summary: `Bond ${card.bondLevel}: ${card.summary}${card.nextUpgradeSummary ? ` ${card.nextUpgradeSummary}` : ''}`,
+                        }))}
+                      />
+                    ) : null}
+                    {crewChannelScene ? (
+                      <CardList
+                        title={crewChannelScene.title}
+                        cards={crewChannelScene.lines.map((line) => ({
+                          id: line.speakerId,
+                          title: line.speakerName,
+                          summary: line.text,
                         }))}
                       />
                     ) : null}
@@ -781,6 +825,12 @@ function createStyles(
       borderColor: colors.border,
       gap: spacing.xs + 2,
     },
+    statusList: {
+      gap: spacing.sm,
+    },
+    statusItem: {
+      gap: spacing.xs,
+    },
     statusHeading: {
       color: colors.accent,
       fontSize: scaleFontSize(12, settings),
@@ -789,10 +839,17 @@ function createStyles(
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     },
-    statusBody: {
-      color: colors.textSecondary,
+    statusLabel: {
+      color: colors.textPrimary,
       fontSize: scaleFontSize(14, settings),
+      fontWeight: '800',
       lineHeight: scaleLineHeight(20, settings),
+    },
+    statusBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     actionList: {
       gap: spacing.md,

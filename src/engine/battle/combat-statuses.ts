@@ -162,5 +162,6 @@ export function getCombatStatusIncomingDamageBonus(
 
 export function formatCombatStatusLabel(status: CombatStatusState) {
   const statusName = getStatusDefinition(status.id)?.name ?? status.id;
-  return `${statusName} (${status.turnsRemaining})`;
+  const turnLabel = status.turnsRemaining === 1 ? 'turn' : 'turns';
+  return `${statusName} - ${status.turnsRemaining} ${turnLabel} left`;
 }

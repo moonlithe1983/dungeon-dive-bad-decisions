@@ -1,8 +1,9 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -39,6 +40,7 @@ export default function EventScreen() {
   const isApplyingEventChoice = useRunStore(
     (state) => state.isApplyingEventChoice
   );
+  const [showSupportingReads, setShowSupportingReads] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -184,75 +186,19 @@ export default function EventScreen() {
                   <DetailLine label="Node" value={currentNode.label} />
                   <DetailLine label="Run ID" value={run.runId} />
                 </View>
-                {eventCrewScene ? (
-                  <View style={styles.detailCard}>
-                    {eventCrewScene.lines.map((line) => (
-                      <Text key={line.speakerId} style={styles.panelBody}>
-                        {line.speakerName}: {line.text}
-                      </Text>
-                    ))}
-                  </View>
-                ) : null}
                 <LoopArtPanel
-                  title="Room Read"
-                  body={
-                    eventScene
-                      ? `${eventScene.title} should read at a glance, but the real decision still lives in the choice text below.`
-                      : 'Read the room first, then choose the line that keeps the next floor legible.'
-                  }
+                  title="Room Signal"
+                  body={eventScene.description}
                   source={eventArtSource}
                   backgroundSource={eventSurfaceArtSource}
+                  frameVariant="portrait"
                 />
               </View>
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Class Read</Text>
+                <Text style={styles.panelTitle}>Make The Call</Text>
                 <Text style={styles.panelBody}>
-                  Your role should clarify the risk, not bury it in another memo.
-                </Text>
-                <View style={styles.classReadCard}>
-                  <Text style={styles.classReadName}>
-                    {eventScene.classMoment.className}
-                  </Text>
-                  <Text style={styles.classReadHeadline}>
-                    {eventScene.classMoment.headline}
-                  </Text>
-                  <Text style={styles.classReadBody}>
-                    {eventScene.classMoment.line}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Companion Readouts</Text>
-                <Text style={styles.panelBody}>
-                  Active and reserve reads stay short so the choice remains the center of the screen.
-                </Text>
-                <View style={styles.banterList}>
-                  {eventScene.companionMoments.map((moment) => (
-                    <View
-                      key={`${moment.companionId}-${moment.role}`}
-                      style={[
-                        styles.banterCard,
-                        moment.role === 'active' ? styles.banterCardActive : null,
-                      ]}
-                    >
-                      <Text style={styles.banterName}>
-                        {moment.companionName}
-                      </Text>
-                      <Text style={styles.banterHeadline}>
-                        {moment.headline}
-                      </Text>
-                      <Text style={styles.banterBody}>{moment.line}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Choices</Text>
-                <Text style={styles.panelBody}>
-                  Pick one path. The art sets the tone, but the labels and previews still carry the actual risk.
+                  Pick one response. The preview shows the immediate tradeoff.
                 </Text>
                 <View style={styles.choiceList}>
                   {eventScene.choices.map((choice) => {
@@ -311,6 +257,69 @@ export default function EventScreen() {
                     disabled={isApplyingEventChoice}
                   />
                 </View>
+              </View>
+
+              <View style={styles.panel}>
+                <Pressable
+                  style={styles.toggleRow}
+                  onPress={() => {
+                    setShowSupportingReads((current) => !current);
+                  }}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.panelTitle}>Class and Crew Reads</Text>
+                  <Text style={styles.toggleLabel}>
+                    {showSupportingReads ? 'Hide' : 'Show'}
+                  </Text>
+                </Pressable>
+                {showSupportingReads ? (
+                  <>
+                    <View style={styles.classReadCard}>
+                      <Text style={styles.classReadName}>
+                        {eventScene.classMoment.className}
+                      </Text>
+                      <Text style={styles.classReadHeadline}>
+                        {eventScene.classMoment.headline}
+                      </Text>
+                      <Text style={styles.classReadBody}>
+                        {eventScene.classMoment.line}
+                      </Text>
+                    </View>
+                    <View style={styles.banterList}>
+                      {eventCrewScene ? (
+                        <View style={styles.detailCard}>
+                          <Text style={styles.banterName}>{eventCrewScene.title}</Text>
+                          {eventCrewScene.lines.map((line) => (
+                            <Text key={line.speakerId} style={styles.banterBody}>
+                              {line.speakerName}: {line.text}
+                            </Text>
+                          ))}
+                        </View>
+                      ) : null}
+                      {eventScene.companionMoments.map((moment) => (
+                        <View
+                          key={`${moment.companionId}-${moment.role}`}
+                          style={[
+                            styles.banterCard,
+                            moment.role === 'active' ? styles.banterCardActive : null,
+                          ]}
+                        >
+                          <Text style={styles.banterName}>
+                            {moment.companionName}
+                          </Text>
+                          <Text style={styles.banterHeadline}>
+                            {moment.headline}
+                          </Text>
+                          <Text style={styles.banterBody}>{moment.line}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </>
+                ) : (
+                  <Text style={styles.panelBody}>
+                    Open this if you want extra class context or crew flavor before locking the choice.
+                  </Text>
+                )}
               </View>
             </>
           )}
@@ -638,6 +647,19 @@ function createStyles(
     color: colors.textSecondary,
     fontSize: scaleFontSize(13, settings),
     lineHeight: scaleLineHeight(18, settings),
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  toggleLabel: {
+    color: colors.accent,
+    fontSize: scaleFontSize(12, settings),
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   actionGroup: {
     gap: spacing.sm + 2,

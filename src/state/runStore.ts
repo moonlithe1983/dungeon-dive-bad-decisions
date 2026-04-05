@@ -34,6 +34,7 @@ import {
 } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import type { CombatActionId } from '@/src/types/combat';
 import type {
   RewardClaimResult,
@@ -311,6 +312,7 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
       const savedRun = await saveActiveRunAsync(initialRun);
 
       await saveBackupRunAsync(savedRun);
+      useUxTelemetryStore.getState().registerRunStart(savedRun.runId, savedRun.createdAt);
       await refreshBootstrapState();
 
       set({

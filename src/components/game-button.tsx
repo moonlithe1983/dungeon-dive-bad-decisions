@@ -30,10 +30,12 @@ export function GameButton({
         },
         buttonPrimary: {
           backgroundColor: colors.accent,
+          borderWidth: settings.highContrastEnabled ? 2 : 0,
+          borderColor: settings.highContrastEnabled ? colors.textPrimary : colors.accent,
         },
         buttonSecondary: {
           backgroundColor: colors.surfaceRaised,
-          borderWidth: 1,
+          borderWidth: settings.highContrastEnabled ? 2 : 1,
           borderColor: colors.borderStrong,
         },
         buttonDisabled: {
@@ -61,7 +63,7 @@ export function GameButton({
           color: colors.textMuted,
         },
       }),
-    [colors, metrics, settings.reducedMotionEnabled]
+    [colors, metrics, settings.highContrastEnabled, settings.reducedMotionEnabled]
   );
 
   return (

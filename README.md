@@ -10,18 +10,21 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> companion select on fresh profiles -> route-choice run map -> battle / reward / event -> archive recap -> progression
+- Core loop: title -> class select when multiple classes are unlocked, otherwise companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
 - Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
 - Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
+- Decision-path presentation: mission/context panels are progressively disclosed, route/event/reward choices now sit higher in the hierarchy, and player-facing copy avoids fake choice scaffolding
 - Authored voice layer: early-floor lore beats, starting-trio chemistry, early event overlays, codex bios, reward build-lane cues, and defeat advice now use the April 4 narrative pack instead of lighter placeholder prose
 - Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
+- Combat readability: live battle status labels now use readable durations/summaries, and repeated crew chatter is rotated or hidden behind tactical detail instead of crowding the main turn view
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
 - Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
 - Accessibility foundation: persisted theme presets, text-size controls, contrast/motion toggles, dyslexia-friendly spacing, and screen-reader hints are now in the live settings route
-- Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation
+- Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation plus local-only UX telemetry readouts
+- Policy/support surfaces: repository markdown and the in-app `support` / `privacy` routes now reflect the current offline-only, local-save, no-account shipping model
 
 ## MVP Content Snapshot
 
@@ -90,7 +93,8 @@ Notes:
 - `npm run android` uses the native Android run flow (`expo run:android`).
 - Native iOS is intentionally out of scope for this project now.
 - `npm run smoke:sim` is the fastest automated gameplay guardrail.
-- `app/settings.tsx` is now the live accessibility and theme control surface.
+- `app/settings.tsx` is now the live accessibility and theme control surface, including a visible preview for readability/contrast changes.
+- `app/dev-smoke.tsx` is the quickest place to sanity-check local-only UX telemetry counters during manual QA.
 
 ## Native Android Release Build
 
@@ -170,6 +174,8 @@ The game is in release-candidate hardening mode:
 - the opening roster now shows 3 companions so the first team pick is a real choice
 - the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
 - battle and reward screens now hide deeper mechanical detail behind toggles so the first read is shorter and more phone-friendly
+- event screens now lead with the real choice and tuck class/crew readouts behind an explicit toggle
+- setup screens now keep role and crew flavor available without forcing it ahead of the first actionable decision
 - archived defeat recaps now call out the enemy, final exchange, live statuses, and a suggested next-run adjustment
 - the April 4 authored-content pass now feeds:
   - floors 1 to 3 lore beats on the run map
@@ -185,7 +191,9 @@ The game is in release-candidate hardening mode:
 - automated smoke validation now also covers the route-choice map structure deterministically instead of assuming a single forced floor path
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
+- the live settings route now includes a visual preview so high contrast, color assist, reduced motion, and readability changes are visibly testable
 - the primary gameplay, recap, reference, and test routes now respect the saved accessibility/theme profile rather than only the shared chrome
+- the in-app support/privacy routes and the repo markdown now agree on the offline-only/local-save model and the dev-only/local-only telemetry scope
 - class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
 - older companion/meta writing now carries more of that sharper company-specific tone
 - combat log ordering now places the rolling narrative above the action list
@@ -196,9 +204,10 @@ The game is in release-candidate hardening mode:
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - the canonical short-path workspace `C:\ddbd` can produce a local release APK and currently contains `android/app/build/outputs/apk/release/app-release.apk`
 - the local Android launcher now resolves the real workspace path first, so `npm run android` works from both `C:\ddbd` and the restored junction path without the earlier Expo root-resolution failure
+- the native-only `dev-smoke` route now surfaces local-only UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, and `Run It Back` usage
 - the legacy long-path workspace may still fail native packaging because of Windows path-length limits
 - before tester or store distribution after future source changes, rebuild from the final accepted `C:\ddbd` source and re-verify install behavior
-- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke`, now also including the authored lore/voice surfaces, before broader playtesting and upload
+- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, setup compression, settings preview, and `dev-smoke` telemetry surfaces before broader playtesting and upload
 
 ## Launch Defaults
 
@@ -230,6 +239,8 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 - `PROJECT_HANDOFF_2026-04-05.md`
 - `PROJECT_HANDOFF_2026-04-05.docx`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`
+- `SUPPORT.md`
+- `PRIVACY_POLICY.md`
 - `PROJECT_HANDOFF_2026-04-04.md`
 - `PROJECT_HANDOFF_2026-04-02.md`
 - `PROJECT_HANDOFF_2026-03-31.md`

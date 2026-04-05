@@ -15,11 +15,11 @@ import type { ProfileSettingsState } from '@/src/types/profile';
 
 const sections = [
   {
-    title: 'Getting Help',
+    title: 'Current Support Status',
     body: [
-      'If you run into trouble, use the support contact listed with your storefront copy, distributor, or build channel.',
+      'A final public support inbox still needs to be confirmed before release.',
+      'Until that inbox is live, use the support contact listed with your storefront copy, distributor, or build channel.',
       'Support details may vary by region, storefront, or release channel.',
-      'When available, check the latest listing notes or storefront page for updated contact information.',
     ],
   },
   {
@@ -31,11 +31,11 @@ const sections = [
     ],
   },
   {
-    title: 'What To Include',
+    title: 'Current Product Notes',
     body: [
-      'Device model, Android version, and app version or build number.',
-      'What you expected to happen, what happened instead, and whether the issue can be repeated.',
-      'For save or resume issues, mention the last screen you visited before the problem appeared.',
+      'Dungeon Dive: Bad Decisions is being prepared as an offline single-player Android release.',
+      'Accessibility settings now include a live preview so readability, contrast, and motion changes are visibly testable before a run starts.',
+      'The Smoke Lab route is native-dev only and its local-only telemetry is not part of the public release build.',
     ],
   },
 ];

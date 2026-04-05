@@ -25,6 +25,7 @@ import {
 } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useRunStore } from '@/src/state/runStore';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -53,6 +54,7 @@ export default function EndRunScreen() {
   const currentRunId = useRunStore((state) => state.currentRun?.runId ?? null);
   const clearCurrentRunState = useRunStore((state) => state.clearCurrentRunState);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
+  const recordRunItBack = useUxTelemetryStore((state) => state.recordRunItBack);
   const profile = useGameStore((state) => state.profile);
   const [archivedRun, setArchivedRun] = useState<RunHistoryEntry | null>(null);
   const [loadStatus, setLoadStatus] = useState<EndRunLoadStatus>('loading');
@@ -209,6 +211,7 @@ export default function EndRunScreen() {
   };
 
   const handleRunItBack = () => {
+    recordRunItBack();
     beginNewRunSetup();
     clearCurrentRunState();
     const hasSingleOpeningClass = (profile?.unlockedClassIds.length ?? 0) <= 1;
@@ -305,10 +308,11 @@ export default function EndRunScreen() {
                 ) : null}
               </View>
               <LoopArtPanel
-                title="Archive Verdict"
+                title="Next Experiment"
                 body={restartReadBody}
                 source={archivedResultArtSource}
                 backgroundSource={endRunSurfaceArtSource}
+                frameVariant="portrait"
               />
 
               {isFailedRun && archivedRun.recap?.defeatSummary ? (
@@ -427,23 +431,23 @@ export default function EndRunScreen() {
               ) : null}
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Next</Text>
+                <Text style={styles.panelTitle}>Next Run</Text>
                 <Text style={styles.panelBody}>
                   The run is safely archived. If the postmortem gave you a clear next experiment, run it back while it is still hot.
                 </Text>
                 <View style={styles.actionGroup}>
                   <GameButton label="Run It Back" onPress={handleRunItBack} />
                   <GameButton
+                    label="Return to Title"
+                    onPress={handleReturnToTitle}
+                    variant="secondary"
+                  />
+                  <GameButton
                     label="Open Run Archive"
                     onPress={() => {
                       clearCurrentRunState();
                       router.replace('/progression' as Href);
                     }}
-                    variant="secondary"
-                  />
-                  <GameButton
-                    label="Return to Title"
-                    onPress={handleReturnToTitle}
                     variant="secondary"
                   />
                 </View>

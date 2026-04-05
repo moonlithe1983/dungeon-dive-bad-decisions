@@ -27,13 +27,14 @@ const sections = [
     body: [
       'The game stores gameplay-related information locally on your device, including profile progression, unlocked content, active run state, backup recovery data, archive history, and settings.',
       'This local data exists so the app can resume dives, preserve unlocks, and show progression history without needing a remote account.',
+      'In development builds only, the Smoke Lab route can show local in-memory UX telemetry counters for manual QA, and those counters are not part of the public gameplay loop.',
     ],
   },
   {
     title: 'Data Sharing',
     body: [
       'Gameplay data is not intentionally sent to developer-operated servers during normal play.',
-      'The app does not require a player email, payment profile, cloud-save account, or location sharing for the core game loop.',
+      'The app does not require a player email, payment profile, cloud-save account, location sharing, or third-party login for the core game loop.',
       'Platform providers such as Google Play may still collect store, install, payment, or diagnostic information under their own policies.',
     ],
   },

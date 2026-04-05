@@ -221,6 +221,46 @@ const partyScenes: Record<string, PartyScene> = {
       },
     ],
   },
+  'battle-intro-alt-1': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'If anyone asks, this was a controlled escalation.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Then let us control it before it controls the hallway.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Too late. I already like where this is going.',
+      },
+    ],
+  },
+  'battle-intro-alt-2': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Same drill as always: survive first, complain second.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'I can multitask if the complaint is specific enough.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Specific complaint: that thing still has kneecaps.',
+      },
+    ],
+  },
   'suspicious-reward-screen': {
     title: 'Crew Read',
     lines: [
@@ -278,6 +318,46 @@ const partyScenes: Record<string, PartyScene> = {
         speakerId: 'security-skeleton',
         speakerName: 'Security Skeleton',
         text: "Aim for survivable. We've already had interesting.",
+      },
+    ],
+  },
+  'low-health-alt-1': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'You are still upright. Let us preserve that luxury.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Good. Falling over would slow the looting.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Please survive long enough for me to be smug about it later.',
+      },
+    ],
+  },
+  'low-health-alt-2': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'You are doing the dramatic pause before the comeback. Commit to the second half.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Confirmed. Breathing remains the current objective.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'I can work with breathing. Please keep doing it.',
       },
     ],
   },

@@ -217,7 +217,7 @@ export default function SettingsScreen() {
                 <View style={styles.toggleList}>
                   <ToggleRow
                     label="High Contrast"
-                    description="Strengthens borders, text separation, and accent visibility."
+                    description="Makes borders thicker, brightens separation, and increases button emphasis immediately."
                     value={settings.highContrastEnabled}
                     onPress={() => {
                       void applySettings({
@@ -227,7 +227,7 @@ export default function SettingsScreen() {
                   />
                   <ToggleRow
                     label="Color Assist"
-                    description="Shifts accent/error colors toward safer high-separation combinations."
+                    description="Shifts accent and alert colors toward safer, easier-to-distinguish combinations."
                     value={settings.colorAssistEnabled}
                     onPress={() => {
                       void applySettings({
@@ -237,13 +237,45 @@ export default function SettingsScreen() {
                   />
                   <ToggleRow
                     label="Reduced Motion"
-                    description="Disables stack transitions and removes small press animations where possible."
+                    description="Removes navigation fades and button compression where possible."
                     value={settings.reducedMotionEnabled}
                     onPress={() => {
                       void applySettings({
                         reducedMotionEnabled: !settings.reducedMotionEnabled,
                       });
                     }}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Live Preview</Text>
+                <Text style={styles.panelBody}>
+                  This sample reflects your current settings right now, so each toggle has a visible result before the next run.
+                </Text>
+                <View style={styles.previewCard}>
+                  <Text style={styles.previewEyebrow}>Preview Card</Text>
+                  <Text style={styles.previewTitle}>Readable Warning</Text>
+                  <Text style={styles.previewBody}>
+                    Borders, spacing, color separation, and button emphasis should all change here when you adjust the controls above.
+                  </Text>
+                  <View style={styles.previewPillRow}>
+                    <View style={styles.previewPill}>
+                      <Text style={styles.previewPillText}>Accent</Text>
+                    </View>
+                    <View style={[styles.previewPill, styles.previewPillMuted]}>
+                      <Text style={[styles.previewPillText, styles.previewPillTextMuted]}>
+                        Secondary
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.previewButtonRow}>
+                  <GameButton label="Primary Preview" onPress={() => undefined} />
+                  <GameButton
+                    label="Secondary Preview"
+                    onPress={() => undefined}
+                    variant="secondary"
                   />
                 </View>
               </View>
@@ -505,6 +537,63 @@ function createStyles(settings: ProfileSettingsState, colors: ReturnType<typeof 
       borderWidth: 1,
       borderColor: colors.border,
       gap: spacing.xs + 2,
+    },
+    previewCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: spacing.lg,
+      borderWidth: settings.highContrastEnabled ? 2 : 1,
+      borderColor: colors.borderStrong,
+      gap: spacing.sm,
+    },
+    previewEyebrow: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    previewTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    previewBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    previewPillRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    previewPill: {
+      borderRadius: 999,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      backgroundColor: colors.accent,
+      borderWidth: settings.highContrastEnabled ? 2 : 1,
+      borderColor: settings.highContrastEnabled ? colors.textPrimary : colors.accent,
+    },
+    previewPillMuted: {
+      backgroundColor: colors.surfaceRaised,
+      borderColor: colors.borderStrong,
+    },
+    previewPillText: {
+      color: colors.buttonText,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+    },
+    previewPillTextMuted: {
+      color: colors.textPrimary,
+    },
+    previewButtonRow: {
+      gap: spacing.sm,
     },
     detailLine: {
       color: colors.textSecondary,

@@ -19,6 +19,7 @@ import { saveActiveRunAsync, saveBackupRunAsync } from '@/src/save/runRepo';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -34,10 +35,32 @@ export default function DevSmokeScreen() {
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
   const hydrateFromActiveRun = useRunStore((state) => state.hydrateFromActiveRun);
+  const telemetry = useUxTelemetryStore((state) => ({
+    runsStarted: state.runsStarted,
+    routeSelections: state.routeSelections,
+    routeChanges: state.routeChanges,
+    runItBackCount: state.runItBackCount,
+    crewSceneViews: state.crewSceneViews,
+    repeatedCrewSceneCount: state.repeatedCrewSceneCount,
+    floorOneCommitSamplesMs: state.floorOneCommitSamplesMs,
+  }));
+  const resetTelemetry = useUxTelemetryStore((state) => state.resetSession);
   const [pendingScenario, setPendingScenario] = useState<PendingScenario>(null);
   const [error, setError] = useState<string | null>(null);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const averageFloorOneCommitMs = useMemo(() => {
+    if (telemetry.floorOneCommitSamplesMs.length === 0) {
+      return null;
+    }
+
+    const total = telemetry.floorOneCommitSamplesMs.reduce(
+      (sum, sample) => sum + sample,
+      0
+    );
+
+    return Math.round(total / telemetry.floorOneCommitSamplesMs.length);
+  }, [telemetry.floorOneCommitSamplesMs]);
 
   const seedScenario = async (scenarioId: DevSmokeScenarioId) => {
     if (!__DEV__) {
@@ -56,6 +79,7 @@ export default function DevSmokeScreen() {
       const savedRun = await saveActiveRunAsync(seededRun);
 
       await saveBackupRunAsync(savedRun);
+      useUxTelemetryStore.getState().registerRunStart(savedRun.runId, savedRun.createdAt);
       await refreshBootstrap();
       await hydrateFromActiveRun(savedRun);
 
@@ -156,6 +180,28 @@ export default function DevSmokeScreen() {
             />
           </View>
 
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>UX Telemetry</Text>
+            <Text style={styles.panelBody}>
+              Local-only session metrics for validating loop clarity without adding a remote analytics dependency.
+            </Text>
+            <View style={styles.metricsCard}>
+              <MetricLine label="Runs started" value={String(telemetry.runsStarted)} />
+              <MetricLine label="Floor 1 commit avg" value={averageFloorOneCommitMs != null ? `${averageFloorOneCommitMs} ms` : 'No samples yet'} />
+              <MetricLine label="Route selections" value={String(telemetry.routeSelections)} />
+              <MetricLine label="Route changes" value={String(telemetry.routeChanges)} />
+              <MetricLine label="Run It Back taps" value={String(telemetry.runItBackCount)} />
+              <MetricLine label="Crew reads viewed" value={String(telemetry.crewSceneViews)} />
+              <MetricLine label="Repeated crew reads" value={String(telemetry.repeatedCrewSceneCount)} />
+            </View>
+            <GameButton
+              label="Reset Telemetry"
+              onPress={resetTelemetry}
+              variant="secondary"
+              disabled={pendingScenario !== null}
+            />
+          </View>
+
           {pendingScenario ? (
             <View style={styles.loadingRow}>
               <ActivityIndicator size="small" color={colors.accent} />
@@ -183,6 +229,18 @@ export default function DevSmokeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function MetricLine({ label, value }: { label: string; value: string }) {
+  const { colors, settings } = useAppTheme();
+  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
+  return (
+    <Text style={styles.metricLine}>
+      <Text style={styles.metricLabel}>{label}: </Text>
+      {value}
+    </Text>
   );
 }
 
@@ -288,6 +346,23 @@ function createStyles(
     fontSize: scaleFontSize(14, settings),
     lineHeight: scaleLineHeight(20, settings),
     letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+  },
+  metricsCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: spacing.md,
+    gap: spacing.xs + 2,
+  },
+  metricLine: {
+    color: colors.textSecondary,
+    fontSize: scaleFontSize(14, settings),
+    lineHeight: scaleLineHeight(20, settings),
+  },
+  metricLabel: {
+    color: colors.textPrimary,
+    fontWeight: '800',
   },
   });
 }

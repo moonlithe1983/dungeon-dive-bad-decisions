@@ -52,7 +52,7 @@ export default function IndexScreen() {
   }, [activeRun]);
   const resumeLabel = useMemo(() => {
     if (!activeRun) {
-      return 'Resume Dive';
+      return null;
     }
 
     return `Resume ${resumeTarget?.buttonLabel ?? 'Dive'} - Floor ${activeRun.floorIndex}`;
@@ -165,7 +165,7 @@ export default function IndexScreen() {
                     styles={styles}
                   />
                   <StatCard
-                    label="Companions"
+                    label="Crew"
                     value={String(snapshot?.unlockedCompanions ?? 0)}
                     styles={styles}
                   />
@@ -206,15 +206,16 @@ export default function IndexScreen() {
                 </View>
 
                 <View style={styles.primaryActions}>
-                  <GameButton
-                    label={resumeLabel}
-                    onPress={handleResume}
-                    disabled={!activeRun}
-                  />
+                  {activeRun && resumeLabel ? (
+                    <GameButton
+                      label={resumeLabel}
+                      onPress={handleResume}
+                    />
+                  ) : null}
                   <GameButton
                     label="Start New Dive"
                     onPress={handleNewDive}
-                    variant="secondary"
+                    variant={activeRun ? 'secondary' : 'primary'}
                   />
                 </View>
               </>
@@ -326,13 +327,15 @@ function StatCard({
         style={styles.statValue}
         numberOfLines={2}
         adjustsFontSizeToFit
+        minimumFontScale={0.72}
       >
         {value}
       </Text>
       <Text
         style={styles.statLabel}
-        numberOfLines={2}
+        numberOfLines={1}
         adjustsFontSizeToFit
+        minimumFontScale={0.8}
       >
         {label}
       </Text>

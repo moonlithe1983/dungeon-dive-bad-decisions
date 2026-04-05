@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -42,6 +42,7 @@ export default function CompanionSelectScreen() {
   const createRunFromSetup = useRunStore((state) => state.createRunFromSetup);
   const isCreatingRun = useRunStore((state) => state.isCreatingRun);
   const setupError = useRunStore((state) => state.setupError);
+  const [showCrewChemistry, setShowCrewChemistry] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -133,24 +134,38 @@ export default function CompanionSelectScreen() {
             </Text>
             <Text style={styles.body}>
               {hasMultipleClassChoices
-                ? `Current class: ${selectedClass?.name ?? selectedClassId}. Choose exactly two companions to build your crew for the climb.`
-                : `${selectedClass?.name ?? selectedClassId} is already carrying the ticket. Choose exactly two companions to decide how this climb feels.`}
+                ? `Current class: ${selectedClass?.name ?? selectedClassId}. Pick the two companions that best support this role.`
+                : `${selectedClass?.name ?? selectedClassId} is locked in. Pick one lead and one reserve to support the run.`}
             </Text>
           </View>
 
           {openingScene ? (
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>{openingScene.title}</Text>
-              <Text style={styles.panelBody}>
-                The first impression should feel like a bad team-up and a real rescue attempt at the same time.
-              </Text>
-              <View style={styles.selectionDetailCard}>
-                {openingScene.lines.map((line) => (
-                  <Text key={line.speakerId} style={styles.panelBody}>
-                    {line.speakerName}: {line.text}
-                  </Text>
-                ))}
-              </View>
+              <Pressable
+                style={styles.toggleRow}
+                onPress={() => {
+                  setShowCrewChemistry((current) => !current);
+                }}
+                accessibilityRole="button"
+              >
+                <Text style={styles.panelTitle}>{openingScene.title}</Text>
+                <Text style={styles.toggleLabel}>
+                  {showCrewChemistry ? 'Hide' : 'Show'}
+                </Text>
+              </Pressable>
+              {showCrewChemistry ? (
+                <View style={styles.selectionDetailCard}>
+                  {openingScene.lines.map((line) => (
+                    <Text key={line.speakerId} style={styles.panelBody}>
+                      {line.speakerName}: {line.text}
+                    </Text>
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.panelBody}>
+                  Optional flavor. Open it if you want the crew intro before you lock the team.
+                </Text>
+              )}
             </View>
           ) : null}
 
@@ -204,6 +219,8 @@ export default function CompanionSelectScreen() {
                           toggleSelectedCompanionId(companion.id);
                         }}
                         disabled={isDisabled}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: isSelected, disabled: isDisabled }}
                         style={({ pressed }) => [
                           styles.optionCard,
                           isSelected && styles.optionCardSelected,
@@ -271,9 +288,7 @@ export default function CompanionSelectScreen() {
                         .join(' | ')}
                 </Text>
                 <Text style={styles.hintText}>
-                  Bonds carry forward between dives. The stronger those ties
-                  get, the more they can shape your opening turns, recovery,
-                  and party identity.
+                  Bonds carry forward between dives. Stronger ties improve early turns, recovery, and role support.
                 </Text>
                 <View style={styles.selectionDetailCard}>
                   <Text style={styles.selectionDetailTitle}>Team Synergies</Text>
@@ -290,15 +305,13 @@ export default function CompanionSelectScreen() {
                     ))
                   ) : (
                     <Text style={styles.selectionDetailBody}>
-                      No known team synergy is active yet. Selection order still
-                      matters for class and lead-companion pairings.
+                      No active team synergy yet. Selection order still matters for lead and reserve effects.
                     </Text>
                   )}
                 </View>
                 {profile.unlockedCompanionIds.length < companionDefinitions.length ? (
                   <Text style={styles.hintText}>
-                    Need more recruits? Spend breakroom chits in the hub to
-                    requisition additional companions between dives.
+                    Need more recruits? Spend breakroom chits in the hub between dives.
                   </Text>
                 ) : null}
                 {setupError ? (
@@ -504,6 +517,20 @@ function createStyles(
     fontSize: scaleFontSize(13, settings),
     lineHeight: scaleLineHeight(19, settings),
     letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  toggleLabel: {
+    color: colors.accent,
+    fontSize: scaleFontSize(12, settings),
+    fontWeight: '800',
+    lineHeight: scaleLineHeight(16, settings),
+    textTransform: 'uppercase',
+    letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
   },
   actionGroup: {
     gap: spacing.sm + 2,

@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -41,6 +41,7 @@ export default function ClassSelectScreen() {
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const selectedClassId = useRunStore((state) => state.selectedClassId);
   const setSelectedClassId = useRunStore((state) => state.setSelectedClassId);
+  const [showRoleDetails, setShowRoleDetails] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -101,16 +102,13 @@ export default function ClassSelectScreen() {
             </Text>
             <Text style={styles.subtitle}>
               {hasMultipleClassChoices
-                ? 'Pick the employee identity that has to survive the climb.'
+                ? 'Pick the role you want to pilot through the climb.'
                 : `${assignedClassDefinition?.name ?? 'IT Support'} drew the short straw.`}
             </Text>
             <Text style={styles.body}>
-              {getCompanyDisasterSummary()}
-            </Text>
-            <Text style={styles.body}>
               {hasMultipleClassChoices
-                ? `Your class choice decides who you are at ${COMPANY_NAME}, why leadership needs you, who they are ready to blame, and what kind of disaster language you bring into the tower.`
-                : `For now, ${COMPANY_NAME} only trusts one department to carry this mess uphill. Your role is already decided, so the choice that matters here is who climbs beside you.`}
+                ? `Your class sets your starting health, action kit, and the kind of trouble you solve best inside ${COMPANY_NAME}.`
+                : `${COMPANY_NAME} already picked the department. Read the role fast, then choose the crew that supports it.`}
             </Text>
           </View>
 
@@ -137,6 +135,11 @@ export default function ClassSelectScreen() {
                       <Pressable
                         key={classDefinition.id}
                         disabled={!hasMultipleClassChoices}
+                        accessibilityRole="button"
+                        accessibilityState={{
+                          selected: isSelected,
+                          disabled: !hasMultipleClassChoices,
+                        }}
                         onPress={() => {
                           if (!hasMultipleClassChoices) {
                             return;
@@ -200,19 +203,15 @@ export default function ClassSelectScreen() {
                 <Text style={styles.panelTitle}>
                   {hasMultipleClassChoices ? 'Current Selection' : 'Role Briefing'}
                 </Text>
-                <Text style={styles.panelBody}>
-                  {selectedClassId
-                    ? selectedClassDefinition?.name ?? selectedClassId
-                    : 'No class selected yet.'}
-                </Text>
                 {selectedClassDefinition ? (
                   <View style={styles.selectionDetailCard}>
-                    <Text style={styles.selectionIdentity}>
-                      {selectedClassDefinition.combatIdentity}
-                    </Text>
+                    <Text style={styles.selectionIdentity}>{selectedClassDefinition.name}</Text>
                     <Text style={styles.selectionActionLine}>
                       <Text style={styles.selectionActionLabel}>Role: </Text>
                       {selectedNarrative?.roleLabel ?? 'Unknown'}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      {selectedNarrative?.openingHook ?? getCompanyDisasterSummary()}
                     </Text>
                     {selectedStartingHp ? (
                       <Text style={styles.selectionActionLine}>
@@ -222,7 +221,7 @@ export default function ClassSelectScreen() {
                         {selectedStartingHp}
                       </Text>
                     ) : null}
-                    {getClassActionKit(selectedClassDefinition.id).actions.map((action) => (
+                    {getClassActionKit(selectedClassDefinition.id).actions.slice(0, 2).map((action) => (
                       <Text
                         key={`selected-${action.id}`}
                         style={styles.selectionActionLine}
@@ -235,16 +234,22 @@ export default function ClassSelectScreen() {
                     ))}
                   </View>
                 ) : null}
-                {selectedNarrative ? (
+                <Pressable
+                  style={styles.toggleRow}
+                  onPress={() => {
+                    setShowRoleDetails((current) => !current);
+                  }}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.panelTitle}>Role Details</Text>
+                  <Text style={styles.toggleLabel}>
+                    {showRoleDetails ? 'Hide' : 'Show'}
+                  </Text>
+                </Pressable>
+                {showRoleDetails && selectedNarrative ? (
                   <View style={styles.selectionDetailCard}>
-                    <Text style={styles.selectionIdentity}>Narrative Briefing</Text>
                     <Text style={styles.selectionActionLine}>
-                      {selectedNarrative.openingHook}
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>
-                        Leadership Broke:
-                      </Text>{' '}
+                      <Text style={styles.selectionActionLabel}>Leadership Broke:</Text>{' '}
                       {selectedNarrative.leadershipFailure}
                     </Text>
                     <Text style={styles.selectionActionLine}>
@@ -256,29 +261,10 @@ export default function ClassSelectScreen() {
                       {selectedNarrative.approvalConstraint}
                     </Text>
                     <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>
-                        Department Baggage:
-                      </Text>{' '}
-                      {selectedNarrative.rivalDepartments}
+                      <Text style={styles.selectionActionLabel}>Meta Boosts:</Text>{' '}
+                      +{rewardCurrencyBonus} chits, +{rewardHealingBonus} healing per reward
                     </Text>
-                  </View>
-                ) : null}
-                {profile ? (
-                  <View style={styles.selectionDetailCard}>
-                    <Text style={styles.selectionIdentity}>Run Forecast</Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>
-                        Reward Chits:{' '}
-                      </Text>
-                      +{rewardCurrencyBonus} per claim
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>
-                        Reward Healing:{' '}
-                      </Text>
-                      +{rewardHealingBonus} per claim
-                    </Text>
-                    {metaUpgradeCatalog.map((offer) => (
+                    {metaUpgradeCatalog.slice(0, 2).map((offer) => (
                       <Text
                         key={`ops-${offer.id}`}
                         style={styles.selectionActionLine}
@@ -286,7 +272,6 @@ export default function ClassSelectScreen() {
                         <Text style={styles.selectionActionLabel}>
                           {offer.title}:
                         </Text>{' '}
-                        Rank {offer.currentLevel}/{offer.maxLevel}.{' '}
                         {offer.currentEffectLabel}
                       </Text>
                     ))}
@@ -294,8 +279,7 @@ export default function ClassSelectScreen() {
                 ) : null}
                 {profile.unlockedClassIds.length < classDefinitions.length ? (
                   <Text style={styles.hintText}>
-                    Additional departments can be requisitioned from the hub
-                    before future attempts up {TOWER_NAME}.
+                    Unlock more departments from the hub before future climbs up {TOWER_NAME}.
                   </Text>
                 ) : null}
                 <View style={styles.actionGroup}>
@@ -507,6 +491,20 @@ function createStyles(
       fontSize: scaleFontSize(13, settings),
       lineHeight: scaleLineHeight(19, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    toggleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    toggleLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     },
     actionGroup: {
       gap: spacing.sm + 2,

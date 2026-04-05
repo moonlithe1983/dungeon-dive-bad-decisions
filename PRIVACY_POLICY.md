@@ -26,12 +26,13 @@ This local data currently includes:
 - archive history
 - saved settings flags for accessibility, readability, and comfort preferences
 - authored codex/event/lore progress that is unlocked locally through play remains part of that on-device profile/archive data
+- in development builds only, the native `dev-smoke` route can show local in-memory UX telemetry counters for manual QA; those counters are not required for normal play, are not part of the public gameplay loop, and are not intentionally transmitted, synced, or attached to a player identity
 
 ## Data The App Does Not Intentionally Send To Moonlithe
 
 In the current offline build, gameplay data is not intentionally transmitted to Moonlithe-operated servers during normal play.
 
-The current app does not require a player email, payment profile, location sharing, or cloud account to use the core game loop.
+The current app does not require a player email, payment profile, location sharing, cloud account, or third-party login to use the core game loop.
 
 ## Platform Providers
 

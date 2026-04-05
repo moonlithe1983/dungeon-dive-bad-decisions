@@ -17,9 +17,10 @@ import type { ProfileSettingsState } from '@/src/types/profile';
 
 type LoopArtPanelProps = {
   title: string;
-  body: string;
+  body?: string;
   source: ImageSourcePropType;
   backgroundSource?: ImageSourcePropType;
+  frameVariant?: 'wide' | 'portrait';
 };
 
 export function LoopArtPanel({
@@ -27,13 +28,18 @@ export function LoopArtPanel({
   body,
   source,
   backgroundSource,
+  frameVariant = 'wide',
 }: LoopArtPanelProps) {
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const isPortrait = frameVariant === 'portrait';
 
   return (
     <View style={styles.panel}>
-      <View style={styles.artFrame} accessible={false}>
+      <View
+        style={[styles.artFrame, isPortrait ? styles.artFramePortrait : null]}
+        accessible={false}
+      >
         {backgroundSource ? (
           <Image
             source={backgroundSource}
@@ -41,11 +47,18 @@ export function LoopArtPanel({
             resizeMode="contain"
           />
         ) : null}
-        <Image source={source} style={styles.foregroundArt} resizeMode="contain" />
+        <Image
+          source={source}
+          style={[
+            styles.foregroundArt,
+            isPortrait ? styles.foregroundArtPortrait : null,
+          ]}
+          resizeMode="contain"
+        />
       </View>
       <View style={styles.copyWrap}>
         <Text style={styles.title}>{title}</Text>
-        <Text style={styles.body}>{body}</Text>
+        {body ? <Text style={styles.body}>{body}</Text> : null}
       </View>
     </View>
   );
@@ -69,13 +82,17 @@ function createStyles(
       minHeight: 124,
       borderRadius: 14,
       backgroundColor: colors.background,
-      borderWidth: 1,
+      borderWidth: settings.highContrastEnabled ? 2 : 1,
       borderColor: colors.border,
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'hidden',
       paddingHorizontal: spacing.lg,
       paddingVertical: spacing.sm + 2,
+    },
+    artFramePortrait: {
+      minHeight: 156,
+      paddingHorizontal: spacing.md,
     },
     backgroundArt: {
       ...StyleSheet.absoluteFillObject,
@@ -88,6 +105,11 @@ function createStyles(
       maxWidth: 180,
       height: 88,
       alignSelf: 'center',
+    },
+    foregroundArtPortrait: {
+      width: '58%',
+      maxWidth: 132,
+      height: 120,
     },
     copyWrap: {
       gap: spacing.xs + 2,

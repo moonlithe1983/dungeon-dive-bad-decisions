@@ -38,6 +38,7 @@ import {
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useGameStore } from '@/src/state/gameStore';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -90,6 +91,10 @@ export default function RunMapScreen() {
   const rotateActiveCompanionAtFloorStart = useRunStore(
     (state) => state.rotateActiveCompanionAtFloorStart
   );
+  const recordRouteSelection = useUxTelemetryStore(
+    (state) => state.recordRouteSelection
+  );
+  const recordRouteCommit = useUxTelemetryStore((state) => state.recordRouteCommit);
   const isRotatingActiveCompanion = useRunStore(
     (state) => state.isRotatingActiveCompanion
   );
@@ -237,6 +242,13 @@ export default function RunMapScreen() {
   };
 
   const handleChooseRoute = async (nodeId: string) => {
+    if (run) {
+      recordRouteSelection({
+        runId: run.runId,
+        changedSelection: currentNode?.id !== nodeId,
+      });
+    }
+
     await chooseCurrentNode(nodeId);
   };
 
@@ -373,6 +385,56 @@ export default function RunMapScreen() {
                 </View>
               ) : null}
 
+              {!run.pendingReward ? (
+                <View style={styles.panel}>
+                  <Pressable
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowBriefing((current) => !current);
+                    }}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.panelTitle}>Mission Brief</Text>
+                    <Text style={styles.toggleLabel}>
+                      {showBriefing ? 'Hide' : 'Show'}
+                    </Text>
+                  </Pressable>
+                  {showBriefing ? (
+                    <>
+                      <Text style={styles.panelBody}>
+                        {classNarrative?.openingHook ??
+                          'You are climbing because nobody above you intends to fix this honestly.'}
+                      </Text>
+                      <View style={styles.detailCard}>
+                        <DetailLine
+                          label="Why you climb"
+                          value={
+                            classNarrative?.stake ??
+                            'Because the tower keeps billing survival as a workflow issue.'
+                          }
+                        />
+                        {classNarrative ? (
+                          <>
+                            <DetailLine
+                              label="Leadership broke"
+                              value={classNarrative.leadershipFailure}
+                            />
+                            <DetailLine
+                              label="Approval trap"
+                              value={classNarrative.approvalConstraint}
+                            />
+                          </>
+                        ) : null}
+                      </View>
+                    </>
+                  ) : (
+                    <Text style={styles.panelBody}>
+                      Survive this floor, keep the crew alive, and pick the next problem on purpose.
+                    </Text>
+                  )}
+                </View>
+              ) : null}
+
               {run.pendingReward ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Reward Waiting</Text>
@@ -408,26 +470,18 @@ export default function RunMapScreen() {
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Choose Your Next Stop</Text>
                   <Text style={styles.panelBody}>
-                    Keep the route simple: pick one door, read the risk, then go.
+                    Pick the route that best matches what this run needs right now.
                   </Text>
-                  {routeScene ? (
-                    <View style={styles.detailCard}>
-                      {routeScene.lines.map((line) => (
-                        <Text key={line.speakerId} style={styles.panelBody}>
-                          {line.speakerName}: {line.text}
-                        </Text>
-                      ))}
-                    </View>
-                  ) : null}
                   <LoopArtPanel
-                    title="Meaningful Choice"
+                    title={currentNode ? 'Selected Route' : 'Route Preview'}
                     body={
                       currentNode
-                        ? `${currentNode.label} is the next test. Keep the loop readable by committing to one risk on purpose.`
-                        : 'Pick the next room by intent: pressure, story risk, recovery, or boss progress.'
+                        ? `${currentNode.label}: ${summarizeRoute(currentNode)}`
+                        : 'Choose a route below to preview what comes next.'
                     }
                     source={selectedRouteArtSource}
                     backgroundSource={runMapSurfaceArtSource}
+                    frameVariant="portrait"
                   />
                   <View style={styles.choiceList}>
                     {floorChoices.map((node) => {
@@ -444,6 +498,7 @@ export default function RunMapScreen() {
                             void handleChooseRoute(node.id);
                           }}
                           accessibilityRole="button"
+                          accessibilityState={{ selected: isSelected }}
                         >
                           <View style={styles.choiceHeader}>
                             <View style={styles.choiceHeaderContent}>
@@ -478,6 +533,11 @@ export default function RunMapScreen() {
                             return;
                           }
 
+                          recordRouteCommit({
+                            runId: run.runId,
+                            nodeId: currentNode.id,
+                            floorIndex: run.floorIndex,
+                          });
                           router.push(currentNodeRoute as Href);
                         }}
                       />
@@ -492,54 +552,6 @@ export default function RunMapScreen() {
                   ) : null}
                 </View>
               )}
-
-              <View style={styles.panel}>
-                <Pressable
-                  style={styles.toggleRow}
-                  onPress={() => {
-                    setShowBriefing((current) => !current);
-                  }}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.panelTitle}>Mission Brief</Text>
-                  <Text style={styles.toggleLabel}>
-                    {showBriefing ? 'Hide' : 'Show'}
-                  </Text>
-                </Pressable>
-                {showBriefing ? (
-                  <>
-                    <Text style={styles.panelBody}>
-                      {classNarrative?.openingHook ??
-                        'You are climbing because nobody above you intends to fix this honestly.'}
-                    </Text>
-                    <View style={styles.detailCard}>
-                      <DetailLine
-                        label="Why you climb"
-                        value={
-                          classNarrative?.stake ??
-                          'Because the tower keeps billing survival as a workflow issue.'
-                        }
-                      />
-                      {classNarrative ? (
-                        <>
-                          <DetailLine
-                            label="Leadership broke"
-                            value={classNarrative.leadershipFailure}
-                          />
-                          <DetailLine
-                            label="Approval trap"
-                            value={classNarrative.approvalConstraint}
-                          />
-                        </>
-                      ) : null}
-                    </View>
-                  </>
-                ) : (
-                  <Text style={styles.panelBody}>
-                    Short version: survive this floor, keep the crew alive, and make leadership regret leaving you to clean up their apocalypse.
-                  </Text>
-                )}
-              </View>
 
               <View style={styles.panel}>
                 <Pressable
@@ -588,10 +600,20 @@ export default function RunMapScreen() {
                         ))}
                       </View>
                     ) : null}
+                    {routeScene ? (
+                      <View style={styles.detailCard}>
+                        <Text style={styles.supportTitle}>{routeScene.title}</Text>
+                        {routeScene.lines.map((line) => (
+                          <Text key={line.speakerId} style={styles.supportBody}>
+                            {line.speakerName}: {line.text}
+                          </Text>
+                        ))}
+                      </View>
+                    ) : null}
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Keep this hidden unless you need the fine print. The goal is one clear decision at a time.
+                    Keep this hidden unless you need the fine print. Your route choice should stay readable first.
                   </Text>
                 )}
               </View>
@@ -672,15 +694,17 @@ function StatCard({ label, value }: { label: string; value: string }) {
     <View style={styles.statCard}>
       <Text
         style={styles.statValue}
-        numberOfLines={2}
+        numberOfLines={3}
         adjustsFontSizeToFit
+        minimumFontScale={0.68}
       >
         {value}
       </Text>
       <Text
         style={styles.statLabel}
-        numberOfLines={2}
+        numberOfLines={1}
         adjustsFontSizeToFit
+        minimumFontScale={0.8}
       >
         {label}
       </Text>

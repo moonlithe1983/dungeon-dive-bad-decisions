@@ -217,33 +217,25 @@ export default function RewardScreen() {
                     </Text>
                   ) : null}
                 </View>
-                <LoopArtPanel
-                  title="Package Read"
-                  body={
-                    selectedRewardOption
-                      ? `${selectedRewardOption.label} gets a fast visual tag, but the label and payout still decide the pick.`
-                      : 'Use the emblem as a fast read, then let the payout text make the actual decision.'
-                  }
-                  source={selectedRewardArtSource}
-                  backgroundSource={rewardSurfaceArtSource}
-                />
               </View>
 
               {hasSelectableOptions ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Choose One Package</Text>
                   <Text style={styles.panelBody}>
-                    Keep the decision readable: what helps this run the most right now?
+                    Pick the package that changes this run the most right now.
                   </Text>
-                  {rewardScene ? (
-                    <View style={styles.detailCard}>
-                      {rewardScene.lines.map((line) => (
-                        <Text key={line.speakerId} style={styles.panelBody}>
-                          {line.speakerName}: {line.text}
-                        </Text>
-                      ))}
-                    </View>
-                  ) : null}
+                  <LoopArtPanel
+                    title={selectedRewardOption ? 'Selected Package' : 'Package Preview'}
+                    body={
+                      selectedRewardOption
+                        ? selectedRewardOption.description
+                        : 'Pick a package below to preview it here.'
+                    }
+                    source={selectedRewardArtSource}
+                    backgroundSource={rewardSurfaceArtSource}
+                    frameVariant="portrait"
+                  />
                   <View style={styles.optionList}>
                     {pendingReward.options?.map((option) => {
                       const optionItem = option.itemId
@@ -264,6 +256,7 @@ export default function RewardScreen() {
                           }}
                           disabled={isClaimingReward || isSelectingRewardOption}
                           accessibilityRole="button"
+                          accessibilityState={{ selected: isSelected }}
                         >
                           <View style={styles.optionHeader}>
                             <View style={styles.optionHeaderContent}>
@@ -319,6 +312,16 @@ export default function RewardScreen() {
                 </Pressable>
                 {showDetails ? (
                   <>
+                    {rewardScene ? (
+                      <View style={styles.detailCard}>
+                        <Text style={styles.detailCardTitle}>{rewardScene.title}</Text>
+                        {rewardScene.lines.map((line) => (
+                          <Text key={line.speakerId} style={styles.detailCardBody}>
+                            {line.speakerName}: {line.text}
+                          </Text>
+                        ))}
+                      </View>
+                    ) : null}
                     <View style={styles.detailCard}>
                       <DetailLine
                         label="Source"
@@ -353,7 +356,7 @@ export default function RewardScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Extra source and preview notes stay hidden unless you want the paperwork.
+                    Extra source notes, crew flavor, and run-impact previews stay hidden unless you want the paperwork.
                   </Text>
                 )}
                 <View style={styles.actionGroup}>

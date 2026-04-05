@@ -1,0 +1,118 @@
+{
+  "pack_id": "ddbd-miniboss-headers-intros-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "provisional_overlay_note": "The named miniboss roster remains an authored provisional overlay even though the live game count is fixed at 5.",
+  "minibosses": [
+    {
+      "id": "audience-warm-up-manager",
+      "title": "Audience Warm-Up Manager",
+      "biome": "Orientation Arcade",
+      "accent": "#ff9d1a",
+      "tag": "coercive applause"
+    },
+    {
+      "id": "incentive-podium",
+      "title": "Incentive Podium",
+      "biome": "Orientation Arcade",
+      "accent": "#ffbf57",
+      "tag": "reward trap"
+    },
+    {
+      "id": "lunch-break-denial-engine",
+      "title": "Lunch Break Denial Engine",
+      "biome": "Throughput Maze",
+      "accent": "#46c7d9",
+      "tag": "deferred hunger"
+    },
+    {
+      "id": "calibration-committee",
+      "title": "Calibration Committee",
+      "biome": "Throughput Maze",
+      "accent": "#6ea0c7",
+      "tag": "consensus violence"
+    },
+    {
+      "id": "investor-relations-avatar",
+      "title": "Investor Relations Avatar",
+      "biome": "Executive Apex",
+      "accent": "#c4cad2",
+      "tag": "premium harm"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "audience-warm-up-manager_header.svg",
+      "audience-warm-up-manager_intro.svg",
+      "calibration-committee_header.svg",
+      "calibration-committee_intro.svg",
+      "incentive-podium_header.svg",
+      "incentive-podium_intro.svg",
+      "investor-relations-avatar_header.svg",
+      "investor-relations-avatar_intro.svg",
+      "lunch-break-denial-engine_header.svg",
+      "lunch-break-denial-engine_intro.svg"
+    ],
+    "svg/mono": [
+      "audience-warm-up-manager_header.svg",
+      "audience-warm-up-manager_intro.svg",
+      "calibration-committee_header.svg",
+      "calibration-committee_intro.svg",
+      "incentive-podium_header.svg",
+      "incentive-podium_intro.svg",
+      "investor-relations-avatar_header.svg",
+      "investor-relations-avatar_intro.svg",
+      "lunch-break-denial-engine_header.svg",
+      "lunch-break-denial-engine_intro.svg"
+    ],
+    "png/banner": [
+      "audience-warm-up-manager_header_default_1080x220.png",
+      "audience-warm-up-manager_header_mono_1080x220.png",
+      "audience-warm-up-manager_intro_default_1080x320.png",
+      "audience-warm-up-manager_intro_mono_1080x320.png",
+      "calibration-committee_header_default_1080x220.png",
+      "calibration-committee_header_mono_1080x220.png",
+      "calibration-committee_intro_default_1080x320.png",
+      "calibration-committee_intro_mono_1080x320.png",
+      "incentive-podium_header_default_1080x220.png",
+      "incentive-podium_header_mono_1080x220.png",
+      "incentive-podium_intro_default_1080x320.png",
+      "incentive-podium_intro_mono_1080x320.png",
+      "investor-relations-avatar_header_default_1080x220.png",
+      "investor-relations-avatar_header_mono_1080x220.png",
+      "investor-relations-avatar_intro_default_1080x320.png",
+      "investor-relations-avatar_intro_mono_1080x320.png",
+      "lunch-break-denial-engine_header_default_1080x220.png",
+      "lunch-break-denial-engine_header_mono_1080x220.png",
+      "lunch-break-denial-engine_intro_default_1080x320.png",
+      "lunch-break-denial-engine_intro_mono_1080x320.png"
+    ],
+    "png/compact": [
+      "audience-warm-up-manager_header_default_360x74.png",
+      "audience-warm-up-manager_header_mono_360x74.png",
+      "audience-warm-up-manager_intro_default_360x106.png",
+      "audience-warm-up-manager_intro_mono_360x106.png",
+      "calibration-committee_header_default_360x74.png",
+      "calibration-committee_header_mono_360x74.png",
+      "calibration-committee_intro_default_360x106.png",
+      "calibration-committee_intro_mono_360x106.png",
+      "incentive-podium_header_default_360x74.png",
+      "incentive-podium_header_mono_360x74.png",
+      "incentive-podium_intro_default_360x106.png",
+      "incentive-podium_intro_mono_360x106.png",
+      "investor-relations-avatar_header_default_360x74.png",
+      "investor-relations-avatar_header_mono_360x74.png",
+      "investor-relations-avatar_intro_default_360x106.png",
+      "investor-relations-avatar_intro_mono_360x106.png",
+      "lunch-break-denial-engine_header_default_360x74.png",
+      "lunch-break-denial-engine_header_mono_360x74.png",
+      "lunch-break-denial-engine_intro_default_360x106.png",
+      "lunch-break-denial-engine_intro_mono_360x106.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "This pack is adoptable/provisional because the uploaded docs do not expose a canonical live named miniboss roster.",
+    "Keep miniboss title, intro line, and floor-band text in runtime UI.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

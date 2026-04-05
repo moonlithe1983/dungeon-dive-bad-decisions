@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="300" height="220">
+
+
+    <rect x="8" y="8" width="284" height="204" rx="22" fill="none" opacity="0.98"/>
+    <rect x="8" y="8" width="284" height="204" rx="22" fill="none" stroke="#f5efe2" stroke-width="4"/>
+    <rect x="24" y="24" width="104" height="128" rx="20" fill="none" stroke="#f5efe2" stroke-width="4"/>
+    <path d="M148 40 H252" stroke="#f5efe2" stroke-width="7" stroke-linecap="round"/>
+    <path d="M148 66 H232" stroke="#f5efe2" stroke-width="5" stroke-linecap="round"/>
+    <path d="M148 118 H266" stroke="#f5efe2" stroke-width="4" opacity="0.92" stroke-linecap="round"/>
+    <path d="M148 142 H244" stroke="#f5efe2" stroke-width="4" opacity="0.72" stroke-linecap="round"/>
+    <path d="M148 168 H220" stroke="#f5efe2" stroke-width="4" opacity="0.84" stroke-linecap="round"/>
+    <path d="M28 190 H94" stroke="#f5efe2" stroke-width="4" opacity="0.55" stroke-linecap="round"/>
+    
+        <path d="M44 42 H84 L92 54 V92 C92 104 80 112 64 112 C48 112 36 104 36 92 V50 Z"
+              fill="none" stroke="#f5efe2" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M68 42 V56 H84" fill="none" stroke="#f5efe2" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M48 68 H80 M48 82 H74" stroke="#f5efe2" stroke-width="5" stroke-linecap="round"/>
+        <path d="M34 102 H94" stroke="#f5efe2" stroke-width="6" opacity="0.8" stroke-linecap="round"/>
+        
+    
+</svg>

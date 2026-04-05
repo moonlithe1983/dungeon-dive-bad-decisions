@@ -1,0 +1,509 @@
+[
+  {
+    "id": "warm-badges",
+    "title": "Warm Badges",
+    "prompt": "A dispenser spits out fresh employee badges, all still warm. None of the names match the people in your party. The smiling screen above it thanks you for participating in accelerated career visibility.",
+    "choices": [
+      {
+        "id": "take-highest-rank-badge",
+        "label": "Take the highest-rank badge",
+        "summary": "Claim access. Risk attention."
+      },
+      {
+        "id": "sort-through-carefully",
+        "label": "Sort through them carefully",
+        "summary": "Play it safe. Look for a useful mismatch."
+      },
+      {
+        "id": "jam-the-machine",
+        "label": "Jam the machine",
+        "summary": "Let Facilities Goblin break the system before it tags you."
+      }
+    ],
+    "result_short": {
+      "take-highest-rank-badge": "Gain immediate leverage, but Meridian notices the discrepancy.",
+      "sort-through-carefully": "Gain steadier value with less scrutiny.",
+      "jam-the-machine": "Prevent the system from assigning you cleanly and pull something useful out of the wreckage."
+    },
+    "result_long": {
+      "take-highest-rank-badge": "You choose the badge with the highest title because Meridian still believes rank should open doors faster than truth. The scanner accepts you just long enough to be dangerous. Somewhere deeper in the building, something updates your file with interest. This is the kind of access Crown Meridian never meant to give you, which is why it arrives trailing suspicion.",
+      "sort-through-carefully": "You ignore the flattering titles and look for the least-wrong lie. The dispenser keeps spitting warm plastic while you search, as if the building is impatient for you to become someone easier to route. You leave with a badge that does not fit, but fits well enough to survive on.",
+      "jam-the-machine": "Facilities Goblin gets fingers, wire, and delighted malice into the housing before the system can decide who you are. The dispenser shrieks, swallows three names, and coughs up a half-valid badge core and a shower of static. Meridian hates damaged paperwork because damaged paperwork can still be argued with."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Facilities Goblin",
+        "line": "Good. If it starts smoking, it’s finally being honest."
+      },
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "Titles are only useful if you know which doors they offend."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "Meridian has always trusted badges more than people."
+      }
+    ],
+    "codex_unlock": [
+      "orientation-arcade",
+      "admin-keycard",
+      "orientation-badge-core"
+    ]
+  },
+  {
+    "id": "applause-threshold",
+    "title": "Applause Threshold",
+    "prompt": "A sealed door will not open until the room registers enough applause. The overhead speakers keep insisting that enthusiasm is voluntary. Dark streaks mark the floor where people stood too long deciding whether to clap.",
+    "choices": [
+      {
+        "id": "clap-along",
+        "label": "Clap along",
+        "summary": "Easy progress. Keep your head down."
+      },
+      {
+        "id": "spoof-the-sensor",
+        "label": "Spoof the sensor",
+        "summary": "Outsmart the room."
+      },
+      {
+        "id": "refuse-and-wait",
+        "label": "Refuse and wait",
+        "summary": "Test whether the system blinks first."
+      }
+    ],
+    "result_short": {
+      "clap-along": "The door opens. You hate how easy that was.",
+      "spoof-the-sensor": "You fake approval and learn how shallow the system’s standards are.",
+      "refuse-and-wait": "The room escalates before it yields, but it does yield. Barely."
+    },
+    "result_long": {
+      "clap-along": "You clap. The speakers brighten. The applause track fattens around your own until the room can pretend it was earned. The door opens with the smug grace of a policy being proven right, and you walk through feeling slightly less like a person and slightly more like usable data.",
+      "spoof-the-sensor": "You feed the sensor what it wants without giving it the satisfaction of sincerity. The room accepts the fraud immediately, which tells you something useful about Crown Meridian: even its rituals were built to detect compliance, not belief. The door slides open to pre-recorded encouragement that no one present deserves.",
+      "refuse-and-wait": "You stand still while the room cycles through incentives, reminders, and gentle threats. The speakers become sharper. The lights become hotter. At the point where a kinder building would have given up, Meridian finally relents, not because it respects refusal, but because it has finished documenting it."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Security Skeleton",
+        "line": "Anything that calls coercion voluntary is already on company letterhead."
+      },
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "If they needed applause this badly, the pitch was never good."
+      },
+      {
+        "speaker": "Facilities Goblin",
+        "line": "Can I clap with a wrench? It feels more sincere."
+      }
+    ],
+    "codex_unlock": [
+      "broken-applause-sign",
+      "orientation-arcade"
+    ]
+  },
+  {
+    "id": "career-accelerator",
+    "title": "Career Accelerator",
+    "prompt": "A spinning prize wheel promises a career accelerator package if you sign before reading the deduction schedule. Every wedge on the wheel is gold except the tiny ones that look legally important.",
+    "choices": [
+      {
+        "id": "spin-now",
+        "label": "Spin now",
+        "summary": "Grab power. Pay later."
+      },
+      {
+        "id": "read-the-deductions",
+        "label": "Read the deductions",
+        "summary": "Smaller gain. Fewer surprises."
+      },
+      {
+        "id": "forge-a-signature",
+        "label": "Forge a signature",
+        "summary": "Cheat the paperwork."
+      }
+    ],
+    "result_short": {
+      "spin-now": "Strong upside arrives attached to hidden debt.",
+      "read-the-deductions": "You keep the reward modest and the damage legible.",
+      "forge-a-signature": "You steal the benefit and let the paper trail rot elsewhere."
+    },
+    "result_long": {
+      "spin-now": "The wheel spins with the energy of a game show trying not to become a confession. It lands on something generous enough to feel suspicious, and the contract seals before the applause dies. Later, when the cost shows up in fine print and blood pressure, you understand why Meridian loves acceleration: speed is just a way to outrun informed consent.",
+      "read-the-deductions": "You ignore the lights and read. The wheel keeps trying to hurry you, which tells you the danger is in the paperwork, not the prize. What you claim is smaller, cleaner, and much harder for the building to leverage against you. In Meridian Spire, restraint is one of the few luxuries that still compounds.",
+      "forge-a-signature": "You give the form a name Meridian deserves more than you do. The system accepts it because authority has always mattered more here than authenticity. The payout arrives hot and immediate. Somewhere down the line, someone else will get called into a meeting about it, which is how Crown Meridian has always preferred its consequences distributed."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "Never sign anything that smiles before you do."
+      },
+      {
+        "speaker": "Payroll Wraith",
+        "line": "Deferred cost is still cost. Meridian simply charges interest in suffering."
+      },
+      {
+        "speaker": "Facilities Goblin",
+        "line": "Spin it. Worst case, we learn something expensive."
+      }
+    ],
+    "codex_unlock": [
+      "proxy-stamp",
+      "severance-envelope",
+      "orientation-arcade"
+    ]
+  },
+  {
+    "id": "printer-choir",
+    "title": "Printer Choir",
+    "prompt": "A row of office printers hums in harmony, feeding out incident reports for things that have not happened yet. The toner smells hot, prophetic, and slightly vindictive.",
+    "choices": [
+      {
+        "id": "read-your-own-report",
+        "label": "Read your own report",
+        "summary": "Learn what’s coming."
+      },
+      {
+        "id": "shred-the-stack",
+        "label": "Shred the stack",
+        "summary": "Deny the future."
+      },
+      {
+        "id": "swap-the-top-page",
+        "label": "Swap the top page",
+        "summary": "Reassign trouble."
+      }
+    ],
+    "result_short": {
+      "read-your-own-report": "You gain foresight and lose some peace.",
+      "shred-the-stack": "You prevent one version of the future at the cost of useful warning.",
+      "swap-the-top-page": "You change who the paperwork thinks is at fault. That never stays harmless for long."
+    },
+    "result_long": {
+      "read-your-own-report": "The page already knows your name, your status, and the tone Meridian will use after you survive or fail. Reading it gives you an edge, but it also reveals how early the building starts preparing its explanations. The most upsetting part is not that the report predicts harm. It is that the report is written like the harm already received approval.",
+      "shred-the-stack": "You feed future incident reports into the shredder until the room sounds like paper being denied its afterlife. The printers object in perfect harmony. For a moment, the floor feels less inevitable. Then the red warning lights start to pulse, and you remember that destroying a narrative is not the same thing as escaping it.",
+      "swap-the-top-page": "You change the order, not the appetite. Someone else’s future report now sits where yours used to be, and the system accepts the edit with bureaucratic indifference. It is a dark little revelation: Crown Meridian never cared who suffered, only that the paperwork stayed continuous."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Payroll Wraith",
+        "line": "Predicted loss is still entered as acceptable variance. Of course it is."
+      },
+      {
+        "speaker": "Compliance",
+        "line": "A report written early is still evidence."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "If the paperwork arrives first, the emergency is already owned by management."
+      }
+    ],
+    "codex_unlock": [
+      "compliance-binder",
+      "throughput-maze"
+    ]
+  },
+  {
+    "id": "missed-lunch",
+    "title": "Missed Lunch",
+    "prompt": "The break room clock says lunch ended three years ago. A vending machine offers one free item if you can prove you were never paid for the last one.",
+    "choices": [
+      {
+        "id": "make-the-case",
+        "label": "Make the case",
+        "summary": "Argue for what was owed."
+      },
+      {
+        "id": "shake-the-machine",
+        "label": "Shake the machine",
+        "summary": "Direct action beats paperwork."
+      },
+      {
+        "id": "walk-away",
+        "label": "Walk away",
+        "summary": "Preserve time. Skip the trap."
+      }
+    ],
+    "result_short": {
+      "make-the-case": "You win something small and morally overdue.",
+      "shake-the-machine": "You get value quickly, but the machine remembers the insult.",
+      "walk-away": "You lose the payout and keep your momentum."
+    },
+    "result_long": {
+      "make-the-case": "You explain, with more accuracy than dignity, how Meridian has been billing your exhaustion back to you for years. The vending machine clicks, thinks, and finally dispenses a reward like it hates being compelled by fairness. Payroll Wraith watches the whole thing with the particular stillness of someone who has seen too many debts dressed as procedure.",
+      "shake-the-machine": "You stop negotiating with a device whose business model is petty theft and give it the kind of clarity only violence provides. The snack coil snaps, the casing dents, and several items tumble free in a victory that feels crude but understandable. Somewhere behind the metal, a service log quietly updates your temperament.",
+      "walk-away": "You leave. The clock keeps lying. The machine keeps offering a reward that is really an argument about what your time is worth. There is no triumph in refusing it, but there is a certain economy in not spending one more minute proving you deserved lunch in the first place."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Payroll Wraith",
+        "line": "Unpaid time compounds. Meridian merely prefers not to label the interest."
+      },
+      {
+        "speaker": "Facilities Goblin",
+        "line": "You can appeal to the machine or we can make it educational."
+      },
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "The company never forgets a claim. It only postpones admitting it."
+      }
+    ],
+    "codex_unlock": [
+      "expense-card",
+      "patch-kit",
+      "payroll-wraith"
+    ]
+  },
+  {
+    "id": "performance-audit",
+    "title": "Performance Audit",
+    "prompt": "A glass meeting room lights up with your metrics. Some of them are impossible. All of them are somehow your responsibility.",
+    "choices": [
+      {
+        "id": "defend-yourself",
+        "label": "Defend yourself",
+        "summary": "Contest the narrative."
+      },
+      {
+        "id": "accept-and-exploit",
+        "label": "Accept and exploit",
+        "summary": "Take the hit, steal the leverage."
+      },
+      {
+        "id": "cut-the-power",
+        "label": "Cut the power",
+        "summary": "End the meeting the honest way."
+      }
+    ],
+    "result_short": {
+      "defend-yourself": "You keep your footing, but Meridian records the resistance.",
+      "accept-and-exploit": "You let the review land, then weaponize the paperwork it creates.",
+      "cut-the-power": "You break the frame instead of arguing inside it."
+    },
+    "result_long": {
+      "defend-yourself": "You answer each metric like it was composed by someone too senior to admit arithmetic error. The room listens with legal patience. You do not convince the system, but you do force it to become more specific, which is one of the few ways to injure bureaucracy without touching it.",
+      "accept-and-exploit": "You sit through the review with the composure of someone stealing from the meeting in real time. By the end, the room has generated enough official language to create an opening somewhere else. This is the kind of Crown Meridian skill Former Executive Assistant learned young: let them write the trap, then take the key from the footer.",
+      "cut-the-power": "The presentation dies mid-accusation. The room falls silent except for the building’s irritated ventilation and Facilities Goblin’s obvious delight. Whatever else happens next, at least the meeting has briefly stopped pretending it was about performance. It was always about obedience wearing charts."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "If the numbers are impossible, the desired confession is not numerical."
+      },
+      {
+        "speaker": "Facilities Goblin",
+        "line": "I vote we audit the wiring."
+      },
+      {
+        "speaker": "Human Resources",
+        "line": "This room confuses evaluation with containment."
+      }
+    ],
+    "codex_unlock": [
+      "compliance",
+      "human-resources",
+      "throughput-maze"
+    ]
+  },
+  {
+    "id": "wellness-check-in",
+    "title": "Wellness Check-In",
+    "prompt": "A mandatory wellness kiosk asks whether you feel supported. The “no” button is grayed out, but not completely. A soft voice thanks you for your honesty before you answer.",
+    "choices": [
+      {
+        "id": "press-yes",
+        "label": "Press “Yes”",
+        "summary": "Accept the soothing lie."
+      },
+      {
+        "id": "force-no",
+        "label": "Force “No”",
+        "summary": "Push back against the script."
+      },
+      {
+        "id": "answer-for-someone-else",
+        "label": "Answer for someone else",
+        "summary": "Redirect the system."
+      }
+    ],
+    "result_short": {
+      "press-yes": "You receive comfort with strings attached.",
+      "force-no": "You earn a harder truth and a sharper kind of help.",
+      "answer-for-someone-else": "You misdirect the system and complicate the paper trail."
+    },
+    "result_long": {
+      "press-yes": "The kiosk rewards your compliance with the tone of a company that thinks mood is a maintenance issue. The support it offers is real enough to matter and constrained enough to offend. Meridian was always most comfortable providing care in forms leadership did not have to feel guilty about funding.",
+      "force-no": "You press the part of the screen that was meant to be decorative. The kiosk pauses, recalibrates, and speaks to you like a system suddenly uncertain whether it is still in control. Wellness Witch smiles in the particular way people do when institutional language accidentally says something true.",
+      "answer-for-someone-else": "You shift the response sideways and let the machine attach concern to the wrong file. It is a neat, ugly trick—exactly the kind of administrative misdirection Crown Meridian perfected over years of calling selective care a policy choice. The benefit arrives. So does the implication that someone else will be summoned for it later."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Wellness Witch",
+        "line": "If care arrives pre-approved, check what it expects in return."
+      },
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "No button is ever truly disabled if the company still fears the answer."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "Supported is not the same as safe."
+      }
+    ],
+    "codex_unlock": [
+      "wellness-witch",
+      "wellness-candle",
+      "human-resources"
+    ]
+  },
+  {
+    "id": "boardroom-orchard",
+    "title": "Boardroom Orchard",
+    "prompt": "In a glass atrium above the city, dead office plants still receive water on schedule. Something in the roots is listening.",
+    "choices": [
+      {
+        "id": "harvest-the-roots",
+        "label": "Harvest the roots",
+        "summary": "Take hidden value."
+      },
+      {
+        "id": "ask-what-they-heard",
+        "label": "Ask what they heard",
+        "summary": "Trade time for truth."
+      },
+      {
+        "id": "cut-the-irrigation",
+        "label": "Cut the irrigation",
+        "summary": "Deny the system another ritual."
+      }
+    ],
+    "result_short": {
+      "harvest-the-roots": "You gain concealed value and wake an uneasy memory in the floor.",
+      "ask-what-they-heard": "You leave richer in knowledge than safety.",
+      "cut-the-irrigation": "You disrupt a quiet executive habit and invite consequences later."
+    },
+    "result_long": {
+      "harvest-the-roots": "The roots have been fed with more than water. They have been absorbing confidential rot for years: apology drafts, investor language, panic, and carefully diluted blame. When you dig beneath the immaculate soil, you find value hidden the way executives always hide value—out of sight, behind something decorative, still somehow on budget.",
+      "ask-what-they-heard": "You kneel in a room built for altitude and status and listen to dead plants relay boardroom residue. They know things no one meant to confess aloud: which warnings were laughed off, which losses were priced in, which voices in the room flinched before agreeing anyway. The roots do not speak like people. They speak like a minutes document trying to dream.",
+      "cut-the-irrigation": "You turn the feed off and feel the whole atrium react as if a custom older than policy has been insulted. The stillness that follows is not relief. It is the discomfort of a ritual denied. In the Executive Apex, even dead things are maintained because appearances are one of the last forms of power the company still fully trusts."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Wellness Witch",
+        "line": "Nothing this overwatered is alive for innocent reasons."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "Executive spaces always look calmest where they hid the worst decisions."
+      },
+      {
+        "speaker": "Operations",
+        "line": "A ritual on schedule is still a system."
+      }
+    ],
+    "codex_unlock": [
+      "executive-apex",
+      "investor-relations",
+      "expense-card"
+    ]
+  },
+  {
+    "id": "quorum-room",
+    "title": "Quorum Room",
+    "prompt": "You find an empty boardroom still waiting on one final vote. The paperwork on the table is warm. The casualty appendix is face-down, which is how you know it matters.",
+    "choices": [
+      {
+        "id": "cast-the-deciding-vote",
+        "label": "Cast the deciding vote",
+        "summary": "Seize executive leverage."
+      },
+      {
+        "id": "read-the-casualty-appendix",
+        "label": "Read the casualty appendix",
+        "summary": "Learn the truth first."
+      },
+      {
+        "id": "void-the-meeting",
+        "label": "Void the meeting",
+        "summary": "Refuse the premise."
+      }
+    ],
+    "result_short": {
+      "cast-the-deciding-vote": "You gain power contaminated by authorship.",
+      "read-the-casualty-appendix": "You sacrifice tempo for proof.",
+      "void-the-meeting": "You deny the board its ritual and leave with less leverage but cleaner hands."
+    },
+    "result_long": {
+      "cast-the-deciding-vote": "The chair accepts you because authority in Meridian has always been more performative than deserved. The moment the vote lands, so does the awful intimacy of executive power: outcomes sharpen, routes change, and you understand how easily leadership learned to mistake permission for innocence.",
+      "read-the-casualty-appendix": "You turn over the pages Crown Meridian expected nobody would want on the record. The numbers are cleaner than the language around them. This is the real heart of Project Everrise—not the ambition, not the branding, but the point at which harm became sufficiently modeled to continue. Proof like this does not make the Spire kinder. It makes it legible.",
+      "void-the-meeting": "You refuse to validate the room by participating in its choreography. The boardroom lights dim in offended sequence, as though procedure itself has been slighted. Security Skeleton seems almost pleased. Meridian hates nothing more than a process denied the appearance of consensus."
+    },
+    "companion_bark": [
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "The warm paperwork is the worst part. It means the decision wants a body, not a delay."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "Any vote that hides the casualties beneath the agenda deserves interruption."
+      },
+      {
+        "speaker": "Payroll Wraith",
+        "line": "Approved loss still enters the books as strategy."
+      }
+    ],
+    "codex_unlock": [
+      "quorum-seal",
+      "everrise-steering-committee",
+      "everrise-board"
+    ]
+  },
+  {
+    "id": "root-access",
+    "title": "Root Access",
+    "prompt": "A sealed console pulses beneath the final executive floor. It offers “system correction” if you can prove you belong here. The prompt is polite enough to be a threat.",
+    "choices": [
+      {
+        "id": "authenticate-with-stolen-authority",
+        "label": "Authenticate with stolen authority",
+        "summary": "Use what Meridian recognizes."
+      },
+      {
+        "id": "force-the-truth-to-surface",
+        "label": "Force the truth to surface",
+        "summary": "Break concealment."
+      },
+      {
+        "id": "leave-it-untouched",
+        "label": "Leave it untouched",
+        "summary": "Survive first. Understand later."
+      }
+    ],
+    "result_short": {
+      "authenticate-with-stolen-authority": "You gain access at the cost of reinforcing the system’s logic.",
+      "force-the-truth-to-surface": "You claim the sharper revelation and escalate the final conflict.",
+      "leave-it-untouched": "You preserve stability now and accept a partial ending later."
+    },
+    "result_long": {
+      "authenticate-with-stolen-authority": "The console yields because Meridian still believes legitimacy is a credential problem. Every bypassed check reminds you how much of Crown Meridian’s power depended on people mistaking recognition for righteousness. You get what you came for, but only by speaking the building’s native language for a moment longer than feels safe.",
+      "force-the-truth-to-surface": "You stop asking permission and make the system confess. The console fights you with euphemism first, then with security phrasing, then with silence. When it finally breaks open, the truth inside is not dramatic. It is administrative. That is what makes it unbearable. This is the route toward an ending where the Spire can no longer hide exploitation under uplift language.",
+      "leave-it-untouched": "You step back. Not every survivor chooses revelation over continuation, and Meridian has always profited from people needing to live before they can testify. The console keeps pulsing behind you like an unopened argument. You move on knowing that some truths remain intact simply because the timing to tear them out was too expensive."
+    },
+    "companion_bark": [
+      {
+        "speaker": "IT Support",
+        "line": "If it says correction, it means obedience with better branding."
+      },
+      {
+        "speaker": "Security Skeleton",
+        "line": "Belonging has never been the same thing as being permitted."
+      },
+      {
+        "speaker": "Former Executive Assistant",
+        "line": "Executive systems love proof of belonging because it lets them ignore proof of harm."
+      }
+    ],
+    "codex_unlock": [
+      "root-access-shard",
+      "everrise-board"
+    ]
+  }
+]

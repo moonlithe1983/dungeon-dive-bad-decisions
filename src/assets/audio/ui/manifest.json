@@ -1,0 +1,55 @@
+{
+  "pack_id": "ddbd-audio-mvp-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "sample_rate_hz": 48000,
+  "format": "wav",
+  "scope": "minimal interaction and sting pack for release-facing testing",
+  "files": [
+    {
+      "id": "ui_route_select",
+      "duration_s": 0.18,
+      "usage": "route node hover/select"
+    },
+    {
+      "id": "ui_reward_reveal",
+      "duration_s": 0.72,
+      "usage": "reward screen open / reveal"
+    },
+    {
+      "id": "ui_reward_claim",
+      "duration_s": 0.34,
+      "usage": "reward claim / confirm"
+    },
+    {
+      "id": "ui_event_open",
+      "duration_s": 0.88,
+      "usage": "event screen open"
+    },
+    {
+      "id": "ui_event_confirm",
+      "duration_s": 0.3,
+      "usage": "event choice confirm"
+    },
+    {
+      "id": "ui_invalid_tap",
+      "duration_s": 0.22,
+      "usage": "locked / invalid action"
+    },
+    {
+      "id": "ui_boss_warning",
+      "duration_s": 1.0,
+      "usage": "boss door / elite warning sting"
+    },
+    {
+      "id": "ui_recap_sting",
+      "duration_s": 1.05,
+      "usage": "defeat recap open"
+    }
+  ],
+  "mix_notes": [
+    "Keep these cues below voice lines and readability-critical SFX.",
+    "Avoid stacking more than one sting at once on small device speakers.",
+    "Pair invalid/locked audio with visible text or icon state; do not rely on sound alone.",
+    "Provide a settings path to reduce or disable non-essential SFX where possible."
+  ]
+}

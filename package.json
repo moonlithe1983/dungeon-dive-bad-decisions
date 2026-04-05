@@ -3,11 +3,11 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "node ./scripts/expo-realpath.cjs start",
     "reset-project": "node ./scripts/reset-project.js",
     "smoke:sim": "node ./scripts/smoke-sim.cjs",
-    "android": "expo run:android",
-    "web": "expo start --web",
+    "android": "node ./scripts/expo-realpath.cjs run:android",
+    "web": "node ./scripts/expo-realpath.cjs start --web",
     "lint": "expo lint"
   },
   "dependencies": {

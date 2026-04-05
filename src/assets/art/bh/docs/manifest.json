@@ -1,0 +1,77 @@
+{
+  "pack_id": "ddbd-boss-header-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "bosses": [
+    {
+      "id": "director-of-onboarding",
+      "title": "The Director of Onboarding",
+      "floor": 4,
+      "biome": "orientation-arcade"
+    },
+    {
+      "id": "vp-of-throughput",
+      "title": "Vice President of Throughput",
+      "floor": 7,
+      "biome": "throughput-maze"
+    },
+    {
+      "id": "everrise-board",
+      "title": "The Everrise Board",
+      "floor": 10,
+      "biome": "executive-apex"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "boss-director-onboarding-archive.svg",
+      "boss-director-onboarding-header.svg",
+      "boss-everrise-board-archive.svg",
+      "boss-everrise-board-header.svg",
+      "boss-vp-throughput-archive.svg",
+      "boss-vp-throughput-header.svg"
+    ],
+    "svg/mono": [
+      "boss-director-onboarding-archive.svg",
+      "boss-director-onboarding-header.svg",
+      "boss-everrise-board-archive.svg",
+      "boss-everrise-board-header.svg",
+      "boss-vp-throughput-archive.svg",
+      "boss-vp-throughput-header.svg"
+    ],
+    "png/banner": [
+      "boss-director-onboarding-archive_default_1080x420.png",
+      "boss-director-onboarding-archive_mono_1080x420.png",
+      "boss-director-onboarding-header_default_1080x420.png",
+      "boss-director-onboarding-header_mono_1080x420.png",
+      "boss-everrise-board-archive_default_1080x420.png",
+      "boss-everrise-board-archive_mono_1080x420.png",
+      "boss-everrise-board-header_default_1080x420.png",
+      "boss-everrise-board-header_mono_1080x420.png",
+      "boss-vp-throughput-archive_default_1080x420.png",
+      "boss-vp-throughput-archive_mono_1080x420.png",
+      "boss-vp-throughput-header_default_1080x420.png",
+      "boss-vp-throughput-header_mono_1080x420.png"
+    ],
+    "png/compact": [
+      "boss-director-onboarding-archive_default_360x140.png",
+      "boss-director-onboarding-archive_mono_360x140.png",
+      "boss-director-onboarding-header_default_360x140.png",
+      "boss-director-onboarding-header_mono_360x140.png",
+      "boss-everrise-board-archive_default_360x140.png",
+      "boss-everrise-board-archive_mono_360x140.png",
+      "boss-everrise-board-header_default_360x140.png",
+      "boss-everrise-board-header_mono_360x140.png",
+      "boss-vp-throughput-archive_default_360x140.png",
+      "boss-vp-throughput-archive_mono_360x140.png",
+      "boss-vp-throughput-header_default_360x140.png",
+      "boss-vp-throughput-header_mono_360x140.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Keep boss title, intro line, and archive text in runtime UI, not baked into art.",
+    "Do not rely on color alone to distinguish boss state or unlock state.",
+    "Mono assets are intended as high-contrast-safe fallbacks.",
+    "Banner exports are suitable for intro surfaces; compact exports are suitable for smaller header slots."
+  ]
+}

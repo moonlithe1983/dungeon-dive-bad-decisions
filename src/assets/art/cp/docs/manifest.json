@@ -1,0 +1,97 @@
+{
+  "pack_id": "ddbd-companion-cards-headers-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "companions": [
+    {
+      "id": "facilities-goblin",
+      "title": "Facilities Goblin",
+      "accent": "#ff9d1a",
+      "short": "Wall goblin logged.",
+      "tag": "infrastructure chaos"
+    },
+    {
+      "id": "former-executive-assistant",
+      "title": "Former Executive Assistant",
+      "accent": "#9e7ee6",
+      "short": "Calendar knife logged.",
+      "tag": "executive precision"
+    },
+    {
+      "id": "security-skeleton",
+      "title": "Security Skeleton",
+      "accent": "#c4cad2",
+      "short": "Dead guard logged.",
+      "tag": "credentialed deadpan"
+    },
+    {
+      "id": "payroll-wraith",
+      "title": "Payroll Wraith",
+      "accent": "#46c7d9",
+      "short": "Payroll anomaly logged.",
+      "tag": "ledger haunt"
+    },
+    {
+      "id": "wellness-witch",
+      "title": "Wellness Witch",
+      "accent": "#90b86a",
+      "short": "Unauthorized care logged.",
+      "tag": "ritual calm"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "facilities-goblin_card.svg",
+      "facilities-goblin_header.svg",
+      "former-executive-assistant_card.svg",
+      "former-executive-assistant_header.svg",
+      "payroll-wraith_card.svg",
+      "payroll-wraith_header.svg",
+      "security-skeleton_card.svg",
+      "security-skeleton_header.svg",
+      "wellness-witch_card.svg",
+      "wellness-witch_header.svg"
+    ],
+    "svg/mono": [
+      "facilities-goblin_card.svg",
+      "facilities-goblin_header.svg",
+      "former-executive-assistant_card.svg",
+      "former-executive-assistant_header.svg",
+      "payroll-wraith_card.svg",
+      "payroll-wraith_header.svg",
+      "security-skeleton_card.svg",
+      "security-skeleton_header.svg",
+      "wellness-witch_card.svg",
+      "wellness-witch_header.svg"
+    ],
+    "png/card": [
+      "facilities-goblin_card_default_300x220.png",
+      "facilities-goblin_card_mono_300x220.png",
+      "former-executive-assistant_card_default_300x220.png",
+      "former-executive-assistant_card_mono_300x220.png",
+      "payroll-wraith_card_default_300x220.png",
+      "payroll-wraith_card_mono_300x220.png",
+      "security-skeleton_card_default_300x220.png",
+      "security-skeleton_card_mono_300x220.png",
+      "wellness-witch_card_default_300x220.png",
+      "wellness-witch_card_mono_300x220.png"
+    ],
+    "png/header": [
+      "facilities-goblin_header_default_1080x220.png",
+      "facilities-goblin_header_mono_1080x220.png",
+      "former-executive-assistant_header_default_1080x220.png",
+      "former-executive-assistant_header_mono_1080x220.png",
+      "payroll-wraith_header_default_1080x220.png",
+      "payroll-wraith_header_mono_1080x220.png",
+      "security-skeleton_header_default_1080x220.png",
+      "security-skeleton_header_mono_1080x220.png",
+      "wellness-witch_header_default_1080x220.png",
+      "wellness-witch_header_mono_1080x220.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Keep companion title, unlock text, and combat role text in runtime UI.",
+    "Do not rely on accent color alone to communicate rarity, selection, or lock state.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

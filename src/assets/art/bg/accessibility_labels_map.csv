@@ -1,0 +1,8 @@
+asset_id,category,recommended_accessibility_label,notes
+biome-orientation-arcade-bg,biome-background,Orientation Arcade biome background,Decorative background only; do not rely on art for route meaning.
+biome-throughput-maze-bg,biome-background,Throughput Maze biome background,Decorative background only; keep foreground text at readable contrast.
+biome-executive-apex-bg,biome-background,Executive Apex biome background,Decorative background only; keep gameplay semantics in runtime UI.
+overlay-dim-soft,screen-overlay,soft dim overlay,Use to increase foreground readability without obscuring scene identity.
+overlay-dim-strong,screen-overlay,strong dim overlay,Use for high-density UI states or recap surfaces.
+overlay-blur-veil,screen-overlay,blur veil overlay,Use under cards or compact decision layouts; keep runtime text primary.
+overlay-focus-window,screen-overlay,focus window overlay,Use when centering one panel or modal over a busy background.

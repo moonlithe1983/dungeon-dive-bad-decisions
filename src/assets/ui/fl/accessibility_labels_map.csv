@@ -1,0 +1,24 @@
+asset_id,category,recommended_accessibility_label,notes
+floor-01-welcome_badge,floor-badge,Floor 1 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-01-welcome_header,floor-header,Floor 1 header background,Runtime floor title and biome text should carry semantics.
+floor-02-audience_badge,floor-badge,Floor 2 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-02-audience_header,floor-header,Floor 2 header background,Runtime floor title and biome text should carry semantics.
+floor-03-performance_badge,floor-badge,Floor 3 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-03-performance_header,floor-header,Floor 3 header background,Runtime floor title and biome text should carry semantics.
+floor-04-corrective_badge,floor-badge,Floor 4 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-04-corrective_header,floor-header,Floor 4 header background,Runtime floor title and biome text should carry semantics.
+floor-05-cubicle_badge,floor-badge,Floor 5 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-05-cubicle_header,floor-header,Floor 5 header background,Runtime floor title and biome text should carry semantics.
+floor-06-variance_badge,floor-badge,Floor 6 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-06-variance_header,floor-header,Floor 6 header background,Runtime floor title and biome text should carry semantics.
+floor-07-quarterly_badge,floor-badge,Floor 7 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-07-quarterly_header,floor-header,Floor 7 header background,Runtime floor title and biome text should carry semantics.
+floor-08-marble_badge,floor-badge,Floor 8 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-08-marble_header,floor-header,Floor 8 header background,Runtime floor title and biome text should carry semantics.
+floor-09-consensus-garden_badge,floor-badge,Floor 9 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-09-consensus-garden_header,floor-header,Floor 9 header background,Runtime floor title and biome text should carry semantics.
+floor-10-consensus-engine_badge,floor-badge,Floor 10 badge,Pair with visible floor title text or progress-strip text; badge is supportive.
+floor-10-consensus-engine_header,floor-header,Floor 10 header background,Runtime floor title and biome text should carry semantics.
+biome-orientation-arcade_act-header,biome-header,Orientation Arcade biome header background,Use with visible biome title and act copy in runtime UI.
+biome-throughput-maze_act-header,biome-header,Throughput Maze biome header background,Use with visible biome title and act copy in runtime UI.
+biome-executive-apex_act-header,biome-header,Executive Apex biome header background,Use with visible biome title and act copy in runtime UI.

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Elite threat">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M64 20 l11 21 23 4 -16 16 5 23 -23 -12 -23 12 5 -23 -16 -16 23 -4z"/>
+      <path d="M64 47 C78 47 87 57 87 64 C87 71 78 81 64 81 C50 81 41 71 41 64 C41 57 50 47 64 47Z"/>
+      <circle cx="64" cy="64" r="5" fill="#FFFFFF" stroke="none"/>
+    </g>
+    </svg>

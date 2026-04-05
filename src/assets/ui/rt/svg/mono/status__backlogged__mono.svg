@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Backlogged">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round">
+      <rect x="24" y="28" width="38" height="30" rx="4"/>
+      <rect x="39" y="45" width="38" height="30" rx="4"/>
+      <rect x="54" y="62" width="38" height="30" rx="4"/>
+      <path d="M73 91 l8 -9 8 9 8 -9"/>
+    </g>
+    </svg>

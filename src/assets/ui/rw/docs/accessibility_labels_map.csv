@@ -1,0 +1,21 @@
+asset_id,category,recommended_accessibility_label,notes
+patch-stack,reward-package-icon,Patch Stack package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+hostile-takeover,reward-package-icon,Hostile Takeover package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+paper-armor,reward-package-icon,Paper Armor package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+escalation-clause,reward-package-icon,Escalation Clause package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+lunch-and-learn,reward-package-icon,Lunch-and-Learn package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+expense-account,reward-package-icon,Expense Account package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+back-channel,reward-package-icon,Back Channel package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+overtime-spiral,reward-package-icon,Overtime Spiral package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+sick-leave,reward-package-icon,Sick Leave package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+exit-package,reward-package-icon,Exit Package package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+policy-knife,reward-package-icon,Policy Knife package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+budget-freeze,reward-package-icon,Budget Freeze package icon,"Pair with visible package name and description; icon is supportive, not sole meaning."
+reward-screen-panel,reward-ui-chrome,reward screen panel background,Do not expose as standalone focus target.
+reward-detail-panel,reward-ui-chrome,reward detail panel background,Do not expose as standalone focus target.
+reward-card-frame,reward-ui-chrome,reward package card frame,"Parent card should announce package name, summary, and state."
+reward-card-selected,reward-ui-chrome,selected reward package card frame,Selection state should be announced on the parent control.
+inspect-button,reward-button,inspect reward package details,Use with visible runtime text label.
+claim-button,reward-button,claim selected reward package,Use with visible runtime text label.
+skip-button,reward-button,skip reward package selection,Use with visible runtime text label.
+reroll-button,reward-button,reroll reward package options,Use with visible runtime text label.

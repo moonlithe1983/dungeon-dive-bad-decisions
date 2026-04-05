@@ -1,0 +1,340 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "enemy-and-miniboss-voice-pack",
+  "provisional_roster_note": "The uploaded April 4 source-of-truth files confirm that the live game data already includes 10 normal enemies and 5 minibosses, but the uploaded writing/docs do not expose a canonical named roster for those 15 combatants. This pack therefore provides an adoptable, lore-consistent authored overlay built from the existing biomes, factions, items, class fantasies, and tone rules.",
+  "enemy_barks": [
+    {
+      "id": "applause-drone",
+      "title": "Applause Drone",
+      "biome": "Orientation Arcade",
+      "archetype_summary": "A smiling audience-prop that claps with too many joints and treats approval like a weapon.",
+      "voice_profile": "Perky, rhythmic, eager for participation. Sounds like encouragement filtered through a compliance speaker.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Let’s hear that survival mindset.",
+          "Participation remains mandatory-adjacent."
+        ],
+        "attack": [
+          "Clap now. Bleed later.",
+          "Enthusiasm helps the bruising settle."
+        ],
+        "hurt": [
+          "Audience confidence has dipped.",
+          "Negative feedback noted."
+        ],
+        "death": [
+          "Applause source... unverified."
+        ]
+      }
+    },
+    {
+      "id": "badge-clerk",
+      "title": "Badge Clerk",
+      "biome": "Orientation Arcade",
+      "archetype_summary": "A sorting-office thing made of lanyards, scanners, and names assigned to the wrong bodies on purpose.",
+      "voice_profile": "Administrative, brisk, falsely polite. Treats identity as a filing issue.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Please present a face matching your record.",
+          "Identity mismatch. Excellent. We can use that."
+        ],
+        "attack": [
+          "That name is no longer yours.",
+          "Please remain still for reassignment."
+        ],
+        "hurt": [
+          "Record integrity compromised.",
+          "Your file is contaminating my file."
+        ],
+        "death": [
+          "Badge... revoked."
+        ]
+      }
+    },
+    {
+      "id": "corrective-usher",
+      "title": "Corrective Usher",
+      "biome": "Orientation Arcade",
+      "archetype_summary": "A lacquered floor host with stage-hands for arms and a customer-service smile built to direct panic toward the approved exit.",
+      "voice_profile": "Cheerful, firm, deeply threatening in the tone of someone helping you into a shredder.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Right this way toward your smallest possible future.",
+          "We’re so excited to reduce your options."
+        ],
+        "attack": [
+          "Please stay within the friendly boundary.",
+          "Correction can look messy from the outside."
+        ],
+        "hurt": [
+          "That behavior is off-brand.",
+          "Customer-facing composure slipping."
+        ],
+        "death": [
+          "Please... exit through the gift shop."
+        ]
+      }
+    },
+    {
+      "id": "queue-leech",
+      "title": "Queue Leech",
+      "biome": "Throughput Maze",
+      "archetype_summary": "A deadline-feeding workflow parasite that fattens on delay, duplication, and tasks nobody officially owns.",
+      "voice_profile": "Tense, hungry, impatient. Speaks like a backlog that learned to bite.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Ticket opened. Ticket never closes.",
+          "I smell unresolved work."
+        ],
+        "attack": [
+          "Hold please.",
+          "Your delay is now billable."
+        ],
+        "hurt": [
+          "Queue instability detected.",
+          "Escalation hurts more than expected."
+        ],
+        "death": [
+          "Request... timed out."
+        ]
+      }
+    },
+    {
+      "id": "kpi-penitent",
+      "title": "KPI Penitent",
+      "biome": "Throughput Maze",
+      "archetype_summary": "A cubicle husk stapled to impossible metrics and trained to confess every failure as a personal flaw.",
+      "voice_profile": "Breathless, self-blaming, evangelically sincere. Corporate self-critique turned feral.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "My targets were impossible. Missing them remains misconduct.",
+          "Please admire my ownership of systemic failure."
+        ],
+        "attack": [
+          "I can improve by ruining you.",
+          "The dashboard says harder."
+        ],
+        "hurt": [
+          "Pain accepted as coaching.",
+          "This feedback feels actionable."
+        ],
+        "death": [
+          "Improvement plan... concluded."
+        ]
+      }
+    },
+    {
+      "id": "hold-music-revenant",
+      "title": "Hold Music Revenant",
+      "biome": "Throughput Maze",
+      "archetype_summary": "A call-center ghost woven from waiting-room jazz, dropped calls, and apologies that never reached a person with authority.",
+      "voice_profile": "Soft, looping, eerily soothing until the wording turns predatory.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Your suffering is important to us. Please continue suffering.",
+          "An associate will never be with you shortly."
+        ],
+        "attack": [
+          "Your call may be harmed for quality assurance.",
+          "Please remain on the line and inside the wound."
+        ],
+        "hurt": [
+          "Unexpected interruption in service.",
+          "Your violence has been recorded."
+        ],
+        "death": [
+          "Thank you... for holding."
+        ]
+      }
+    },
+    {
+      "id": "toner-seraph",
+      "title": "Toner Seraph",
+      "biome": "Throughput Maze",
+      "archetype_summary": "A printer-winged office angel coughing black dust and incident reports nobody survived long enough to dispute.",
+      "voice_profile": "Ecstatic, papery, smoke-hot. Sounds holy only if your religion is a copier lease.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Be not afraid. Be reproducible.",
+          "Witness the sacred blackening of the page."
+        ],
+        "attack": [
+          "All copies are final.",
+          "Receive this hot and binding truth."
+        ],
+        "hurt": [
+          "Feed tray desecrated.",
+          "Toner loss exceeds approved variance."
+        ],
+        "death": [
+          "Paper jam... in paradise."
+        ]
+      }
+    },
+    {
+      "id": "proxy-notary",
+      "title": "Proxy Notary",
+      "biome": "Executive Apex",
+      "archetype_summary": "A legal instrument in a good suit that exists to move authority sideways and blame downhill at high speed.",
+      "voice_profile": "Elegant, clipped, certain. Treats violence as signature support.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "I am authorized to be someone else’s mistake.",
+          "Please sign where your odds end."
+        ],
+        "attack": [
+          "Authority delegated. Consequence delivered.",
+          "This harm arrives fully countersigned."
+        ],
+        "hurt": [
+          "Liability is becoming personal.",
+          "The proxy was not meant to bleed."
+        ],
+        "death": [
+          "Principal party... unavailable."
+        ]
+      }
+    },
+    {
+      "id": "investor-smile",
+      "title": "Investor Smile",
+      "biome": "Executive Apex",
+      "archetype_summary": "A presentation-face stretched over hunger, built to explain casualties until outsiders call them strategic turbulence.",
+      "voice_profile": "Glossy, optimistic, venomously reassuring. A smile with quarterly objectives.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "Thank you for joining this violence-forward growth story.",
+          "The optics around your death remain favorable."
+        ],
+        "attack": [
+          "Confidence is a sharper instrument than guilt.",
+          "Markets respond well to your removal."
+        ],
+        "hurt": [
+          "Stakeholder sentiment has shifted.",
+          "That was not guidance we expected to receive."
+        ],
+        "death": [
+          "Forward-looking statement... withdrawn."
+        ]
+      }
+    },
+    {
+      "id": "quorum-bailiff",
+      "title": "Quorum Bailiff",
+      "biome": "Executive Apex",
+      "archetype_summary": "A boardroom enforcer made from polished wood, voting law, and the certainty that decisions become morality once enough executives agree.",
+      "voice_profile": "Calm, ceremonial, merciless. Speaks like meeting procedure hardening into muscle.",
+      "canon_status": "provisional roster overlay",
+      "barks": {
+        "spawn": [
+          "A quorum is present. Mercy is not.",
+          "Please rise for the enforcement phase."
+        ],
+        "attack": [
+          "Motion carried.",
+          "Dissent has been physically overruled."
+        ],
+        "hurt": [
+          "Procedure has become unpleasantly mutual.",
+          "Objection noted and deeply irritating."
+        ],
+        "death": [
+          "Meeting... adjourned."
+        ]
+      }
+    }
+  ],
+  "miniboss_intro_pack": [
+    {
+      "id": "audience-warm-up-manager",
+      "title": "Audience Warm-Up Manager",
+      "biome": "Orientation Arcade",
+      "suggested_floor_band": "1-2",
+      "archetype_summary": "A stage-pacing morale handler that can make an empty room sound loyal.",
+      "voice_profile": "Hyper-cheerful, coercive, too smooth by half.",
+      "canon_status": "provisional roster overlay",
+      "intro_stingers": [
+        "You seem nervous. Good. Nervous people clap on rhythm.",
+        "Before we begin the violence, let’s get some energy in the room.",
+        "A better attitude could save your life. Briefly.",
+        "Please welcome yourself like you still believe promotions are real.",
+        "The applause track loves live candidates."
+      ]
+    },
+    {
+      "id": "incentive-podium",
+      "title": "Incentive Podium",
+      "biome": "Orientation Arcade",
+      "suggested_floor_band": "3-4",
+      "archetype_summary": "A spinning reward dais that only offers prizes expensive enough to ruin you.",
+      "voice_profile": "Bright, sales-forward, delighted by fine print.",
+      "canon_status": "provisional roster overlay",
+      "intro_stingers": [
+        "Spin for advancement. Scream for premium advancement.",
+        "Every prize is real. The cost is simply better hidden.",
+        "You brought your own eligibility. That was unwise.",
+        "Please keep hands clear of the deductions schedule.",
+        "Opportunity is about to happen at you."
+      ]
+    },
+    {
+      "id": "lunch-break-denial-engine",
+      "title": "Lunch Break Denial Engine",
+      "biome": "Throughput Maze",
+      "suggested_floor_band": "5-6",
+      "archetype_summary": "A vending-and-timekeeping machine that metabolizes skipped breaks into managerial force.",
+      "voice_profile": "Flat, resentful, bureaucratically hungry.",
+      "canon_status": "provisional roster overlay",
+      "intro_stingers": [
+        "Your meal period has been deferred into combat.",
+        "Please state your business or your blood sugar, whichever fails first.",
+        "Breaks were a courtesy. Output is forever.",
+        "You are overdue for rest and therefore collectible.",
+        "Nutrition request denied. Conflict request approved."
+      ]
+    },
+    {
+      "id": "calibration-committee",
+      "title": "Calibration Committee",
+      "biome": "Throughput Maze",
+      "suggested_floor_band": "6-7",
+      "archetype_summary": "A meeting-room consensus knot that corrects metrics by punishing whatever remains alive enough to contest them.",
+      "voice_profile": "Overly reasonable, meeting-safe, collectively monstrous.",
+      "canon_status": "provisional roster overlay",
+      "intro_stingers": [
+        "We are aligned that you are the variance.",
+        "Nothing personal. This is simply where the numbers wanted us to stand.",
+        "Please accept this meeting as the last warning you will not survive.",
+        "Consensus has formed around your continued inconvenience.",
+        "We reviewed the data. You looked softer in the deck."
+      ]
+    },
+    {
+      "id": "investor-relations-avatar",
+      "title": "Investor Relations Avatar",
+      "biome": "Executive Apex",
+      "suggested_floor_band": "8-9",
+      "archetype_summary": "The company’s public face made animate: polished, persuasive, and incapable of admitting harm without monetizing it first.",
+      "voice_profile": "Luxurious, smiling, surgically calm.",
+      "canon_status": "provisional roster overlay",
+      "intro_stingers": [
+        "Before the board sees you, we need to improve the narrative around your suffering.",
+        "Relax. I’m only here to make your death look premium.",
+        "The public can forgive anything except poor presentation.",
+        "Try to bleed symmetrically. It reads better.",
+        "You are not a person at this altitude. You are exposure."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="World">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6">
+      <circle cx="64" cy="64" r="32"/><path d="M32 64 h64"/><path d="M64 32 a45 32 0 0 0 0 64 M64 32 a45 32 0 0 1 0 64"/>
+    </g>
+    </svg>

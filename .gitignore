@@ -62,3 +62,6 @@ android-*.xml
 codex-*.png
 codex-*.xml
 emulator-smoke.png
+tmp-*.png
+tmp-*.xml
+/release/*.apk

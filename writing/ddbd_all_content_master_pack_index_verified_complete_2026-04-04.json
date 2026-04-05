@@ -1,0 +1,177 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "all-content-master-pack-index-verified",
+  "built_at_utc": "2026-04-04T19:45:02Z",
+  "files": {
+    "master_pack": "ddbd_all_content_master_pack_verified_complete_2026-04-04.json",
+    "final_content_bundle": "ddbd_final_content_bundle_2026-04-04.json",
+    "event_and_codex_pack": "ddbd_event_and_codex_pack_with_full_codex_and_archive_ui_2026-04-04.json",
+    "supporting_voice_pack": "ddbd_supporting_voice_pack_with_bonds_bosses_enemies_minibosses_statuses_countermeasures_rewards_routes_and_endings_2026-04-04.json",
+    "archive_ui_pack": "ddbd_archive_ui_pack_with_boss_unlocks_and_endings_2026-04-04.json",
+    "bond_scenes_pack": "ddbd_bond_scenes_write_pass_2026-04-04.json",
+    "boss_encounter_pack": "ddbd_boss_encounter_pack_2026-04-04.json",
+    "enemy_and_miniboss_voice_pack": "ddbd_enemy_and_miniboss_voice_pack_2026-04-04.json",
+    "status_and_countermeasure_pack": "ddbd_status_and_countermeasure_pack_2026-04-04.json",
+    "reward_and_route_ui_pack": "ddbd_reward_and_route_ui_pack_2026-04-04.json",
+    "ending_and_recap_pack": "ddbd_ending_and_recap_pack_2026-04-04.json",
+    "codex_cards_with_archive_ui": "ddbd_codex_cards_with_archive_ui_2026-04-04.json",
+    "baseline_event_and_codex_pack": "ddbd_event_and_codex_pack.json",
+    "baseline_event_sheets": "ddbd_event_sheets.json",
+    "baseline_supporting_voice_pack": "ddbd_supporting_voice_pack.json",
+    "baseline_codex_cards": "ddbd_codex_cards.json"
+  },
+  "sections_in_master_pack": [
+    "lore_bible",
+    "event_sheets",
+    "codex_cards",
+    "codex_ui",
+    "codex_entry_microcopy",
+    "starting_trio_chemistry_lines",
+    "reward_packages",
+    "defeat_next_run_ideas",
+    "bond_scenes",
+    "boss_encounter_pack",
+    "boss_unlock_ui",
+    "enemy_bark_pack",
+    "miniboss_intro_pack",
+    "status_effect_pack",
+    "enemy_countermeasure_callout_pack",
+    "reward_screen_microcopy_pack",
+    "late_floor_route_choice_pack",
+    "ending_and_recap_pack"
+  ],
+  "section_source_map": {
+    "lore_bible": {
+      "source_file": "ddbd_all_content_master_pack.json",
+      "source_path": "lore_bible"
+    },
+    "event_sheets": {
+      "source_file": "ddbd_event_and_codex_pack_with_full_codex_and_archive_ui_2026-04-04.json",
+      "source_path": "event_sheets"
+    },
+    "codex_cards": {
+      "source_file": "ddbd_event_and_codex_pack_with_full_codex_and_archive_ui_2026-04-04.json",
+      "source_path": "codex_cards"
+    },
+    "codex_ui": {
+      "source_file": "ddbd_archive_ui_pack_with_boss_unlocks_and_endings_2026-04-04.json",
+      "source_path": "sections.codex_ui"
+    },
+    "codex_entry_microcopy": {
+      "source_file": "ddbd_archive_ui_pack_with_boss_unlocks_and_endings_2026-04-04.json",
+      "source_path": "sections.codex_entry_microcopy"
+    },
+    "starting_trio_chemistry_lines": {
+      "source_file": "ddbd_supporting_voice_pack_with_bonds_bosses_enemies_minibosses_statuses_countermeasures_rewards_routes_and_endings_2026-04-04.json",
+      "source_path": "sections.starting_trio_chemistry_lines"
+    },
+    "reward_packages": {
+      "source_file": "ddbd_supporting_voice_pack_with_bonds_bosses_enemies_minibosses_statuses_countermeasures_rewards_routes_and_endings_2026-04-04.json",
+      "source_path": "sections.reward_packages"
+    },
+    "defeat_next_run_ideas": {
+      "source_file": "ddbd_supporting_voice_pack_with_bonds_bosses_enemies_minibosses_statuses_countermeasures_rewards_routes_and_endings_2026-04-04.json",
+      "source_path": "sections.defeat_next_run_ideas"
+    },
+    "bond_scenes": {
+      "source_file": "ddbd_bond_scenes_write_pass_2026-04-04.json",
+      "source_path": "bond_scenes"
+    },
+    "boss_encounter_pack": {
+      "source_file": "ddbd_boss_encounter_pack_2026-04-04.json",
+      "source_path": "sections"
+    },
+    "boss_unlock_ui": {
+      "source_file": "ddbd_archive_ui_pack_with_boss_unlocks_and_endings_2026-04-04.json",
+      "source_path": "sections.boss_unlock_ui"
+    },
+    "enemy_bark_pack": {
+      "source_file": "ddbd_enemy_and_miniboss_voice_pack_2026-04-04.json",
+      "source_path": "enemy_barks",
+      "status": "provisional roster overlay"
+    },
+    "miniboss_intro_pack": {
+      "source_file": "ddbd_enemy_and_miniboss_voice_pack_2026-04-04.json",
+      "source_path": "miniboss_intro_pack",
+      "status": "provisional roster overlay"
+    },
+    "status_effect_pack": {
+      "source_file": "ddbd_status_and_countermeasure_pack_2026-04-04.json",
+      "source_path": "status_effect_pack"
+    },
+    "enemy_countermeasure_callout_pack": {
+      "source_file": "ddbd_status_and_countermeasure_pack_2026-04-04.json",
+      "source_path": "enemy_countermeasure_callout_pack"
+    },
+    "reward_screen_microcopy_pack": {
+      "source_file": "ddbd_reward_and_route_ui_pack_2026-04-04.json",
+      "source_path": "sections.reward_screen_microcopy_pack"
+    },
+    "late_floor_route_choice_pack": {
+      "source_file": "ddbd_reward_and_route_ui_pack_2026-04-04.json",
+      "source_path": "sections.late_floor_route_choice_pack"
+    },
+    "ending_and_recap_pack": {
+      "source_file": "ddbd_ending_and_recap_pack_2026-04-04.json",
+      "source_path": "sections.ending_and_recap_pack"
+    }
+  },
+  "section_counts": {
+    "event_sheets": 10,
+    "codex_cards": {
+      "companions": 5,
+      "classes": 5,
+      "bosses": 3,
+      "world_entries": 3,
+      "biomes": 3,
+      "factions": 6,
+      "items": 10,
+      "everrise_proofs": 3
+    },
+    "starting_trio_chemistry_lines": 8,
+    "reward_packages": 12,
+    "defeat_next_run_ideas": 10,
+    "bond_scenes": 10,
+    "boss_intro_stingers": 3,
+    "boss_archive_unlocks": 3,
+    "boss_unlock_ui": 3,
+    "enemy_bark_pack": 10,
+    "miniboss_intro_pack": 5,
+    "status_effect_pack": 12,
+    "enemy_countermeasure_callout_pack": {
+      "normal_enemies": 10,
+      "minibosses": 5
+    },
+    "reward_screen_microcopy_pack": {
+      "contextual_lines": 6,
+      "package_microcopy": 12
+    },
+    "late_floor_route_choice_pack": {
+      "floors": 7,
+      "global_route_barks": 3
+    },
+    "ending_and_recap_pack": {
+      "ending_states": 5,
+      "archive_recap_variants": 5,
+      "victory_stingers": {
+        "generic": 6,
+        "full_truth": 4,
+        "partial_truth": 3,
+        "survival_only": 3
+      }
+    }
+  },
+  "verification_summary": {
+    "all_required_sections_present": true,
+    "source_overlap_checks_passed": true,
+    "all_id_sets_unique": true,
+    "codex_microcopy_complete_for_cards": true,
+    "codex_cards_have_unlock_fields": true,
+    "enemy_and_miniboss_roster_is_provisional_overlay": true
+  },
+  "editorial_notes": {
+    "enemy_miniboss_roster_status": "The uploaded April 4 source-of-truth files confirm that the live game data already includes 10 normal enemies and 5 minibosses, but the uploaded writing/docs do not expose a canonical named roster for those 15 combatants. This pack therefore provides an adoptable, lore-consistent authored overlay built from the existing biomes, factions, items, class fantasies, and tone rules.",
+    "boss_section_bug_fixed_from_prior_bundle_verification": "This index corrects the earlier boss-section counting bug by checking boss_id uniqueness in boss_intro_stingers, boss_archive_unlocks, and boss_unlock_ui."
+  }
+}

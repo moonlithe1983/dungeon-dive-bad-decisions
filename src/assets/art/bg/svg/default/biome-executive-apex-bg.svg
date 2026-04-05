@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 640" width="360" height="640">
+
+    
+<defs>
+  <linearGradient id="bgDark" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#120206"/>
+    <stop offset="100%" stop-color="#080103"/>
+  </linearGradient>
+  <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="12"/>
+  </filter>
+  <filter id="medBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="22"/>
+  </filter>
+  <filter id="heavyBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="34"/>
+  </filter>
+  <radialGradient id="emberGlow" cx="50%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#ffbf57" stop-opacity="0.28"/>
+    <stop offset="50%" stop-color="#ff9d1a" stop-opacity="0.12"/>
+    <stop offset="100%" stop-color="#ff9d1a" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="tealGlow" cx="50%" cy="20%" r="80%">
+    <stop offset="0%" stop-color="#75ebff" stop-opacity="0.20"/>
+    <stop offset="45%" stop-color="#46c7d9" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#46c7d9" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="glassGlow" cx="50%" cy="20%" r="90%">
+    <stop offset="0%" stop-color="#e8f2fb" stop-opacity="0.18"/>
+    <stop offset="50%" stop-color="#b8bec8" stop-opacity="0.06"/>
+    <stop offset="100%" stop-color="#b8bec8" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#000000" stop-opacity="0.42"/>
+    <stop offset="22%" stop-color="#000000" stop-opacity="0.08"/>
+    <stop offset="78%" stop-color="#000000" stop-opacity="0.12"/>
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.48"/>
+  </linearGradient>
+</defs>
+
+    <rect width="360" height="640" fill="url(#bgDark)"/>
+    <rect width="360" height="640" fill="url(#glassGlow)"/>
+    <g>
+      <path d="M40 86 H320" stroke="#d7e4ef" stroke-width="4" opacity="0.34"/>
+      <path d="M28 154 H332" stroke="#b8bec8" stroke-width="3" opacity="0.22"/>
+      <path d="M54 248 H306" stroke="#d7e4ef" stroke-width="3" opacity="0.16"/>
+      <rect x="42" y="70" width="276" height="420" rx="24" fill="#11141a" opacity="0.36" stroke="#b8bec8" stroke-width="2"/>
+      <path d="M86 70 V490 M180 70 V490 M274 70 V490" stroke="#d7e4ef" stroke-width="3" opacity="0.22"/>
+      <g filter="url(#softBlur)" opacity="0.22">
+        <ellipse cx="180" cy="114" rx="96" ry="24" fill="#f5efe2"/>
+      </g>
+      <g opacity="0.40">
+        <path d="M112 336 C128 304, 150 282, 166 246 C180 268, 188 304, 198 340" fill="none" stroke="#819b6b" stroke-width="5" stroke-linecap="round"/>
+        <path d="M214 352 C226 324, 242 306, 252 280 C262 300, 268 330, 274 362" fill="none" stroke="#6c8258" stroke-width="5" stroke-linecap="round"/>
+        <path d="M148 348 C160 326, 174 312, 184 292 C194 314, 198 334, 202 360" fill="none" stroke="#8ca56f" stroke-width="5" stroke-linecap="round"/>
+      </g>
+      <rect x="62" y="508" width="236" height="72" rx="18" fill="#181a20" opacity="0.80" stroke="#b8bec8" stroke-width="2"/>
+      <g opacity="0.24">
+        <path d="M82 534 H276" stroke="#f5efe2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M104 556 H250" stroke="#ff9d1a" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g filter="url(#medBlur)" opacity="0.14">
+        <rect x="58" y="92" width="244" height="18" rx="9" fill="#f5efe2"/>
+      </g>
+      <rect width="360" height="640" fill="url(#vignette)"/>
+    </g>
+    
+</svg>

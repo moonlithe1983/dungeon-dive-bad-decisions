@@ -1,0 +1,7 @@
+asset_id,category,recommended_accessibility_label,notes
+boss-director-onboarding-header,boss-header,Director of Onboarding boss header art,Use with visible runtime title and intro line; art is supportive.
+boss-vp-throughput-header,boss-header,Vice President of Throughput boss header art,Use with visible runtime title and intro line; art is supportive.
+boss-everrise-board-header,boss-header,Everrise Board boss header art,Use with visible runtime title and intro line; art is supportive.
+boss-director-onboarding-archive,boss-archive-panel,Director of Onboarding archive update panel background,Runtime panel text carries semantics.
+boss-vp-throughput-archive,boss-archive-panel,Vice President of Throughput archive update panel background,Runtime panel text carries semantics.
+boss-everrise-board-archive,boss-archive-panel,Everrise Board archive update panel background,Runtime panel text carries semantics.

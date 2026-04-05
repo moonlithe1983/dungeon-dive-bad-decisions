@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Support
 
-Last updated: April 4, 2026
+Last updated: April 5, 2026
 
 ## Current Launch Defaults
 
@@ -36,5 +36,6 @@ If you report a problem, include:
 - unfinished settings that do not affect real runtime behavior are intentionally hidden from the live UI
 - one full 10-floor Android release-build validation pass has already been completed on the prior candidate
 - fresh-profile onboarding now starts with an assigned IT Support role and three default companion options
-- the current polished source now includes compact route choice, stronger defeat recap, and authored early-run writing integration
-- the next device check should focus on the current polished build that includes the latest onboarding, route-choice, and authored-copy updates
+- the current polished source now includes compact route choice, loop-facing art panels, stronger defeat recap, and authored early-run writing integration
+- the April 5 local release APK was rebuilt from the current source and verified to launch from a clean install on Android
+- testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK

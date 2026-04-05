@@ -10,7 +10,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  getArchivedResultArtSource,
+  getLoopSurfaceArtSource,
+} from '@/src/assets/loop-art-sources';
 import { GameButton } from '@/src/components/game-button';
+import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getItemDefinition } from '@/src/content/items';
@@ -171,6 +176,32 @@ export default function EndRunScreen() {
       .filter(Boolean)
       .join(' ');
   }, [activeCompanionName, archivedRun, carriedItemNames]);
+  const endRunSurfaceArtSource = useMemo(
+    () => getLoopSurfaceArtSource('end-run', settings),
+    [settings]
+  );
+  const archivedResultArtSource = useMemo(
+    () => getArchivedResultArtSource(archivedRun?.result ?? 'loss', settings),
+    [archivedRun?.result, settings]
+  );
+  const restartReadBody = useMemo(() => {
+    if (!archivedRun) {
+      return 'The archive should explain the outcome before it asks for another run.';
+    }
+
+    if (archivedRun.result === 'win') {
+      return 'The run worked. Keep the part of the build that actually closed fights and do not assume the next climb will be as kind.';
+    }
+
+    if (archivedRun.result === 'abandon') {
+      return 'Even a retreat should leave a clear note about why you bailed and what has to change before the next climb.';
+    }
+
+    return (
+      archivedRun.recap?.defeatSummary?.recommendation ??
+      'A loss should tell you what failed and point at the next experiment immediately.'
+    );
+  }, [archivedRun]);
 
   const handleReturnToTitle = () => {
     clearCurrentRunState();
@@ -273,6 +304,12 @@ export default function EndRunScreen() {
                   <Text style={styles.panelBody}>Build snapshot: {buildSummary}.</Text>
                 ) : null}
               </View>
+              <LoopArtPanel
+                title="Archive Verdict"
+                body={restartReadBody}
+                source={archivedResultArtSource}
+                backgroundSource={endRunSurfaceArtSource}
+              />
 
               {isFailedRun && archivedRun.recap?.defeatSummary ? (
                 <View style={styles.panel}>
@@ -392,7 +429,7 @@ export default function EndRunScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Next</Text>
                 <Text style={styles.panelBody}>
-                  The run is safely archived. If the postmortem gave you an idea, run it back while it is still hot.
+                  The run is safely archived. If the postmortem gave you a clear next experiment, run it back while it is still hot.
                 </Text>
                 <View style={styles.actionGroup}>
                   <GameButton label="Run It Back" onPress={handleRunItBack} />
@@ -462,8 +499,20 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text
+        style={styles.statValue}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {value}
+      </Text>
+      <Text
+        style={styles.statLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -578,6 +627,7 @@ function createStyles(
       fontWeight: '900',
       lineHeight: scaleLineHeight(26, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     statLabel: {
       color: colors.textMuted,
@@ -585,7 +635,9 @@ function createStyles(
       fontWeight: '700',
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      lineHeight: scaleLineHeight(16, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     detailCard: {
       backgroundColor: colors.surface,

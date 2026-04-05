@@ -2,9 +2,10 @@
 ## Authored Voice / Readiness Addendum
 
 Version date: April 4, 2026  
-Last refreshed: April 4, 2026 after the authored writing integration pass, repo smoke validation pass, and GitHub-readiness review.
+Last refreshed: April 4, 2026 after the authored writing integration pass, repo smoke validation pass, and GitHub-readiness review.  
+Superseded by the April 5, 2026 handoff pair and the April 5 `APP_NEEDS` docx for current release/tester-build planning.
 
-Purpose: Use this addendum as the freshest source of truth for the live narrative/presentation layer, current repo readiness, and the exact remaining pre-upload work after the April 4 content pass. Keep `PROJECT_HANDOFF_2026-03-24.md` as the broad product/system handoff, `PROJECT_HANDOFF_2026-03-31.md` as the prior polish/release addendum, and `PROJECT_HANDOFF_2026-04-02.md` as the route-choice/readability snapshot immediately before this writing pass.
+Purpose: This addendum captures the April 4 authored-writing/content pass. For the current release/tester-build state, use `PROJECT_HANDOFF_2026-04-05.md`, `PROJECT_HANDOFF_2026-04-05.docx`, and `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`. Keep `PROJECT_HANDOFF_2026-03-24.md` as the broad product/system handoff, `PROJECT_HANDOFF_2026-03-31.md` as the prior polish/release addendum, and `PROJECT_HANDOFF_2026-04-02.md` as the route-choice/readability snapshot immediately before this writing pass.
 
 ## 1. What changed on April 4, 2026
 
@@ -109,6 +110,23 @@ Content note:
 - only the first three authored event sheets are integrated into the live event pool right now
 - the remaining writing pack material is still available for a second content pass if desired
 
+
+## 5a. Writing source bundles added on April 4
+
+The canonical repo now also contains a verified-complete local writing bundle set under `C:\ddbd\writing`:
+
+- `ddbd_all_content_master_pack_verified_complete_2026-04-04.json`
+- `ddbd_all_content_master_pack_index_verified_complete_2026-04-04.json`
+- `ddbd_final_content_bundle.json`
+- `ddbd_codex_cards_with_archive_ui.json`
+- `ddbd_reward_and_route_ui_pack.json`
+- `ddbd_status_and_countermeasure_pack.json`
+- `ddbd_enemy_and_miniboss_voice_pack.json`
+- `ddbd_boss_encounter_pack.json`
+- `ddbd_ending_and_recap_pack.json`
+
+These files extend the earlier April 4 writing source set and should now be treated as the preferred local narrative/content source material for future import passes. They are source material, not required runtime assets, so they can remain local until intentionally integrated into app content.
+
 ## 6. Best next move after this pass
 
 The next highest-value step is now product validation, not more repo plumbing:
@@ -137,7 +155,9 @@ Use these docs together:
 
 - `PROJECT_HANDOFF_2026-04-04.md`
 - `PROJECT_HANDOFF_2026-04-04.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-04.md`
+- `PROJECT_HANDOFF_2026-04-05.md`
+- `PROJECT_HANDOFF_2026-04-05.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`
 - `PROJECT_HANDOFF_2026-04-02.md`
 - `PROJECT_HANDOFF_2026-03-31.md`
 - `PROJECT_HANDOFF_2026-03-30.md`
@@ -147,6 +167,7 @@ Use these docs together:
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
 - `.github/BRANCH_PROTECTION.md`
+- local writing source bundles under `writing/`, especially `ddbd_all_content_master_pack_verified_complete_2026-04-04.json` and `ddbd_all_content_master_pack_index_verified_complete_2026-04-04.json`
 
 Simple rule:
 

@@ -1,0 +1,11 @@
+asset_id,category,recommended_accessibility_label,notes
+facilities-goblin_card,companion-card-art,Facilities Goblin companion card art,"Use with visible companion name, unlock line, and gameplay text."
+facilities-goblin_header,companion-header-art,Facilities Goblin companion header art,Keep runtime title and description text separate from the art.
+former-executive-assistant_card,companion-card-art,Former Executive Assistant companion card art,"Use with visible companion name, unlock line, and gameplay text."
+former-executive-assistant_header,companion-header-art,Former Executive Assistant companion header art,Keep runtime title and description text separate from the art.
+security-skeleton_card,companion-card-art,Security Skeleton companion card art,"Use with visible companion name, unlock line, and gameplay text."
+security-skeleton_header,companion-header-art,Security Skeleton companion header art,Keep runtime title and description text separate from the art.
+payroll-wraith_card,companion-card-art,Payroll Wraith companion card art,"Use with visible companion name, unlock line, and gameplay text."
+payroll-wraith_header,companion-header-art,Payroll Wraith companion header art,Keep runtime title and description text separate from the art.
+wellness-witch_card,companion-card-art,Wellness Witch companion card art,"Use with visible companion name, unlock line, and gameplay text."
+wellness-witch_header,companion-header-art,Wellness Witch companion header art,Keep runtime title and description text separate from the art.

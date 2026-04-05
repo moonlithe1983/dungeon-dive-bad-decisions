@@ -1,0 +1,11 @@
+asset_id,category,recommended_accessibility_label,notes
+full-exposure_ending-header,ending-header-art,Full Exposure ending header art,"Use with visible ending title, subtitle, and summary text in runtime UI."
+controlled-detonation_ending-header,ending-header-art,Controlled Detonation ending header art,"Use with visible ending title, subtitle, and summary text in runtime UI."
+partial-exposure_ending-header,ending-header-art,Partial Exposure ending header art,"Use with visible ending title, subtitle, and summary text in runtime UI."
+licensed-survival_ending-header,ending-header-art,Licensed Survival ending header art,"Use with visible ending title, subtitle, and summary text in runtime UI."
+quiet-survival_ending-header,ending-header-art,Quiet Survival ending header art,"Use with visible ending title, subtitle, and summary text in runtime UI."
+full-exposure-recap_recap-panel,archive-recap-panel-art,Archive Recap: Exposure Won archive recap panel background,"Use with visible archive recap title, subtitle, body, and footer text."
+controlled-detonation-recap_recap-panel,archive-recap-panel-art,Archive Recap: Permission Became the Wound archive recap panel background,"Use with visible archive recap title, subtitle, body, and footer text."
+partial-exposure-recap_recap-panel,archive-recap-panel-art,Archive Recap: The Confession Came Out Damaged archive recap panel background,"Use with visible archive recap title, subtitle, body, and footer text."
+licensed-survival-recap_recap-panel,archive-recap-panel-art,Archive Recap: The Leak Has a Badge archive recap panel background,"Use with visible archive recap title, subtitle, body, and footer text."
+quiet-survival-recap_recap-panel,archive-recap-panel-art,"Archive Recap: Survival Logged, Core Truth Pending archive recap panel background","Use with visible archive recap title, subtitle, body, and footer text."

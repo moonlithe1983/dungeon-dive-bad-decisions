@@ -1,0 +1,12 @@
+asset_id,category,recommended_accessibility_label,notes
+core-main-shell,ui-chrome,main gameplay shell background,Decorative container; do not expose as standalone focus target.
+core-section-header,ui-chrome,section header background,Parent heading text should carry semantics.
+core-legend-panel,ui-chrome,legend panel background,Legend text and icons should be announced separately.
+core-modal-panel,ui-chrome,modal dialog panel background,Dialog container should announce title and modal state in runtime UI.
+core-info-card,ui-chrome,information card frame,Parent card content should carry semantics.
+core-bottom-action-bar,ui-chrome,bottom action bar background,Buttons should be separately focusable and labeled.
+core-toggle-row,ui-chrome,settings toggle row background,Runtime toggle state must be announced by the actual control.
+core-choice-pill,ui-chrome,choice pill background,Do not rely on chrome alone for selected/unselected meaning.
+core-choice-pill-selected,ui-chrome,selected choice pill background,Selected state should be announced by the actual control.
+core-tooltip-panel,ui-chrome,tooltip panel background,Tooltip text should remain readable and accessible without art.
+core-overlay-frame,ui-chrome,dimmed overlay frame,Use reduced-motion-safe open/close behavior and keep modal semantics on the runtime component.

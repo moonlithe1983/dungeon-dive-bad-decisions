@@ -1,0 +1,77 @@
+{
+  "pack_id": "ddbd-class-emblems-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "classes": [
+    {
+      "id": "it-support",
+      "title": "IT Support",
+      "fantasy": "controlled interference and exposed-system leverage"
+    },
+    {
+      "id": "human-resources",
+      "title": "Human Resources",
+      "fantasy": "weaponized empathy and coercive care"
+    },
+    {
+      "id": "finance",
+      "title": "Finance",
+      "fantasy": "stored advantage turned into pressure"
+    },
+    {
+      "id": "compliance",
+      "title": "Compliance",
+      "fantasy": "weaponized interpretation and consequences"
+    },
+    {
+      "id": "operations",
+      "title": "Operations",
+      "fantasy": "tempo, sequencing, and redirected momentum"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "compliance.svg",
+      "finance.svg",
+      "human-resources.svg",
+      "it-support.svg",
+      "operations.svg"
+    ],
+    "svg/mono": [
+      "compliance.svg",
+      "finance.svg",
+      "human-resources.svg",
+      "it-support.svg",
+      "operations.svg"
+    ],
+    "png/128": [
+      "compliance_default.png",
+      "compliance_mono.png",
+      "finance_default.png",
+      "finance_mono.png",
+      "human-resources_default.png",
+      "human-resources_mono.png",
+      "it-support_default.png",
+      "it-support_mono.png",
+      "operations_default.png",
+      "operations_mono.png"
+    ],
+    "png/256": [
+      "compliance_default.png",
+      "compliance_mono.png",
+      "finance_default.png",
+      "finance_mono.png",
+      "human-resources_default.png",
+      "human-resources_mono.png",
+      "it-support_default.png",
+      "it-support_mono.png",
+      "operations_default.png",
+      "operations_mono.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Do not use class emblem color alone to communicate unlock or selected state.",
+    "Keep runtime role names and progression copy separate from the art.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

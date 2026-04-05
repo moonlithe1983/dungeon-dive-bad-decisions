@@ -1,0 +1,129 @@
+{
+  "pack_id": "ddbd-ending-recap-accents-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "ending_states": [
+    {
+      "id": "full-exposure",
+      "title": "Full Exposure",
+      "archive_header": "Final Record: Meridian Had the Numbers",
+      "accent": "#c23b16",
+      "theme": "rupture"
+    },
+    {
+      "id": "controlled-detonation",
+      "title": "Controlled Detonation",
+      "archive_header": "Final Record: Authority Helped Carry the Knife",
+      "accent": "#ff9d1a",
+      "theme": "stolen-authority"
+    },
+    {
+      "id": "partial-exposure",
+      "title": "Partial Exposure",
+      "archive_header": "Final Record: Confirmed Harm, Incomplete Chain",
+      "accent": "#46c7d9",
+      "theme": "damaged-confession"
+    },
+    {
+      "id": "licensed-survival",
+      "title": "Licensed Survival",
+      "archive_header": "Final Record: Contained Lie, Escalating Leak",
+      "accent": "#c4cad2",
+      "theme": "contained-leak"
+    },
+    {
+      "id": "quiet-survival",
+      "title": "Quiet Survival",
+      "archive_header": "Final Record: Survivor Exit, Truth Deferred",
+      "accent": "#90b86a",
+      "theme": "deferred-truth"
+    }
+  ],
+  "archive_recaps": [
+    {
+      "id": "full-exposure-recap",
+      "title": "Archive Recap: Exposure Won",
+      "accent": "#c23b16",
+      "theme": "rupture"
+    },
+    {
+      "id": "controlled-detonation-recap",
+      "title": "Archive Recap: Permission Became the Wound",
+      "accent": "#ff9d1a",
+      "theme": "stolen-authority"
+    },
+    {
+      "id": "partial-exposure-recap",
+      "title": "Archive Recap: The Confession Came Out Damaged",
+      "accent": "#46c7d9",
+      "theme": "damaged-confession"
+    },
+    {
+      "id": "licensed-survival-recap",
+      "title": "Archive Recap: The Leak Has a Badge",
+      "accent": "#c4cad2",
+      "theme": "contained-leak"
+    },
+    {
+      "id": "quiet-survival-recap",
+      "title": "Archive Recap: Survival Logged, Core Truth Pending",
+      "accent": "#90b86a",
+      "theme": "deferred-truth"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "controlled-detonation-recap_recap-panel.svg",
+      "controlled-detonation_ending-header.svg",
+      "full-exposure-recap_recap-panel.svg",
+      "full-exposure_ending-header.svg",
+      "licensed-survival-recap_recap-panel.svg",
+      "licensed-survival_ending-header.svg",
+      "partial-exposure-recap_recap-panel.svg",
+      "partial-exposure_ending-header.svg",
+      "quiet-survival-recap_recap-panel.svg",
+      "quiet-survival_ending-header.svg"
+    ],
+    "svg/mono": [
+      "controlled-detonation-recap_recap-panel.svg",
+      "controlled-detonation_ending-header.svg",
+      "full-exposure-recap_recap-panel.svg",
+      "full-exposure_ending-header.svg",
+      "licensed-survival-recap_recap-panel.svg",
+      "licensed-survival_ending-header.svg",
+      "partial-exposure-recap_recap-panel.svg",
+      "partial-exposure_ending-header.svg",
+      "quiet-survival-recap_recap-panel.svg",
+      "quiet-survival_ending-header.svg"
+    ],
+    "png/header": [
+      "controlled-detonation_ending-header_default_1080x220.png",
+      "controlled-detonation_ending-header_mono_1080x220.png",
+      "full-exposure_ending-header_default_1080x220.png",
+      "full-exposure_ending-header_mono_1080x220.png",
+      "licensed-survival_ending-header_default_1080x220.png",
+      "licensed-survival_ending-header_mono_1080x220.png",
+      "partial-exposure_ending-header_default_1080x220.png",
+      "partial-exposure_ending-header_mono_1080x220.png",
+      "quiet-survival_ending-header_default_1080x220.png",
+      "quiet-survival_ending-header_mono_1080x220.png"
+    ],
+    "png/panel": [
+      "controlled-detonation-recap_recap-panel_default_1080x320.png",
+      "controlled-detonation-recap_recap-panel_mono_1080x320.png",
+      "full-exposure-recap_recap-panel_default_1080x320.png",
+      "full-exposure-recap_recap-panel_mono_1080x320.png",
+      "licensed-survival-recap_recap-panel_default_1080x320.png",
+      "licensed-survival-recap_recap-panel_mono_1080x320.png",
+      "partial-exposure-recap_recap-panel_default_1080x320.png",
+      "partial-exposure-recap_recap-panel_mono_1080x320.png",
+      "quiet-survival-recap_recap-panel_default_1080x320.png",
+      "quiet-survival-recap_recap-panel_mono_1080x320.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Keep ending titles, archive headers, subtitles, and summaries in runtime text.",
+    "Do not rely on accent color alone to communicate truth level or completion.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

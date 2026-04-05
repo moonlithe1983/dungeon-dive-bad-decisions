@@ -1,0 +1,34 @@
+{
+  "pack_id": "ddbd-biome-background-overlay-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "biomes": [
+    {
+      "id": "orientation-arcade",
+      "title": "Orientation Arcade",
+      "tone_anchor": "bright onboarding carnival where game-show cheer hides administrative predation"
+    },
+    {
+      "id": "throughput-maze",
+      "title": "Throughput Maze",
+      "tone_anchor": "industrial middle of the run with cubicle warrens, printer heat, KPI shrines, and workflow machinery"
+    },
+    {
+      "id": "executive-apex",
+      "title": "Executive Apex",
+      "tone_anchor": "polished upper tier with glass, investor-safe language, and approved harm"
+    }
+  ],
+  "overlays": [
+    "overlay-dim-soft",
+    "overlay-dim-strong",
+    "overlay-blur-veil",
+    "overlay-focus-window"
+  ],
+  "usage_notes": [
+    "Prefer SVG at runtime when possible.",
+    "Backgrounds are decorative and should sit behind route, reward, event, recap, and hub chrome.",
+    "Use dim or blur overlays to preserve compact mobile readability rather than baking text into art.",
+    "Do not rely on background color differences alone to communicate danger or progression.",
+    "Choose stronger overlays for recap/event dense copy and lighter overlays for route/reward surfaces."
+  ]
+}

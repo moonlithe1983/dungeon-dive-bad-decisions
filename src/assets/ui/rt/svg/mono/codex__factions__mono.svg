@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Factions">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round">
+      <path d="M64 18 l13 24 26 0 -13 22 13 22 -26 0 -13 24 -13-24 -26 0 13-22 -13-22 26 0z"/>
+      <circle cx="64" cy="64" r="9" fill="#FFFFFF" stroke="none"/>
+    </g>
+    </svg>

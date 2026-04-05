@@ -1,0 +1,199 @@
+{
+  "pack_id": "ddbd-floor-badges-headers-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "floors": [
+    {
+      "floor": 1,
+      "slug": "floor-01-welcome",
+      "title": "Welcome to Meridian Spire",
+      "biome": "Orientation Arcade",
+      "biome_slug": "orientation-arcade"
+    },
+    {
+      "floor": 2,
+      "slug": "floor-02-audience",
+      "title": "Audience Participation",
+      "biome": "Orientation Arcade",
+      "biome_slug": "orientation-arcade"
+    },
+    {
+      "floor": 3,
+      "slug": "floor-03-performance",
+      "title": "Performance Improvement Round",
+      "biome": "Orientation Arcade",
+      "biome_slug": "orientation-arcade"
+    },
+    {
+      "floor": 4,
+      "slug": "floor-04-corrective",
+      "title": "Corrective Showcase",
+      "biome": "Orientation Arcade",
+      "biome_slug": "orientation-arcade"
+    },
+    {
+      "floor": 5,
+      "slug": "floor-05-cubicle",
+      "title": "Cubicle Herd",
+      "biome": "Throughput Maze",
+      "biome_slug": "throughput-maze"
+    },
+    {
+      "floor": 6,
+      "slug": "floor-06-variance",
+      "title": "Variance Review",
+      "biome": "Throughput Maze",
+      "biome_slug": "throughput-maze"
+    },
+    {
+      "floor": 7,
+      "slug": "floor-07-quarterly",
+      "title": "Quarterly Sacrifice",
+      "biome": "Throughput Maze",
+      "biome_slug": "throughput-maze"
+    },
+    {
+      "floor": 8,
+      "slug": "floor-08-marble",
+      "title": "Marble Permission",
+      "biome": "Executive Apex",
+      "biome_slug": "executive-apex"
+    },
+    {
+      "floor": 9,
+      "slug": "floor-09-consensus-garden",
+      "title": "Consensus Garden",
+      "biome": "Executive Apex",
+      "biome_slug": "executive-apex"
+    },
+    {
+      "floor": 10,
+      "slug": "floor-10-consensus-engine",
+      "title": "Consensus Engine",
+      "biome": "Executive Apex",
+      "biome_slug": "executive-apex"
+    }
+  ],
+  "biome_headers": [
+    {
+      "id": "biome-orientation-arcade_act-header",
+      "title": "Orientation Arcade"
+    },
+    {
+      "id": "biome-throughput-maze_act-header",
+      "title": "Throughput Maze"
+    },
+    {
+      "id": "biome-executive-apex_act-header",
+      "title": "Executive Apex"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "biome-executive-apex_act-header.svg",
+      "biome-orientation-arcade_act-header.svg",
+      "biome-throughput-maze_act-header.svg",
+      "floor-01-welcome_badge.svg",
+      "floor-01-welcome_header.svg",
+      "floor-02-audience_badge.svg",
+      "floor-02-audience_header.svg",
+      "floor-03-performance_badge.svg",
+      "floor-03-performance_header.svg",
+      "floor-04-corrective_badge.svg",
+      "floor-04-corrective_header.svg",
+      "floor-05-cubicle_badge.svg",
+      "floor-05-cubicle_header.svg",
+      "floor-06-variance_badge.svg",
+      "floor-06-variance_header.svg",
+      "floor-07-quarterly_badge.svg",
+      "floor-07-quarterly_header.svg",
+      "floor-08-marble_badge.svg",
+      "floor-08-marble_header.svg",
+      "floor-09-consensus-garden_badge.svg",
+      "floor-09-consensus-garden_header.svg",
+      "floor-10-consensus-engine_badge.svg",
+      "floor-10-consensus-engine_header.svg"
+    ],
+    "svg/mono": [
+      "biome-executive-apex_act-header.svg",
+      "biome-orientation-arcade_act-header.svg",
+      "biome-throughput-maze_act-header.svg",
+      "floor-01-welcome_badge.svg",
+      "floor-01-welcome_header.svg",
+      "floor-02-audience_badge.svg",
+      "floor-02-audience_header.svg",
+      "floor-03-performance_badge.svg",
+      "floor-03-performance_header.svg",
+      "floor-04-corrective_badge.svg",
+      "floor-04-corrective_header.svg",
+      "floor-05-cubicle_badge.svg",
+      "floor-05-cubicle_header.svg",
+      "floor-06-variance_badge.svg",
+      "floor-06-variance_header.svg",
+      "floor-07-quarterly_badge.svg",
+      "floor-07-quarterly_header.svg",
+      "floor-08-marble_badge.svg",
+      "floor-08-marble_header.svg",
+      "floor-09-consensus-garden_badge.svg",
+      "floor-09-consensus-garden_header.svg",
+      "floor-10-consensus-engine_badge.svg",
+      "floor-10-consensus-engine_header.svg"
+    ],
+    "png/badge": [
+      "floor-01-welcome_badge_default_256x96.png",
+      "floor-01-welcome_badge_mono_256x96.png",
+      "floor-02-audience_badge_default_256x96.png",
+      "floor-02-audience_badge_mono_256x96.png",
+      "floor-03-performance_badge_default_256x96.png",
+      "floor-03-performance_badge_mono_256x96.png",
+      "floor-04-corrective_badge_default_256x96.png",
+      "floor-04-corrective_badge_mono_256x96.png",
+      "floor-05-cubicle_badge_default_256x96.png",
+      "floor-05-cubicle_badge_mono_256x96.png",
+      "floor-06-variance_badge_default_256x96.png",
+      "floor-06-variance_badge_mono_256x96.png",
+      "floor-07-quarterly_badge_default_256x96.png",
+      "floor-07-quarterly_badge_mono_256x96.png",
+      "floor-08-marble_badge_default_256x96.png",
+      "floor-08-marble_badge_mono_256x96.png",
+      "floor-09-consensus-garden_badge_default_256x96.png",
+      "floor-09-consensus-garden_badge_mono_256x96.png",
+      "floor-10-consensus-engine_badge_default_256x96.png",
+      "floor-10-consensus-engine_badge_mono_256x96.png"
+    ],
+    "png/header": [
+      "biome-executive-apex_act-header_default_1080x220.png",
+      "biome-executive-apex_act-header_mono_1080x220.png",
+      "biome-orientation-arcade_act-header_default_1080x220.png",
+      "biome-orientation-arcade_act-header_mono_1080x220.png",
+      "biome-throughput-maze_act-header_default_1080x220.png",
+      "biome-throughput-maze_act-header_mono_1080x220.png",
+      "floor-01-welcome_header_default_1080x220.png",
+      "floor-01-welcome_header_mono_1080x220.png",
+      "floor-02-audience_header_default_1080x220.png",
+      "floor-02-audience_header_mono_1080x220.png",
+      "floor-03-performance_header_default_1080x220.png",
+      "floor-03-performance_header_mono_1080x220.png",
+      "floor-04-corrective_header_default_1080x220.png",
+      "floor-04-corrective_header_mono_1080x220.png",
+      "floor-05-cubicle_header_default_1080x220.png",
+      "floor-05-cubicle_header_mono_1080x220.png",
+      "floor-06-variance_header_default_1080x220.png",
+      "floor-06-variance_header_mono_1080x220.png",
+      "floor-07-quarterly_header_default_1080x220.png",
+      "floor-07-quarterly_header_mono_1080x220.png",
+      "floor-08-marble_header_default_1080x220.png",
+      "floor-08-marble_header_mono_1080x220.png",
+      "floor-09-consensus-garden_header_default_1080x220.png",
+      "floor-09-consensus-garden_header_mono_1080x220.png",
+      "floor-10-consensus-engine_header_default_1080x220.png",
+      "floor-10-consensus-engine_header_mono_1080x220.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Keep floor titles and biome labels in runtime text, not baked into art.",
+    "Do not rely on floor/biome accent color alone to communicate progress or danger.",
+    "Mono assets are intended as high-contrast-safe fallbacks.",
+    "Badge exports are suitable for progress strips and compact floor chips; header exports are suitable for larger intro or map-title surfaces."
+  ]
+}

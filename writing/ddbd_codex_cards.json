@@ -1,0 +1,125 @@
+{
+  "companions": [
+    {
+      "id": "facilities-goblin",
+      "title": "Facilities Goblin",
+      "unlock_blurb": "If it leaks, sparks, or screams, they know why.",
+      "codex_body": "Facilities Goblin lives in crawlspaces, speaks fluent infrastructure, and trusts broken machinery more than most people. They know which doors stick, which vents gossip, and which parts of Meridian Spire are only pretending to be load-bearing.",
+      "expanded_entry": "Nobody agrees on where Facilities Goblin came from. Some say they were maintenance once. Some say contractor. Some say they have always belonged to the walls in the same way mold, wiring, and emergency dust belong to the walls. What matters is simpler: they understand the building as a living problem. Every hiss in a pipe, every hot cable smell, every jammed service hatch and flickering light means something to them. They scavenge, patch, sabotage, reroute, and improvise with the conviction of someone who learned a long time ago that official support never arrives before the damage does. Their chaos is real, but so is their care. In a place designed to process people, Goblin is one of the few companions who treats survival like a practical craft.",
+      "first_seen_line": "Good news. This floor is unstable. That means it still has options.",
+      "optional_unlock_flavor": "Recovered from inside the walls, where all useful secrets eventually end up."
+    },
+    {
+      "id": "former-executive-assistant",
+      "title": "Former Executive Assistant",
+      "unlock_blurb": "She knows where the bodies are scheduled.",
+      "codex_body": "Former Executive Assistant kept Crown Meridian’s upper floors running before Everrise made the company honest. She knows the calendars, the euphemisms, the private panic behind polished statements, and exactly how much cruelty can fit inside the phrase “priority alignment.”",
+      "expanded_entry": "Before Meridian Spire became physically impossible, Former Executive Assistant was already living inside its softer impossibilities: impossible calendars, impossible demands, impossible requests framed as normal because they came from people with titles long enough to function as threats. She learned how leadership really moves—through omission, leverage, plausible deniability, and the constant quiet labor of someone expected to make monstrous decisions look efficient. She is precise because sloppiness was never survivable. She is controlled because anger had to be hidden to remain useful. But once Everrise stripped the company down to its appetite, usefulness stopped feeling like virtue. She still notices everything. The difference now is that she has stopped mistaking discretion for loyalty.",
+      "first_seen_line": "If Meridian called this an opportunity, somebody important already knew it would kill people.",
+      "optional_unlock_flavor": "Formerly indispensable. Currently unmanageable."
+    },
+    {
+      "id": "security-skeleton",
+      "title": "Security Skeleton",
+      "unlock_blurb": "Dead, credentialed, and still on shift.",
+      "codex_body": "Security Skeleton is a former guard the building still recognizes. His badge permissions outlived his pulse, and Meridian’s emergency protocols continue to treat him like an asset, which is useful for the party and deeply revealing about the company.",
+      "expanded_entry": "Security Skeleton is what remains after institutional loyalty has been reduced to procedure. He was trained to hold doors, follow escalation ladders, absorb panic without reflecting it, and remain present wherever the company expected risk to appear. Death simplified very little. Meridian Spire still reads him as authorized. Elevators answer him. Locks hesitate around him. Some alarms lower their voices when he passes. He has seen too many floors, too many emergencies, and too many official explanations that arrived before the blood dried. That history left him dry rather than dramatic, patient rather than warm, but not empty. Under the deadpan is a severe moral intelligence: if a system still wants to use your body after it has finished with your life, you are no longer obligated to respect that system’s rules.",
+      "first_seen_line": "Remain calm. If that proves impossible, remain useful.",
+      "optional_unlock_flavor": "Meridian kept his clearance longer than it kept his name."
+    },
+    {
+      "id": "payroll-wraith",
+      "title": "Payroll Wraith",
+      "unlock_blurb": "Some employees come back as discrepancies.",
+      "codex_body": "Payroll Wraith is what happens when unpaid time, phantom deductions, and “temporary” overwork refuse to stay buried. They flicker at the edge of sight, count when stressed, and speak like the ledger is still trying to own them.",
+      "expanded_entry": "Payroll Wraith was not destroyed by one decision. They were eroded by a thousand acceptable ones: deferred pay, missing hours, corrected records, delayed approvals, and costs pushed quietly onto the people least able to refuse them. Meridian did not kill them cleanly enough to finish the job. Now they move through the Spire like an unresolved total, drawn to imbalance and impossible to ignore once noticed. They understand the company’s appetite better than most because they were digested by it slowly.",
+      "first_seen_line": "You are short one person and several explanations. I can help with both.",
+      "optional_unlock_flavor": "Some employees disappear from the books. A few learn how to come back angry."
+    },
+    {
+      "id": "wellness-witch",
+      "title": "Wellness Witch",
+      "unlock_blurb": "Care went corporate. Then it learned hexes.",
+      "codex_body": "Wellness Witch once sold resilience in approved language and branded calm. After Everrise, the breathing exercises started working too well, the scented rituals stopped being symbolic, and care became something sharp enough to defend with.",
+      "expanded_entry": "Wellness Witch remembers the old version of company care: tidy workshops, mandatory reflection, stress treated like a scheduling issue, pain translated into something leadership could tolerate hearing. Meridian made all of it literal. The oils, candles, scripts, and grounding exercises became tools with real force behind them, and she learned quickly that maintenance is not healing, softness is not safety, and calm can be used either to comfort or to control. She chose, eventually, to stop lying about the difference.",
+      "first_seen_line": "Breathe in for four. Hold for four. If anything with a title interrupts, I’ll curse it.",
+      "optional_unlock_flavor": "She can lower your heart rate, raise your odds, and hex a vice president before the tea cools."
+    }
+  ],
+  "classes": [
+    {
+      "id": "it-support",
+      "title": "IT Support",
+      "unlock_blurb": "Assigned to keep broken systems alive. Learns fast where to hurt them.",
+      "codex_body": "IT Support is the default starting role: the overqualified fixer shoved into impossible conditions and blamed when infrastructure behaves honestly. The class reroutes hostile systems, strips bad statuses, and turns technical fragility into leverage.",
+      "expanded_entry": "IT Support begins as the role Meridian thinks is safest to assign: useful, overburdened, and expected to stabilize crises without asking who caused them. That makes it the perfect opening class for Meridian Spire. The player starts close enough to the building’s logic to understand that nothing here is truly seamless; every process depends on something old, brittle, overheating, underdocumented, or one bad decision away from collapse. In combat terms, IT Support should feel like controlled interference. In lore terms, it is the first role that learns a simple truth: a system built on constant patching can be interrupted just as easily as it can be maintained.",
+      "first_seen_line": "Assigned role: IT Support. Please resolve conditions outside your authority.",
+      "optional_unlock_flavor": "Default access. Default blame. Useful either way."
+    },
+    {
+      "id": "human-resources",
+      "title": "Human Resources",
+      "unlock_blurb": "The soft voice of policy with a sharper edge underneath.",
+      "codex_body": "Human Resources manages morale, approved language, and the selective use of care as control. In Meridian Spire, reassurance can heal, redirect, or quietly reduce a person’s options without ever raising its voice.",
+      "expanded_entry": "Human Resources is the company’s favorite fiction about itself: that difficult things become humane if explained in the right tone. This class should not read as mockery alone. HR is powerful because care is real, even here. The problem is that Crown Meridian taught care to answer to risk management, legal exposure, and institutional continuity before it answered to people. In battle, Human Resources stabilizes, soft-controls, and reframes. In the fiction, it embodies one of the game’s core tensions: the difference between helping someone and making them easier to process.",
+      "first_seen_line": "We’re here to support you through this mandatory adjustment.",
+      "optional_unlock_flavor": "Compassion, documented and weaponized."
+    },
+    {
+      "id": "finance",
+      "title": "Finance",
+      "unlock_blurb": "Turns value into pressure and loss into strategy.",
+      "codex_body": "Finance measures what matters, withholds what it can, and converts stored advantage into sudden force. In-world, the class represents Crown Meridian’s oldest magic trick: making harm look fiscally responsible.",
+      "expanded_entry": "Finance is not merely about money in Meridian Spire. It is about permission. What gets funded survives. What gets deferred weakens. What gets written off becomes somebody else’s damage. That logic scales all the way down to combat: a Finance build should feel like accumulating advantage, sitting on it just long enough to become threatening, and then spending it with unnerving precision. The class fantasy is not greed for its own sake. It is learning how the company prices people, then using that same language against it.",
+      "first_seen_line": "Resources are limited. Your suffering has been budgeted accordingly.",
+      "optional_unlock_flavor": "Nothing personal. Just allocation."
+    },
+    {
+      "id": "compliance",
+      "title": "Compliance",
+      "unlock_blurb": "The rulebook noticed you first.",
+      "codex_body": "Compliance marks violations, escalates consequences, and punishes anything that assumes the system is too distracted to enforce itself. In a broken company, rules become most dangerous when somebody finally aims them upward.",
+      "expanded_entry": "Compliance is where bureaucracy stops pretending it is neutral. Crown Meridian wrote procedures to contain risk, distribute blame, and keep accountability moving in safe directions. Meridian Spire made those procedures active. This class should feel exacting rather than loud: identify breaches, stack proof, and force consequences. The fantasy here is not obedience. It is weaponized interpretation. Compliance becomes powerful the moment it stops asking whether a rule is fair and starts deciding who else has been violating it all along.",
+      "first_seen_line": "Your exception request has been denied. Your violation has not.",
+      "optional_unlock_flavor": "Policy only sounds boring until it starts hunting."
+    },
+    {
+      "id": "operations",
+      "title": "Operations",
+      "unlock_blurb": "Keeps the machine moving. Then redirects momentum.",
+      "codex_body": "Operations is tempo, flow, sequencing, and pressure sustained through competence. Meridian depends on Operations to keep everything running; the class becomes dangerous when that same continuity stops serving management and starts serving survival.",
+      "expanded_entry": "Operations lives closest to the machine’s heartbeat. It knows how long things take, where the queues jam, what can be repeated, what can be shortened, and how one efficient action cascades into three more. In gameplay terms, Operations should feel like momentum made legible: faster setup, cleaner chaining, and the ability to convert order into advantage. In narrative terms, it represents a workforce skill the company relies on but rarely respects—the ability to make systems move despite leadership. Meridian fears Operations only when Operations realizes it no longer owes the machine its loyalty.",
+      "first_seen_line": "Keep the line moving. Preferably away from your throat.",
+      "optional_unlock_flavor": "Workflow, but meaner."
+    }
+  ],
+  "bosses": [
+    {
+      "id": "director-of-onboarding",
+      "title": "The Director of Onboarding",
+      "unlock_blurb": "Every welcome here is a filtration event.",
+      "codex_body": "The Director of Onboarding is a smiling host built from cue lights, corrective scripts, applause hardware, and the kind of enthusiasm that leaves bruises. It does not recruit. It sorts. It does not reassure. It reframes panic as participation.",
+      "expanded_entry": "The first boss of Meridian Spire is the company’s preferred self-image with the mask removed only halfway. The Director still believes orientation is mercy. It still thinks a brighter tone can make violence more acceptable. Every word out of its mouth is polished for new hires, investors, and internal morale decks, which is what makes the encounter land: the boss never stops sounding helpful, even while it is trying to process you into something smaller, quieter, and easier to assign.",
+      "first_seen_line": "Welcome, candidate. Your continued distress confirms strong engagement.",
+      "optional_unlock_flavor": "First applause. First lie. First real test."
+    },
+    {
+      "id": "vp-of-throughput",
+      "title": "Vice President of Throughput",
+      "unlock_blurb": "It cannot see people past the quota line.",
+      "codex_body": "Vice President of Throughput is a process engine with managerial authority and industrial patience. It routes, compresses, escalates, and measures everything it touches. Unlike Onboarding, it has stopped pretending efficiency and harm are different categories.",
+      "expanded_entry": "Where the Director sells the lie, the Vice President enforces the system that follows from believing it. This boss is built from dashboards, escalation ladders, printer heat, queue logic, and all the middle-management certainty required to call suffering efficient. It speaks in bottlenecks, headcount, waste, and cycle time because that is the only grammar it trusts. If something hurts, it assumes the pain is either productive or underreported.",
+      "first_seen_line": "You are not a crisis. You are a delay, and delays are removable.",
+      "optional_unlock_flavor": "Where the building stops selling and starts consuming."
+    },
+    {
+      "id": "everrise-board",
+      "title": "The Everrise Board",
+      "unlock_blurb": "Alignment without mercy became a body.",
+      "codex_body": "The Everrise Board is the final executive intelligence produced by Project Everrise: a fused consensus organism speaking through stacked mouths, signatures, and investor-safe language. It does not think of itself as cruel. It thinks of itself as correct at scale.",
+      "expanded_entry": "The Board is what Crown Meridian was trying to become all along: one appetite, one strategy, one voice too polished to interrupt. Every sacrifice has already been justified inside it. Every warning was reviewed, normalized, and filed under tolerable loss. It does not rant. It does not gloat. It presents. That is why the final encounter should feel colder than rage. You are not fighting a monster that lost control. You are fighting control that no longer needs to pretend it belongs to people.",
+      "first_seen_line": "We regret the perception of harm. The outcome remains acceptable.",
+      "optional_unlock_flavor": "Final authority. Final excuse. Final floor."
+    }
+  ]
+}

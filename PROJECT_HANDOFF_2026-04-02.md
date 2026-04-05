@@ -129,7 +129,7 @@ Use these docs together:
 - `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-02.md`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`
 - `README.md`
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
@@ -139,4 +139,5 @@ Simple rule:
 
 - use March 24 for the broad product/system handoff
 - use March 31 for the previous polish/readiness snapshot
-- use this April 2 addendum for the current onboarding, route-choice gameplay/readability, GitHub-readiness, and repo-doc state
+- use this April 2 addendum for the April 2 onboarding and route-choice snapshot
+- use the April 5 docs for the current release/tester-build state

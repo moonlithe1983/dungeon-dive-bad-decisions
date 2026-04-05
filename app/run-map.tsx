@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  getLoopSurfaceArtSource,
+  getRouteNodeArtSource,
+} from '@/src/assets/loop-art-sources';
+import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
 import { getEarlyFloorBeat, getPartyScene } from '@/src/content/authored-voice';
@@ -183,6 +189,18 @@ export default function RunMapScreen() {
     return getPartyScene('first-route-choice', run.chosenCompanionIds);
   }, [run]);
   const currentNodeRoute = currentNode ? getRunNodeRoute(currentNode.kind) : null;
+  const runMapSurfaceArtSource = useMemo(
+    () => getLoopSurfaceArtSource('run-map', settings),
+    [settings]
+  );
+  const selectedRouteArtSource = useMemo(
+    () =>
+      getRouteNodeArtSource(
+        currentNode?.kind ?? floorChoices[0]?.kind ?? 'battle',
+        settings
+      ),
+    [currentNode?.kind, floorChoices, settings]
+  );
   const pendingRewardItem = run?.pendingReward?.itemId
     ? getItemDefinition(run.pendingReward.itemId)
     : null;
@@ -401,6 +419,16 @@ export default function RunMapScreen() {
                       ))}
                     </View>
                   ) : null}
+                  <LoopArtPanel
+                    title="Meaningful Choice"
+                    body={
+                      currentNode
+                        ? `${currentNode.label} is the next test. Keep the loop readable by committing to one risk on purpose.`
+                        : 'Pick the next room by intent: pressure, story risk, recovery, or boss progress.'
+                    }
+                    source={selectedRouteArtSource}
+                    backgroundSource={runMapSurfaceArtSource}
+                  />
                   <View style={styles.choiceList}>
                     {floorChoices.map((node) => {
                       const isSelected = node.id === currentNode?.id;
@@ -418,9 +446,18 @@ export default function RunMapScreen() {
                           accessibilityRole="button"
                         >
                           <View style={styles.choiceHeader}>
-                            <View style={styles.choiceTitleWrap}>
-                              <Text style={styles.choiceEyebrow}>{getRoleCue(node)}</Text>
-                              <Text style={styles.choiceTitle}>{node.label}</Text>
+                            <View style={styles.choiceHeaderContent}>
+                              <View style={styles.choiceIconWrap}>
+                                <Image
+                                  source={getRouteNodeArtSource(node.kind, settings)}
+                                  style={styles.choiceIcon}
+                                  resizeMode="contain"
+                                />
+                              </View>
+                              <View style={styles.choiceTitleWrap}>
+                                <Text style={styles.choiceEyebrow}>{getRoleCue(node)}</Text>
+                                <Text style={styles.choiceTitle}>{node.label}</Text>
+                              </View>
                             </View>
                             {isSelected ? (
                               <Text style={styles.choiceBadge}>Selected</Text>
@@ -633,8 +670,20 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text
+        style={styles.statValue}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {value}
+      </Text>
+      <Text
+        style={styles.statLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -788,6 +837,7 @@ function createStyles(
       fontWeight: '900',
       lineHeight: scaleLineHeight(22, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     statLabel: {
       color: colors.textMuted,
@@ -795,7 +845,9 @@ function createStyles(
       fontWeight: '700',
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      lineHeight: scaleLineHeight(16, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     noticeText: {
       color: colors.accent,
@@ -823,6 +875,27 @@ function createStyles(
       justifyContent: 'space-between',
       alignItems: 'flex-start',
       gap: spacing.sm,
+    },
+    choiceHeaderContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      flex: 1,
+    },
+    choiceIconWrap: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 8,
+    },
+    choiceIcon: {
+      width: 24,
+      height: 24,
     },
     choiceTitleWrap: {
       flex: 1,

@@ -14,6 +14,7 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 - Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
+- Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
 - Authored voice layer: early-floor lore beats, starting-trio chemistry, early event overlays, codex bios, reward build-lane cues, and defeat advice now use the April 4 narrative pack instead of lighter placeholder prose
 - Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
@@ -180,6 +181,7 @@ The game is in release-candidate hardening mode:
 - Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
 - an April 2 Android visual sweep confirmed the updated title, onboarding, settings, support, privacy, and no-active-run map copy in-context on the current debug build
 - an April 4 repo smoke pass confirmed the current source still passes `tsc`, `lint`, and `smoke:sim` after the authored writing integration
+- an April 5 focused Android pass confirmed reward claim -> run-map -> authored event entry -> cold relaunch resume on emulator, and a fresh local release APK now installs and launches cleanly
 - automated smoke validation now also covers the route-choice map structure deterministically instead of assuming a single forced floor path
 - the native Android app label now matches the real product title instead of the repo slug
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
@@ -193,6 +195,7 @@ The game is in release-candidate hardening mode:
 - the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - the canonical short-path workspace `C:\ddbd` can produce a local release APK and currently contains `android/app/build/outputs/apk/release/app-release.apk`
+- the local Android launcher now resolves the real workspace path first, so `npm run android` works from both `C:\ddbd` and the restored junction path without the earlier Expo root-resolution failure
 - the legacy long-path workspace may still fail native packaging because of Windows path-length limits
 - before tester or store distribution after future source changes, rebuild from the final accepted `C:\ddbd` source and re-verify install behavior
 - the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, and `dev-smoke`, now also including the authored lore/voice surfaces, before broader playtesting and upload
@@ -224,12 +227,12 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-04-05.md`
+- `PROJECT_HANDOFF_2026-04-05.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`
 - `PROJECT_HANDOFF_2026-04-04.md`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-04.md`
 - `PROJECT_HANDOFF_2026-04-02.md`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-02.md`
 - `PROJECT_HANDOFF_2026-03-31.md`
-- `DUNGEON_DIVE_APP_NEEDS_2026-03-31.md`
 - `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`

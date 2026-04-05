@@ -1,0 +1,253 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "reward-and-route-ui-pack",
+  "sections": {
+    "reward_screen_microcopy_pack": {
+      "screen_ui": {
+        "title": "Choose a Package",
+        "subtitle": "Meridian calls this recognition because loot with a threat tested poorly.",
+        "inspect_label": "Read the damage",
+        "claim_label": "Take package",
+        "skip_label": "Keep moving",
+        "reroll_label": "Request reconsideration",
+        "footer_hint": "Every package predicts what kind of suffering the company expects next."
+      },
+      "contextual_lines": [
+        {
+          "id": "default-open",
+          "trigger_label": "Default reward screen open",
+          "line": "The company loves rewards. They make coercion feel like customer service."
+        },
+        {
+          "id": "after-bad-floor",
+          "trigger_label": "Reward after a rough floor",
+          "line": "Nothing says institutional remorse like a coupon stapled to trauma."
+        },
+        {
+          "id": "low-health-open",
+          "trigger_label": "Low-health reward screen",
+          "line": "They can smell panic now. That usually improves the packages."
+        },
+        {
+          "id": "elite-reward-open",
+          "trigger_label": "Reward after elite or miniboss",
+          "line": "This one costs more because Meridian watched you earn it."
+        },
+        {
+          "id": "healing-package-visible",
+          "trigger_label": "A healing-focused package appears",
+          "line": "Whenever the building offers recovery this quickly, it expects another injury on schedule."
+        },
+        {
+          "id": "synergy-package-visible",
+          "trigger_label": "A companion/synergy package appears",
+          "line": "The company hates teamwork unless it can invoice it."
+        }
+      ],
+      "package_microcopy": [
+        {
+          "package_id": "patch-stack",
+          "package_name": "Patch Stack",
+          "hover_line": "Triage, solvent, and enough control to keep the floor from getting ambitious.",
+          "take_line": "Take the tools. If Meridian wants you broken, charge it for the repair.",
+          "archive_note": "A fixer package for runs already leaking from multiple seams."
+        },
+        {
+          "package_id": "hostile-takeover",
+          "package_name": "Hostile Takeover",
+          "hover_line": "Aggression with a necktie. End the argument before it becomes policy.",
+          "take_line": "Take it and hit first. Courtesy has never tested well here.",
+          "archive_note": "A pressure package for players who would rather solve meetings with impact."
+        },
+        {
+          "package_id": "paper-armor",
+          "package_name": "Paper Armor",
+          "hover_line": "Defensive paperwork thick enough to stop a few honest injuries.",
+          "take_line": "Take the coverage. Surviving longer is its own kind of insubordination.",
+          "archive_note": "A bunker package for ugly floors and worse math."
+        },
+        {
+          "package_id": "escalation-clause",
+          "package_name": "Escalation Clause",
+          "hover_line": "Status spread, slow ruin, and the joy of making one problem become six.",
+          "take_line": "Take the clause. Let the room discover how many ways pain can be compliant.",
+          "archive_note": "An attrition package for people who enjoy watching policy rot in public."
+        },
+        {
+          "package_id": "lunch-and-learn",
+          "package_name": "Lunch-and-Learn",
+          "hover_line": "Companion synergy disguised as professional development.",
+          "take_line": "Take the seminar. The closest thing Meridian has to hope is coworkers comparing notes.",
+          "archive_note": "A teamwork package for runs built on chemistry, setup, and delayed payoff."
+        },
+        {
+          "package_id": "expense-account",
+          "package_name": "Expense Account",
+          "hover_line": "More resources, richer upgrades, and enough budget to become a problem.",
+          "take_line": "Take the card before Finance remembers you are alive.",
+          "archive_note": "An economy package for players who prefer leverage to purity."
+        },
+        {
+          "package_id": "back-channel",
+          "package_name": "Back Channel",
+          "hover_line": "Smoother setup, better draw, and a cleaner path to ugly behavior.",
+          "take_line": "Take the whisper network. Meridian has always been weakest behind the scenes.",
+          "archive_note": "A setup package for trickier runs and players who like loaded openings."
+        },
+        {
+          "package_id": "overtime-spiral",
+          "package_name": "Overtime Spiral",
+          "hover_line": "Repeat actions, chain turns, and keep moving until the floor files a complaint.",
+          "take_line": "Take the spiral. Burn bright enough and the quotas start begging.",
+          "archive_note": "A momentum package for runs that want to snowball before the building can answer."
+        },
+        {
+          "package_id": "sick-leave",
+          "package_name": "Sick Leave",
+          "hover_line": "Recovery, reset, and temporary permission to keep having organs.",
+          "take_line": "Take the leave. Rest counts more when the company clearly meant to deny it.",
+          "archive_note": "A recovery package for stabilizing after bad draws and worse choices."
+        },
+        {
+          "package_id": "exit-package",
+          "package_name": "Exit Package",
+          "hover_line": "Low-health violence for anyone one bad hallway from enlightenment.",
+          "take_line": "Take the severance. If the run wants a comeback, let it come back mean.",
+          "archive_note": "A clutch package for runs living on fumes and bad intent."
+        },
+        {
+          "package_id": "policy-knife",
+          "package_name": "Policy Knife",
+          "hover_line": "Precision tools for priority targets, especially the kind that sign things.",
+          "take_line": "Take the knife. Some problems deserve accuracy more than mercy.",
+          "archive_note": "A single-target package for elites, bosses, and other well-dressed mistakes."
+        },
+        {
+          "package_id": "budget-freeze",
+          "package_name": "Budget Freeze",
+          "hover_line": "Slow the room, choke the plans, and make initiative die in committee.",
+          "take_line": "Take the freeze. Nothing humiliates power like forcing it to wait its turn.",
+          "archive_note": "A disruption package for players who prefer control to spectacle."
+        }
+      ]
+    },
+    "late_floor_route_choice_pack": {
+      "screen_ui": {
+        "title": "Choose the Next Floor Hazard",
+        "subtitle": "The map only shows the current lie. That is still more honesty than Meridian usually offers.",
+        "legend_risk": "High risk",
+        "legend_event": "Story node",
+        "legend_reward": "Package node",
+        "legend_elite": "Elite threat",
+        "legend_boss": "Boss floor"
+      },
+      "floors": [
+        {
+          "floor": 4,
+          "biome": "Orientation Arcade",
+          "title": "Corrective Showcase",
+          "map_intro": "The lights ahead are too flattering to be safe. The applause track has learned your timing.",
+          "route_hints": {
+            "risk": "The loud lane runs under stage rigging and smiling screens.",
+            "event": "Someone in a headset wants one more volunteer for the demonstration.",
+            "reward": "Prize carts wait nearby, all chrome and legal ambiguity.",
+            "elite": "The ushers have been replaced by personnel who expect a lesson to happen.",
+            "boss": "Behind the bright door, onboarding has decided to become theology."
+          }
+        },
+        {
+          "floor": 5,
+          "biome": "Throughput Maze",
+          "title": "Cubicle Herd",
+          "map_intro": "The carnival paint has peeled off. Now the building wants output, not applause.",
+          "route_hints": {
+            "risk": "The shortest line cuts through desks arranged like teeth.",
+            "event": "Meeting-room glass is glowing again. That never means anything kind.",
+            "reward": "A supply closet is offering compensation in the tone of a threat.",
+            "elite": "Something managerial is pacing the aisle and counting bodies."
+          }
+        },
+        {
+          "floor": 6,
+          "biome": "Throughput Maze",
+          "title": "Variance Review",
+          "map_intro": "Every hallway now feels measured. Even the silence has a quota attached.",
+          "route_hints": {
+            "risk": "The fast route passes beneath active KPI displays and too many cameras.",
+            "event": "A review room has reserved time on your behalf.",
+            "reward": "Someone left a benefits packet on a chair warm enough to worry about.",
+            "elite": "The committee lane smells like toner, panic, and pre-approved harm."
+          }
+        },
+        {
+          "floor": 7,
+          "biome": "Throughput Maze",
+          "title": "Quarterly Sacrifice",
+          "map_intro": "The machinery is no longer pretending to serve people. It wants people to serve the machinery.",
+          "route_hints": {
+            "risk": "The conveyor route is efficient in the same way a blade is efficient.",
+            "event": "A final process exception is available if you feel like lying to a machine.",
+            "reward": "The package station is paying extra for deniability.",
+            "elite": "Everything important on this floor has too many arms.",
+            "boss": "Ahead waits a vice president built from metrics and permission."
+          }
+        },
+        {
+          "floor": 8,
+          "biome": "Executive Apex",
+          "title": "Marble Permission",
+          "map_intro": "The air gets cleaner and the ethics get worse. Executive floors always confuse those two things.",
+          "route_hints": {
+            "risk": "The polished corridor is guarded by doors that only open for authority or blood.",
+            "event": "An atrium node is listening through the roots again.",
+            "reward": "A private lounge is extending benefits to anyone still useful.",
+            "elite": "The shortest route crosses an oversight chamber that has never once been oversaw."
+          }
+        },
+        {
+          "floor": 9,
+          "biome": "Executive Apex",
+          "title": "Consensus Garden",
+          "map_intro": "Every object here has been watered by denial for years. None of it is dead enough.",
+          "route_hints": {
+            "risk": "The upper path cuts past investor glass and something moving behind it.",
+            "event": "A boardroom is still waiting for a vote from the recently endangered.",
+            "reward": "A sealed cabinet is offering leverage dressed as gratitude.",
+            "elite": "The proxy lane is quiet in the way expensive violence is quiet."
+          }
+        },
+        {
+          "floor": 10,
+          "biome": "Executive Apex",
+          "title": "Consensus Engine",
+          "map_intro": "The building has run out of euphemisms and started stacking signatures instead.",
+          "route_hints": {
+            "risk": "There is no safe lane left, only better documented ones.",
+            "event": "The last console will still bargain if you let it define belonging.",
+            "reward": "Anything useful here was purchased with somebody else's future.",
+            "elite": "Every approach is a rehearsal for authority trying to survive exposure.",
+            "boss": "At the summit, leadership has fused into one unanimous refusal."
+          }
+        }
+      ],
+      "global_route_barks": [
+        {
+          "id": "default-route-open",
+          "trigger_label": "Default later-floor route choice",
+          "line": "Pick the hallway that hates your build the least."
+        },
+        {
+          "id": "low-health-route-open",
+          "trigger_label": "Later-floor route choice at low health",
+          "line": "This is not really navigation anymore. It is triage with scenery."
+        },
+        {
+          "id": "post-proof-route-open",
+          "trigger_label": "Route choice after major lore/proof unlock",
+          "line": "Now that you know what the building is, every path feels more honest and less forgivable."
+        }
+      ]
+    }
+  }
+}

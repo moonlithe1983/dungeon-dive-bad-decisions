@@ -1,0 +1,9 @@
+id,recommended_repo_path,surface,notes
+ui_route_select,src/assets/audio/ui/route_select.wav,run-map route node,Short bright select cue.
+ui_reward_reveal,src/assets/audio/ui/reward_reveal.wav,reward open,"Use once on panel reveal, not every rerender."
+ui_reward_claim,src/assets/audio/ui/reward_claim.wav,reward confirm,Good pair for claim button + optional haptic.
+ui_event_open,src/assets/audio/ui/event_open.wav,event open,Uneasy open sting for integrated event overlays.
+ui_event_confirm,src/assets/audio/ui/event_confirm.wav,event choice confirm,Short restrained confirm cue.
+ui_invalid_tap,src/assets/audio/ui/invalid_tap.wav,locked / invalid tap,Use with visible error/disabled state.
+ui_boss_warning,src/assets/audio/ui/boss_warning.wav,boss door / elite warning,Use sparingly.
+ui_recap_sting,src/assets/audio/ui/recap_sting.wav,defeat recap open,Keep below spoken or readable recap copy.

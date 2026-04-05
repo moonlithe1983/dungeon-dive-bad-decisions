@@ -1,0 +1,21 @@
+asset_id,category,recommended_accessibility_label,notes
+bond-facilities-goblin-former-executive-assistant_header,bond-header-art,Deniable Maintenance bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-facilities-goblin-former-executive-assistant_panel,bond-panel-art,Deniable Maintenance bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-facilities-goblin-security-skeleton_header,bond-header-art,Service Corridor Etiquette bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-facilities-goblin-security-skeleton_panel,bond-panel-art,Service Corridor Etiquette bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-former-executive-assistant-security-skeleton_header,bond-header-art,Incident Room bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-former-executive-assistant-security-skeleton_panel,bond-panel-art,Incident Room bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-payroll-wraith-facilities-goblin_header,bond-header-art,Honest Leak bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-payroll-wraith-facilities-goblin_panel,bond-panel-art,Honest Leak bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-payroll-wraith-former-executive-assistant_header,bond-header-art,Corrected Records bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-payroll-wraith-former-executive-assistant_panel,bond-panel-art,Corrected Records bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-payroll-wraith-security-skeleton_header,bond-header-art,Quiet Shift bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-payroll-wraith-security-skeleton_panel,bond-panel-art,Quiet Shift bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-wellness-witch-facilities-goblin_header,bond-header-art,Emergency Herbs bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-wellness-witch-facilities-goblin_panel,bond-panel-art,Emergency Herbs bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-wellness-witch-former-executive-assistant_header,bond-header-art,Pleasantries Over bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-wellness-witch-former-executive-assistant_panel,bond-panel-art,Pleasantries Over bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-wellness-witch-security-skeleton_header,bond-header-art,Plain Honesty bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-wellness-witch-security-skeleton_panel,bond-panel-art,Plain Honesty bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."
+bond-payroll-wraith-wellness-witch_header,bond-header-art,Name the Harm bond scene header art,Use with visible scene title and pair names in runtime UI.
+bond-payroll-wraith-wellness-witch_panel,bond-panel-art,Name the Harm bond scene panel background,"Keep scene copy, trigger text, and unlock text in runtime UI."

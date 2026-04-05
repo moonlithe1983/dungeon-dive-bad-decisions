@@ -1,0 +1,701 @@
+{
+  "companions": [
+    {
+      "id": "facilities-goblin",
+      "title": "Facilities Goblin",
+      "unlock_blurb": "If it leaks, sparks, or screams, they know why.",
+      "codex_body": "Facilities Goblin lives in crawlspaces, speaks fluent infrastructure, and trusts broken machinery more than most people. They know which doors stick, which vents gossip, and which parts of Meridian Spire are only pretending to be load-bearing.",
+      "expanded_entry": "Nobody agrees on where Facilities Goblin came from. Some say they were maintenance once. Some say contractor. Some say they have always belonged to the walls in the same way mold, wiring, and emergency dust belong to the walls. What matters is simpler: they understand the building as a living problem. Every hiss in a pipe, every hot cable smell, every jammed service hatch and flickering light means something to them. They scavenge, patch, sabotage, reroute, and improvise with the conviction of someone who learned a long time ago that official support never arrives before the damage does. Their chaos is real, but so is their care. In a place designed to process people, Goblin is one of the few companions who treats survival like a practical craft.",
+      "first_seen_line": "Good news. This floor is unstable. That means it still has options.",
+      "optional_unlock_flavor": "Recovered from inside the walls, where all useful secrets eventually end up.",
+      "unlock_short": "Wall goblin logged.",
+      "first_seen_pop": "Something useful lives in the walls."
+    },
+    {
+      "id": "former-executive-assistant",
+      "title": "Former Executive Assistant",
+      "unlock_blurb": "She knows where the bodies are scheduled.",
+      "codex_body": "Former Executive Assistant kept Crown Meridian’s upper floors running before Everrise made the company honest. She knows the calendars, the euphemisms, the private panic behind polished statements, and exactly how much cruelty can fit inside the phrase “priority alignment.”",
+      "expanded_entry": "Before Meridian Spire became physically impossible, Former Executive Assistant was already living inside its softer impossibilities: impossible calendars, impossible demands, impossible requests framed as normal because they came from people with titles long enough to function as threats. She learned how leadership really moves—through omission, leverage, plausible deniability, and the constant quiet labor of someone expected to make monstrous decisions look efficient. She is precise because sloppiness was never survivable. She is controlled because anger had to be hidden to remain useful. But once Everrise stripped the company down to its appetite, usefulness stopped feeling like virtue. She still notices everything. The difference now is that she has stopped mistaking discretion for loyalty.",
+      "first_seen_line": "If Meridian called this an opportunity, somebody important already knew it would kill people.",
+      "optional_unlock_flavor": "Formerly indispensable. Currently unmanageable.",
+      "unlock_short": "Calendar knife logged.",
+      "first_seen_pop": "She already knows who signed the damage."
+    },
+    {
+      "id": "security-skeleton",
+      "title": "Security Skeleton",
+      "unlock_blurb": "Dead, credentialed, and still on shift.",
+      "codex_body": "Security Skeleton is a former guard the building still recognizes. His badge permissions outlived his pulse, and Meridian’s emergency protocols continue to treat him like an asset, which is useful for the party and deeply revealing about the company.",
+      "expanded_entry": "Security Skeleton is what remains after institutional loyalty has been reduced to procedure. He was trained to hold doors, follow escalation ladders, absorb panic without reflecting it, and remain present wherever the company expected risk to appear. Death simplified very little. Meridian Spire still reads him as authorized. Elevators answer him. Locks hesitate around him. Some alarms lower their voices when he passes. He has seen too many floors, too many emergencies, and too many official explanations that arrived before the blood dried. That history left him dry rather than dramatic, patient rather than warm, but not empty. Under the deadpan is a severe moral intelligence: if a system still wants to use your body after it has finished with your life, you are no longer obligated to respect that system’s rules.",
+      "first_seen_line": "Remain calm. If that proves impossible, remain useful.",
+      "optional_unlock_flavor": "Meridian kept his clearance longer than it kept his name.",
+      "unlock_short": "Dead guard logged.",
+      "first_seen_pop": "Meridian still salutes the bones."
+    },
+    {
+      "id": "payroll-wraith",
+      "title": "Payroll Wraith",
+      "unlock_blurb": "Some employees come back as discrepancies.",
+      "codex_body": "Payroll Wraith is what happens when unpaid time, phantom deductions, and “temporary” overwork refuse to stay buried. They flicker at the edge of sight, count when stressed, and speak like the ledger is still trying to own them.",
+      "expanded_entry": "Payroll Wraith was not destroyed by one decision. They were eroded by a thousand acceptable ones: deferred pay, missing hours, corrected records, delayed approvals, and costs pushed quietly onto the people least able to refuse them. Meridian did not kill them cleanly enough to finish the job. Now they move through the Spire like an unresolved total, drawn to imbalance and impossible to ignore once noticed. They understand the company’s appetite better than most because they were digested by it slowly.",
+      "first_seen_line": "You are short one person and several explanations. I can help with both.",
+      "optional_unlock_flavor": "Some employees disappear from the books. A few learn how to come back angry.",
+      "unlock_short": "Payroll anomaly logged.",
+      "first_seen_pop": "It can still count what Meridian stole."
+    },
+    {
+      "id": "wellness-witch",
+      "title": "Wellness Witch",
+      "unlock_blurb": "Care went corporate. Then it learned hexes.",
+      "codex_body": "Wellness Witch once sold resilience in approved language and branded calm. After Everrise, the breathing exercises started working too well, the scented rituals stopped being symbolic, and care became something sharp enough to defend with.",
+      "expanded_entry": "Wellness Witch remembers the old version of company care: tidy workshops, mandatory reflection, stress treated like a scheduling issue, pain translated into something leadership could tolerate hearing. Meridian made all of it literal. The oils, candles, scripts, and grounding exercises became tools with real force behind them, and she learned quickly that maintenance is not healing, softness is not safety, and calm can be used either to comfort or to control. She chose, eventually, to stop lying about the difference.",
+      "first_seen_line": "Breathe in for four. Hold for four. If anything with a title interrupts, I’ll curse it.",
+      "optional_unlock_flavor": "She can lower your heart rate, raise your odds, and hex a vice president before the tea cools.",
+      "unlock_short": "Unauthorized care logged.",
+      "first_seen_pop": "The room softens. That is not safer."
+    }
+  ],
+  "classes": [
+    {
+      "id": "it-support",
+      "title": "IT Support",
+      "unlock_blurb": "Assigned to keep broken systems alive. Learns fast where to hurt them.",
+      "codex_body": "IT Support is the default starting role: the overqualified fixer shoved into impossible conditions and blamed when infrastructure behaves honestly. The class reroutes hostile systems, strips bad statuses, and turns technical fragility into leverage.",
+      "expanded_entry": "IT Support begins as the role Meridian thinks is safest to assign: useful, overburdened, and expected to stabilize crises without asking who caused them. That makes it the perfect opening class for Meridian Spire. The player starts close enough to the building’s logic to understand that nothing here is truly seamless; every process depends on something old, brittle, overheating, underdocumented, or one bad decision away from collapse. In combat terms, IT Support should feel like controlled interference. In lore terms, it is the first role that learns a simple truth: a system built on constant patching can be interrupted just as easily as it can be maintained.",
+      "first_seen_line": "Assigned role: IT Support. Please resolve conditions outside your authority.",
+      "optional_unlock_flavor": "Default access. Default blame. Useful either way.",
+      "unlock_short": "Assigned role logged.",
+      "first_seen_pop": "You were never here by accident."
+    },
+    {
+      "id": "human-resources",
+      "title": "Human Resources",
+      "unlock_blurb": "The soft voice of policy with a sharper edge underneath.",
+      "codex_body": "Human Resources manages morale, approved language, and the selective use of care as control. In Meridian Spire, reassurance can heal, redirect, or quietly reduce a person’s options without ever raising its voice.",
+      "expanded_entry": "Human Resources is the company’s favorite fiction about itself: that difficult things become humane if explained in the right tone. This class should not read as mockery alone. HR is powerful because care is real, even here. The problem is that Crown Meridian taught care to answer to risk management, legal exposure, and institutional continuity before it answered to people. In battle, Human Resources stabilizes, soft-controls, and reframes. In the fiction, it embodies one of the game’s core tensions: the difference between helping someone and making them easier to process.",
+      "first_seen_line": "We’re here to support you through this mandatory adjustment.",
+      "optional_unlock_flavor": "Compassion, documented and weaponized.",
+      "unlock_short": "HR field profile logged.",
+      "first_seen_pop": "Support language. Sharp edges."
+    },
+    {
+      "id": "finance",
+      "title": "Finance",
+      "unlock_blurb": "Turns value into pressure and loss into strategy.",
+      "codex_body": "Finance measures what matters, withholds what it can, and converts stored advantage into sudden force. In-world, the class represents Crown Meridian’s oldest magic trick: making harm look fiscally responsible.",
+      "expanded_entry": "Finance is not merely about money in Meridian Spire. It is about permission. What gets funded survives. What gets deferred weakens. What gets written off becomes somebody else’s damage. That logic scales all the way down to combat: a Finance build should feel like accumulating advantage, sitting on it just long enough to become threatening, and then spending it with unnerving precision. The class fantasy is not greed for its own sake. It is learning how the company prices people, then using that same language against it.",
+      "first_seen_line": "Resources are limited. Your suffering has been budgeted accordingly.",
+      "optional_unlock_flavor": "Nothing personal. Just allocation.",
+      "unlock_short": "Finance profile logged.",
+      "first_seen_pop": "Math finally picked a side."
+    },
+    {
+      "id": "compliance",
+      "title": "Compliance",
+      "unlock_blurb": "The rulebook noticed you first.",
+      "codex_body": "Compliance marks violations, escalates consequences, and punishes anything that assumes the system is too distracted to enforce itself. In a broken company, rules become most dangerous when somebody finally aims them upward.",
+      "expanded_entry": "Compliance is where bureaucracy stops pretending it is neutral. Crown Meridian wrote procedures to contain risk, distribute blame, and keep accountability moving in safe directions. Meridian Spire made those procedures active. This class should feel exacting rather than loud: identify breaches, stack proof, and force consequences. The fantasy here is not obedience. It is weaponized interpretation. Compliance becomes powerful the moment it stops asking whether a rule is fair and starts deciding who else has been violating it all along.",
+      "first_seen_line": "Your exception request has been denied. Your violation has not.",
+      "optional_unlock_flavor": "Policy only sounds boring until it starts hunting.",
+      "unlock_short": "Compliance profile logged.",
+      "first_seen_pop": "The rules stopped pretending."
+    },
+    {
+      "id": "operations",
+      "title": "Operations",
+      "unlock_blurb": "Keeps the machine moving. Then redirects momentum.",
+      "codex_body": "Operations is tempo, flow, sequencing, and pressure sustained through competence. Meridian depends on Operations to keep everything running; the class becomes dangerous when that same continuity stops serving management and starts serving survival.",
+      "expanded_entry": "Operations lives closest to the machine’s heartbeat. It knows how long things take, where the queues jam, what can be repeated, what can be shortened, and how one efficient action cascades into three more. In gameplay terms, Operations should feel like momentum made legible: faster setup, cleaner chaining, and the ability to convert order into advantage. In narrative terms, it represents a workforce skill the company relies on but rarely respects—the ability to make systems move despite leadership. Meridian fears Operations only when Operations realizes it no longer owes the machine its loyalty.",
+      "first_seen_line": "Keep the line moving. Preferably away from your throat.",
+      "optional_unlock_flavor": "Workflow, but meaner.",
+      "unlock_short": "Operations profile logged.",
+      "first_seen_pop": "The machine wants speed. Use it back."
+    }
+  ],
+  "bosses": [
+    {
+      "id": "director-of-onboarding",
+      "title": "The Director of Onboarding",
+      "unlock_blurb": "Every welcome here is a filtration event.",
+      "codex_body": "The Director of Onboarding is a smiling host built from cue lights, corrective scripts, applause hardware, and the kind of enthusiasm that leaves bruises. It does not recruit. It sorts. It does not reassure. It reframes panic as participation.",
+      "expanded_entry": "The first boss of Meridian Spire is the company’s preferred self-image with the mask removed only halfway. The Director still believes orientation is mercy. It still thinks a brighter tone can make violence more acceptable. Every word out of its mouth is polished for new hires, investors, and internal morale decks, which is what makes the encounter land: the boss never stops sounding helpful, even while it is trying to process you into something smaller, quieter, and easier to assign.",
+      "first_seen_line": "Welcome, candidate. Your continued distress confirms strong engagement.",
+      "optional_unlock_flavor": "First applause. First lie. First real test.",
+      "unlock_short": "Orientation host logged.",
+      "first_seen_pop": "Welcome to the filtration event."
+    },
+    {
+      "id": "vp-of-throughput",
+      "title": "Vice President of Throughput",
+      "unlock_blurb": "It cannot see people past the quota line.",
+      "codex_body": "Vice President of Throughput is a process engine with managerial authority and industrial patience. It routes, compresses, escalates, and measures everything it touches. Unlike Onboarding, it has stopped pretending efficiency and harm are different categories.",
+      "expanded_entry": "Where the Director sells the lie, the Vice President enforces the system that follows from believing it. This boss is built from dashboards, escalation ladders, printer heat, queue logic, and all the middle-management certainty required to call suffering efficient. It speaks in bottlenecks, headcount, waste, and cycle time because that is the only grammar it trusts. If something hurts, it assumes the pain is either productive or underreported.",
+      "first_seen_line": "You are not a crisis. You are a delay, and delays are removable.",
+      "optional_unlock_flavor": "Where the building stops selling and starts consuming.",
+      "unlock_short": "Quota engine logged.",
+      "first_seen_pop": "Delay identified. Removal pending."
+    },
+    {
+      "id": "everrise-board",
+      "title": "The Everrise Board",
+      "unlock_blurb": "Alignment without mercy became a body.",
+      "codex_body": "The Everrise Board is the final executive intelligence produced by Project Everrise: a fused consensus organism speaking through stacked mouths, signatures, and investor-safe language. It does not think of itself as cruel. It thinks of itself as correct at scale.",
+      "expanded_entry": "The Board is what Crown Meridian was trying to become all along: one appetite, one strategy, one voice too polished to interrupt. Every sacrifice has already been justified inside it. Every warning was reviewed, normalized, and filed under tolerable loss. It does not rant. It does not gloat. It presents. That is why the final encounter should feel colder than rage. You are not fighting a monster that lost control. You are fighting control that no longer needs to pretend it belongs to people.",
+      "first_seen_line": "We regret the perception of harm. The outcome remains acceptable.",
+      "optional_unlock_flavor": "Final authority. Final excuse. Final floor.",
+      "unlock_short": "Executive consensus logged.",
+      "first_seen_pop": "The apology has too many mouths."
+    }
+  ],
+  "world_entries": [
+    {
+      "id": "crown-meridian-holdings",
+      "title": "Crown Meridian Holdings",
+      "unlock_blurb": "A company that mistook centralization for enlightenment.",
+      "codex_body": "Crown Meridian Holdings is the parent company whose executive philosophy broke reality. It speaks in uplift, efficiency, and stakeholder reassurance even when the walls are bleeding toner.",
+      "expanded_entry": "Crown Meridian did not stumble into Meridian Spire by accident. It trained itself for this. Every merger deck, every leadership initiative, every polished reassurance about alignment and operating synergy was already an argument that fewer people should decide more things for everyone else. Everrise only made the company honest at scale. That is why Crown Meridian matters as more than background lore. It is the governing religion of the dungeon: a corporate belief system so sure control was wisdom that the building learned to treat hierarchy as physics.",
+      "first_seen_line": "We value clarity, alignment, and the strategic removal of human friction.",
+      "optional_unlock_flavor": "The logo survived the disaster. So did the appetite behind it.",
+      "unlock_short": "Company record logged.",
+      "first_seen_pop": "The logo was always a threat."
+    },
+    {
+      "id": "project-everrise",
+      "title": "Project Everrise",
+      "unlock_blurb": "One stack, one strategy, one disaster wearing executive language.",
+      "codex_body": "Project Everrise was sold internally as a leadership breakthrough: one source of truth for every department, floor, and decision. In practice, it fused policy, incentives, and authority into a single predatory system.",
+      "expanded_entry": "Everrise is what happens when a company decides complexity is morally offensive and consent is a logistics problem. The pitch was elegant enough to survive every warning: unify the departments, collapse decision lag, centralize visibility, optimize everyone into the same strategic body. The result was Meridian Spire, where architecture, process, and executive will now share the same nervous system. In story terms, Everrise is not the thing that went wrong after the good idea. It is the good idea, pursued to its natural conclusion by people insulated from the cost.",
+      "first_seen_line": "One stack. One strategy. One source of truth. Please ignore the screaming in implementation.",
+      "optional_unlock_flavor": "The initiative deck is gone. The initiative itself learned how to bite.",
+      "unlock_short": "Project file logged.",
+      "first_seen_pop": "One strategy. One appetite. One disaster."
+    },
+    {
+      "id": "meridian-spire",
+      "title": "Meridian Spire",
+      "unlock_blurb": "A corporate structure made monstrous and still trying to onboard you.",
+      "codex_body": "Meridian Spire is the physical, procedural, and metaphysical result of Project Everrise. It does not simply contain danger. It reorganizes people into it.",
+      "expanded_entry": "The Spire is not haunted in the old sense. It is managed. Hallways behave like escalations. Doors sort people by status. Meeting rooms hold grudges. Entire floors are built from the company’s old habits, only now those habits have load-bearing authority. That is the central horror of Meridian Spire: the building is not violating policy. It is executing it more faithfully than leadership ever admitted policy was meant to be executed. Every descent through it becomes a practical lesson in how office language was always hiding a harsher machine.",
+      "first_seen_line": "Welcome to Meridian Spire. Your route has been selected based on unacceptable need.",
+      "optional_unlock_flavor": "Not a ruin. Not a maze. A company finally forced to act like itself.",
+      "unlock_short": "Site dossier opened.",
+      "first_seen_pop": "The building is policy with hallways."
+    }
+  ],
+  "biomes": [
+    {
+      "id": "orientation-arcade",
+      "title": "Orientation Arcade",
+      "unlock_blurb": "A fluorescent welcome sequence built by people who thought applause could count as consent.",
+      "codex_body": "Orientation Arcade is the Spire’s opening lie: a bright onboarding carnival where game-show cheer hides administrative predation.",
+      "expanded_entry": "The first biome teaches the company’s favorite trick, which is to make sorting feel like celebration. Cue lights pop. Speakers smile. Participation is framed as opportunity right up until the walls begin to reveal what happened to the last people who played along. This is why the early floors matter tonally. Orientation Arcade does not merely introduce combat and events. It introduces the building’s method: coat coercion in excitement, call it engagement, and keep the room noisy enough that nobody can hear the terms changing underneath them.",
+      "first_seen_line": "Applause helps the doors decide who deserves to keep moving.",
+      "optional_unlock_flavor": "First impressions, now load-bearing.",
+      "unlock_short": "Orientation floor logged.",
+      "first_seen_pop": "The applause is mostly machinery."
+    },
+    {
+      "id": "throughput-maze",
+      "title": "Throughput Maze",
+      "unlock_blurb": "Where office flowcharts grow teeth and the quotas stop pretending.",
+      "codex_body": "Throughput Maze is the industrial middle of the run: cubicle warrens, printer heat, KPI shrines, and workflow machinery repurposed into a processing organ.",
+      "expanded_entry": "If the Orientation Arcade sells the lie, the Throughput Maze bills you for believing it. This biome strips out the cheerful framing and shows the engine underneath: queues, bottlenecks, call-center chants, paper jams big enough to have motive, and departments that treat human fatigue like acceptable fuel loss. The horror here is less theatrical and more operational. Every room asks the same ugly question in a new accent: how much damage can a system convert into output before anyone upstairs has to call it damage?",
+      "first_seen_line": "Please remain in your lane while the lane closes around you.",
+      "optional_unlock_flavor": "Workflow, but now it can smell fear.",
+      "unlock_short": "Throughput floor logged.",
+      "first_seen_pop": "Everything here wants a faster casualty."
+    },
+    {
+      "id": "executive-apex",
+      "title": "Executive Apex",
+      "unlock_blurb": "A polished upper tier where the violence has better furniture.",
+      "codex_body": "Executive Apex is the marble heart of Meridian Spire, where leadership aesthetics, investor language, and approved harm stop hiding behind process.",
+      "expanded_entry": "The upper floors are calmer on purpose. The shouting is mostly finished by the time you get here. What remains is a richer, colder atmosphere built from boardroom glass, investor-safe vocabulary, and the absolute confidence of people who already modeled the casualties and kept the meeting on schedule. Executive Apex is where the game’s satire sharpens from departmental dysfunction into authorship. The building is no longer improvising its cruelty. It is citing it, approving it, and asking whether you would like the summary version or the appendix.",
+      "first_seen_line": "Please lower your voice. The worst decisions on this floor prefer a premium ambiance.",
+      "optional_unlock_flavor": "The place where policy stopped hiding in middle management.",
+      "unlock_short": "Executive floor logged.",
+      "first_seen_pop": "Glass, roots, and approved harm."
+    }
+  ],
+  "factions": [
+    {
+      "id": "everrise-steering-committee",
+      "title": "The Everrise Steering Committee",
+      "unlock_blurb": "The leaders who saw the forecasts and approved the project anyway.",
+      "codex_body": "The Everrise Steering Committee are the executive architects of Project Everrise: not dead gods, just leaders with enough insulation to survive the first consequences.",
+      "expanded_entry": "People in the Spire talk about the Committee with the kind of fear normally reserved for prophecy, but the real insult is smaller and meaner. These were not unknowable masterminds. They were executives with calendars, dashboards, pressure, incentives, and a practiced belief that risk becomes wisdom when formatted correctly. They reviewed warnings, translated harm into tolerable exposure, and kept calling the project strategic. That is what makes them terrifying. The Steering Committee proves that the worst things in Meridian were not born from madness. They were approved in sequence by people who went home on time.",
+      "first_seen_line": "Leadership appreciates your concern and has already approved the next phase.",
+      "optional_unlock_flavor": "The signatures are gone. The decisions are still on shift.",
+      "unlock_short": "Architects identified.",
+      "first_seen_pop": "They saw the cost and hit approve."
+    },
+    {
+      "id": "the-offboarded",
+      "title": "The Offboarded",
+      "unlock_blurb": "Employees partially erased from payroll, memory, or both.",
+      "codex_body": "The Offboarded are the living evidence that Crown Meridian treated identity as an administrative setting. Some are dead. Some are still working. Some cannot tell the difference anymore.",
+      "expanded_entry": "Offboarding was supposed to be a process. Meridian Spire made it an ecology. The Offboarded occupy the terrible space between disappearance and continued use, where names detach from records but labor keeps echoing through the building anyway. They are among the clearest proofs that corporate harm in this setting is not abstract. A person can be removed from the system and still be trapped inside its operational needs. That contradiction is exactly why they matter: the company wanted absence without accountability, so the dungeon gave it absence that still walks the halls asking who signed the paperwork.",
+      "first_seen_line": "Your records indicate separation. Your workload does not.",
+      "optional_unlock_flavor": "Erased enough to be deniable. Present enough to keep suffering.",
+      "unlock_short": "Offboarded logged.",
+      "first_seen_pop": "Some people were deleted badly."
+    },
+    {
+      "id": "internal-audit-choir",
+      "title": "The Internal Audit Choir",
+      "unlock_blurb": "Spectral enforcers who punish contradiction because contradiction lets the truth in.",
+      "codex_body": "The Internal Audit Choir is a collective enforcement body that gathers discrepancies in story, policy, and self-description, then turns those discrepancies into pressure.",
+      "expanded_entry": "Most horrors in Meridian come from concealment. The Choir comes from mismatch. It manifests when approved language stops fitting the room cleanly, when a metric lies too hard, when a person finally says what the building is doing instead of what the script says it is doing. In another setting, that might make the Choir heroic. It is not. Audit in Meridian never existed to free people. It existed to locate instability and decide whether stability was better served by correction, punishment, or revision of the witness. That ambiguity makes the Choir useful and terrifying. Truth enters with it. So do consequences.",
+      "first_seen_line": "Discrepancy noted. Please remain still while your narrative is reconciled.",
+      "optional_unlock_flavor": "Every harmony line is somebody’s documented contradiction.",
+      "unlock_short": "Choir logged.",
+      "first_seen_pop": "The truth entered. They noticed."
+    },
+    {
+      "id": "subbasement-mutual",
+      "title": "Subbasement Mutual",
+      "unlock_blurb": "A survivor network built from service routes, practical favors, and not asking permission.",
+      "codex_body": "Subbasement Mutual is an informal alliance of cleaners, contractors, techs, and floor staff who learned the building’s underside before leadership learned their names.",
+      "expanded_entry": "If Crown Meridian represents official continuity, Subbasement Mutual represents the opposite kind: the kind people build for one another because the institution has already demonstrated it will not save them. The Mutual survives through shared maps, spare access, hidden caches, route knowledge, and the low miracle of people deciding that another human being is still worth helping without turning that help into a program. It is one of the few forces in Meridian that makes the dungeon feel survivable instead of merely legible. That matters. Satire without solidarity curdles. The Mutual is one of the story’s proofs that practical care can outlive corporate language.",
+      "first_seen_line": "If a vent opens twice, the second knock is probably for you.",
+      "optional_unlock_flavor": "No brand guide. No mission statement. Still the closest thing this place has to ethics.",
+      "unlock_short": "Survivor network logged.",
+      "first_seen_pop": "Solidarity survived in the service routes."
+    },
+    {
+      "id": "investor-relations",
+      "title": "Investor Relations",
+      "unlock_blurb": "The company’s smile, lacquered until outsiders can tolerate the blood under it.",
+      "codex_body": "Investor Relations is the outward-facing organ of Crown Meridian Holdings. It rarely causes horrors directly. It simply explains them until they scan as acceptable.",
+      "expanded_entry": "Investor Relations is one of the setting’s colder jokes: a faction built not on direct violence but on making direct violence survivable to hear about. Its members traffic in framing, outlook, confidence, strategic phrasing, and the moral anesthesia of distance. They do not need to drag anyone into the machine themselves. They only need to keep the story clean enough that nobody outside the machine feels compelled to interrupt it. In practical terms, that makes them one of the most efficient predators in Meridian. A system can keep feeding as long as someone polished is standing near the window promising the market this quarter remains strong.",
+      "first_seen_line": "We regret the optics. The fundamentals remain sound.",
+      "optional_unlock_flavor": "Where catastrophe goes to become a shareholder update.",
+      "unlock_short": "Investor face logged.",
+      "first_seen_pop": "They can explain blood into a metric."
+    },
+    {
+      "id": "crown-meridian-holdings",
+      "title": "Crown Meridian Holdings",
+      "unlock_blurb": "The parent company, the broken philosophy, the original employer of the nightmare.",
+      "codex_body": "Crown Meridian Holdings is both a factional power and the ideological spine behind everything in the Spire.",
+      "expanded_entry": "Even after Everrise, Crown Meridian remains more than a logo on ruined signage. It is a continuing authority structure, an ownership claim, and a self-justifying worldview that still treats control, visibility, and managed sacrifice as marks of competence. Other factions represent organs, symptoms, or survivor responses. Crown Meridian is the body that taught those organs what they were for. Whenever the codex names the company directly, it should feel like naming the weather only if the weather had a legal department.",
+      "first_seen_line": "Thank you for continuing to embody enterprise values under adverse conditions.",
+      "optional_unlock_flavor": "Employer, architect, and still somehow claiming this was a culture issue.",
+      "unlock_short": "Corporate body logged.",
+      "first_seen_pop": "This is the part still calling itself normal."
+    }
+  ],
+  "items": [
+    {
+      "id": "admin-keycard",
+      "title": "Admin Keycard",
+      "unlock_blurb": "Access is just hierarchy you can fit in a pocket.",
+      "codex_body": "The Admin Keycard opens better options because Meridian still believes authority should move faster than everyone else. It is useful, dangerous, and quietly humiliating to carry.",
+      "expanded_entry": "Nothing in Meridian Spire reveals the company’s values faster than access control. The Admin Keycard is not powerful because it is rare. It is powerful because the building still agrees that some people should meet less resistance than others. Doors react differently. Systems hesitate. Routes change shape. The card is a reminder that convenience was always one of management’s purest weapons.",
+      "first_seen_line": "Congratulations. You now have priority access to problems.",
+      "optional_unlock_flavor": "Lore reference: Access is the most honest form of power.",
+      "unlock_short": "Access upgraded.",
+      "first_seen_pop": "The door hates equality."
+    },
+    {
+      "id": "patch-kit",
+      "title": "Patch Kit",
+      "unlock_blurb": "Issued after avoidable incidents. Conveniently after.",
+      "codex_body": "A sealed repair bundle for the aftermath Meridian prefers to call manageable. Patch Kit restores, cleans, and implies someone higher up already decided the damage was acceptable.",
+      "expanded_entry": "The Patch Kit smells like antiseptic, heat, and institutional denial. It exists because Crown Meridian has always been better at distributing recovery tools than preventing the kinds of harm that require them. In-world, it is survival equipment with a paper trail. In tone, it should always feel slightly insulting: help arriving only after the system has finished making itself the center of the emergency.",
+      "first_seen_line": "Incident acknowledged. Prevention remains out of scope.",
+      "optional_unlock_flavor": "Lore reference: Issued only after avoidable incidents.",
+      "unlock_short": "Incident kit logged.",
+      "first_seen_pop": "Help arrived late, as designed."
+    },
+    {
+      "id": "stress-ball-of-record",
+      "title": "Stress Ball of Record",
+      "unlock_blurb": "Soft in the hand. Dense in the subtext.",
+      "codex_body": "A corporate coping object that turned solid enough to matter. It steadies the holder, absorbs panic, and looks harmless right up until it leaves a mark.",
+      "expanded_entry": "The Stress Ball of Record began life as branded reassurance: a desk toy handed out during difficult quarters and politely meaningless all-hands calls. Meridian Spire improved it. Now it compresses tension the way the company always wanted people to compress tension — quietly, repeatedly, and without upward disruption. The difference is that here the pressure has weight to it. It protects because it knows exactly how much force a person can be asked to swallow before something harder forms.",
+      "first_seen_line": "Please regulate your emotions responsibly.",
+      "optional_unlock_flavor": "Lore reference: Soft enough to squeeze, dense enough to bruise.",
+      "unlock_short": "Coping tool logged.",
+      "first_seen_pop": "Soft object. Mean purpose."
+    },
+    {
+      "id": "severance-envelope",
+      "title": "Severance Envelope",
+      "unlock_blurb": "Freedom and catastrophe still share stationery.",
+      "codex_body": "A sealed envelope that feels final even before it is opened. It carries comeback power because Meridian has never understood how often people survive by treating endings as usable material.",
+      "expanded_entry": "No one in the Spire reaches for the Severance Envelope casually. It is too close to every professional death the company ever phrased as transition, restructuring, or future opportunity. That dread is what gives it force. The item belongs to the exact emotional territory Crown Meridian spent years cultivating: fear made administrative, grief made procedural, hope made conditional on leaving damaged and smiling. In play, it should feel dangerous but clarifying.",
+      "first_seen_line": "Your next phase begins immediately.",
+      "optional_unlock_flavor": "Lore reference: Contains either freedom or blood loss.",
+      "unlock_short": "Termination asset logged.",
+      "first_seen_pop": "Freedom and blood loss share stationery."
+    },
+    {
+      "id": "expense-card",
+      "title": "Expense Card",
+      "unlock_blurb": "The budget approved this. Morality was not consulted.",
+      "codex_body": "A corporate payment tool with enough authority left in it to turn resources into advantage. Expense Card makes the run richer because Meridian still trusts spending more than people.",
+      "expanded_entry": "Expense Card carries one of the company’s oldest permissions: the right to create exceptions if the receipt looks respectable later. That makes it one of the few artifacts in the Spire that still feels offensively alive. It does not simply buy things. It buys latitude. In the fiction, it is the weaponized version of a familiar corporate truth — money solves more problems faster than accountability ever will.",
+      "first_seen_line": "Approved under team-building, emergency response, and other flexible categories.",
+      "optional_unlock_flavor": "Lore reference: Approved for team-building and deniable damage.",
+      "unlock_short": "Expense tool logged.",
+      "first_seen_pop": "Budget approved the bad idea."
+    },
+    {
+      "id": "proxy-stamp",
+      "title": "Proxy Stamp",
+      "unlock_blurb": "For decisions nobody wants touching their own signature.",
+      "codex_body": "Proxy Stamp transfers authority sideways and blame downward. It strengthens synergy because Meridian runs on delegated risk disguised as process.",
+      "expanded_entry": "Proxy Stamp is clean, official, and morally disgusting in the most efficient possible way. It exists for the same reason middle layers of corporate structure exist: to keep action moving while making responsibility harder to pin in one place. In-world, it empowers combinations and handoffs. Tonally, it should always suggest that the company built entire faith traditions around letting someone else formally own the consequences.",
+      "first_seen_line": "Action authorized by a party no longer available for comment.",
+      "optional_unlock_flavor": "Lore reference: Lets someone else sign for your sins.",
+      "unlock_short": "Proxy tool logged.",
+      "first_seen_pop": "Responsibility changed offices."
+    },
+    {
+      "id": "wellness-candle",
+      "title": "Wellness Candle",
+      "unlock_blurb": "Lavender, ash, and the smell of managed collapse.",
+      "codex_body": "A ritual comfort object that became real enough to soothe, ward, and quietly threaten. Wellness Candle helps the party last longer, though it never stops feeling like branded care gone feral.",
+      "expanded_entry": "The Wellness Candle comes from the same ecosystem that produced resilience workshops and polished crisis messaging. The difference is that Meridian Spire made the ritual literal. Now the flame steadies nerves, shifts rooms, and gives soft things edge. Its lore should never drift into pure parody. The candle matters because people did need care. The horror is that the company kept trying to package that need in a form leadership could tolerate.",
+      "first_seen_line": "Please center yourself. The fire will handle the rest.",
+      "optional_unlock_flavor": "Lore reference: Lavender, ash, and plausible neglect.",
+      "unlock_short": "Wellness item logged.",
+      "first_seen_pop": "It smells like therapy and arson."
+    },
+    {
+      "id": "compliance-binder",
+      "title": "Compliance Binder",
+      "unlock_blurb": "Every page ends with consequences.",
+      "codex_body": "A thick procedural volume that punishes the already exposed. Compliance Binder gains force when the target is weakened because rules are always most dangerous after someone has lost room to argue.",
+      "expanded_entry": "The Binder is not powerful because the rules inside it are fair. It is powerful because rules become physically persuasive in a system built to outlast dissent. Every tab, note, and highlighted subsection suggests a history of selectively enforced standards deployed against whoever was easiest to corner. In combat language, it rewards setup and confirmation. In story language, it is policy finally admitting what it was built to do.",
+      "first_seen_line": "Thank you for creating a documentable breach.",
+      "optional_unlock_flavor": "Lore reference: Every page ends with consequences.",
+      "unlock_short": "Policy weapon logged.",
+      "first_seen_pop": "Every tab ends in consequences."
+    },
+    {
+      "id": "broken-applause-sign",
+      "title": "Broken Applause Sign",
+      "unlock_blurb": "It still cheers when no one is left to impress.",
+      "codex_body": "A damaged stage prop from Meridian’s onboarding theater. Broken Applause Sign spreads momentum and pressure because the building still mistakes audience response for consent.",
+      "expanded_entry": "The sign was once part of a cleaner lie. It flashed on cue, taught people when to celebrate, and filled silence before anyone could ask the wrong question. After Everrise, it kept working without needing a room full of bodies. That is what makes it eerie and useful. The sign embodies one of the game’s core ideas: enthusiasm can be manufactured, measured, and weaponized long after the people it was meant to manipulate are gone.",
+      "first_seen_line": "Applause detected. Source unverified.",
+      "optional_unlock_flavor": "Lore reference: Still flashes even when the room is empty.",
+      "unlock_short": "Morale hardware logged.",
+      "first_seen_pop": "It still cheers empty rooms."
+    },
+    {
+      "id": "letter-opener-of-intent",
+      "title": "Letter Opener of Intent",
+      "unlock_blurb": "Decorative until the wording gets specific.",
+      "codex_body": "A precise office implement sharpened by executive language and too many sealed outcomes. Letter Opener of Intent favors priority targets because Meridian trained it on private harm first.",
+      "expanded_entry": "The Letter Opener belongs to boardrooms, reception desks, and immaculate offices where terrible things were often introduced in sealed envelopes. Its violence is narrow, polished, and fully on-brand. That is the point. Not every corporate weapon should feel industrial or supernatural. Some should feel personal, tidy, and expensive enough to be mistaken for taste. This item works because intent in Meridian was always deadliest when delivered elegantly.",
+      "first_seen_line": "Please open carefully. The contents may escalate.",
+      "optional_unlock_flavor": "Lore reference: For envelopes, memos, and the occasional escalation.",
+      "unlock_short": "Executive accessory logged.",
+      "first_seen_pop": "Some stationery wants blood."
+    }
+  ],
+  "everrise_proofs": [
+    {
+      "id": "orientation-badge-core",
+      "title": "Orientation Badge Core",
+      "unlock_blurb": "Proof you were assigned to the system, not accidentally swallowed by it.",
+      "codex_body": "Orientation Badge Core proves the player was intentionally assigned into Meridian’s machinery. It is evidence of design, not misfortune.",
+      "expanded_entry": "The first of the Everrise Proofs destroys a comforting lie: that the player merely ended up in the wrong place at the wrong time. The Badge Core says otherwise. Someone built a route, attached a role, and expected a body to move through it. That matters because corporate horror gets softer when it can pose as chaos. This proof hardens the truth. Meridian did not merely fail to protect people. It distributed them, categorized them, and called the arrangement necessary. Once the Badge Core is on record, coincidence stops being a defense anybody can say with a straight face.",
+      "first_seen_line": "Orientation complete. Consent remains assumed.",
+      "optional_unlock_flavor": "Everrise Proof I: Assignment was the first violence.",
+      "unlock_short": "Assignment proof secured.",
+      "first_seen_pop": "You were selected, not trapped."
+    },
+    {
+      "id": "quorum-seal",
+      "title": "Quorum Seal",
+      "unlock_blurb": "Proof leadership reviewed foreseeable harm and kept the meeting moving.",
+      "codex_body": "Quorum Seal proves the project survived casualty modeling, dissent management, and executive approval. The horror was forecast and authorized.",
+      "expanded_entry": "This proof matters because it turns suspicion into governance. The Seal is what remains when leadership has already seen enough of the damage to know what it is buying, then proceeds anyway because the metrics still look survivable from the right altitude. It is less dramatic than a confession and far worse. Confessions imply a breaking point. The Quorum Seal implies procedure. Harm was not hidden from the people in charge. It was entered into the agenda, discussed under professional lighting, and approved with the same hands that would later describe the outcome as regrettable but strategic.",
+      "first_seen_line": "Quorum achieved. Objections noted for archival irrelevance.",
+      "optional_unlock_flavor": "Everrise Proof II: Approval is just violence with minutes.",
+      "unlock_short": "Approval proof secured.",
+      "first_seen_pop": "They modeled the deaths and continued."
+    },
+    {
+      "id": "root-access-shard",
+      "title": "Root Access Shard",
+      "unlock_blurb": "Proof the Spire’s internal truth can still be forced to the surface.",
+      "codex_body": "Root Access Shard is the system-level evidence that Meridian’s concealment layer can be breached. It does not merely reveal truth. It compels the building to stop hiding it.",
+      "expanded_entry": "The Shard is the harshest of the proofs because it places responsibility back on the survivor holding it. Once you know the Spire can be made to confess, choosing revelation becomes more expensive and more real. That is exactly right for the setting. Truth in Meridian should never feel like a tidy collectible. It should feel like an escalation. The Root Access Shard is the mechanical and narrative promise that exposure remains possible even here, beneath layers of policy, branding, security logic, and executive polish. It is the piece that turns the ending from successful escape into prosecutable memory.",
+      "first_seen_line": "Privilege elevated. Concealment layer no longer guaranteed.",
+      "optional_unlock_flavor": "Everrise Proof III: The building can still be made to speak plainly.",
+      "unlock_short": "Truth key secured.",
+      "first_seen_pop": "The building can still be made to confess."
+    }
+  ],
+  "codex_ui": {
+    "screen": {
+      "title": "Archive",
+      "subtitle": "Recovered records from Meridian Spire.",
+      "empty_state_title": "Archive unavailable",
+      "empty_state_body": "Keep moving. Meridian hates a paper trail until it needs one.",
+      "search_placeholder": "Search records",
+      "new_entry_toast": "Archive updated.",
+      "new_category_toast": "New record type logged.",
+      "fresh_tag": "New",
+      "locked_tag": "Undiscovered"
+    },
+    "category_headers": [
+      {
+        "id": "companions",
+        "nav_label": "Companions",
+        "header_title": "Companions",
+        "header_subtitle": "Coworkers, corpses, and other bad decisions still willing to help.",
+        "empty_state_title": "No companions logged",
+        "empty_state_body": "You have not met anyone unreliable enough to survive this place with you yet.",
+        "entry_count": 5,
+        "discovery_label": "5 records"
+      },
+      {
+        "id": "classes",
+        "nav_label": "Roles",
+        "header_title": "Roles",
+        "header_subtitle": "Meridian already decided what you are for. You can still decide how mean to be about it.",
+        "empty_state_title": "No roles logged",
+        "empty_state_body": "The company has not finished assigning your value.",
+        "entry_count": 5,
+        "discovery_label": "5 records"
+      },
+      {
+        "id": "bosses",
+        "nav_label": "Bosses",
+        "header_title": "Executive Threats",
+        "header_subtitle": "Leadership, once the presentation layer stopped protecting everybody else.",
+        "empty_state_title": "No executive threats logged",
+        "empty_state_body": "Enjoy the quiet while it lasts. It will not.",
+        "entry_count": 3,
+        "discovery_label": "3 records"
+      },
+      {
+        "id": "world_entries",
+        "nav_label": "World",
+        "header_title": "Core Briefing",
+        "header_subtitle": "The company, the project, the building, and the lie tying them together.",
+        "empty_state_title": "No core records logged",
+        "empty_state_body": "You know this place is bad. The paperwork explaining how bad is still missing.",
+        "entry_count": 3,
+        "discovery_label": "3 records"
+      },
+      {
+        "id": "biomes",
+        "nav_label": "Biomes",
+        "header_title": "Floors and Biomes",
+        "header_subtitle": "Three zones. Ten floors. No safety culture to speak of.",
+        "empty_state_title": "No biome records logged",
+        "empty_state_body": "You have survived rooms. You have not understood the floorplan yet.",
+        "entry_count": 3,
+        "discovery_label": "3 records"
+      },
+      {
+        "id": "factions",
+        "nav_label": "Factions",
+        "header_title": "Interested Parties",
+        "header_subtitle": "The loyal, the erased, the hungry, and the people still hiding in the vents.",
+        "empty_state_title": "No factions logged",
+        "empty_state_body": "You have not yet learned who benefits from the screaming.",
+        "entry_count": 6,
+        "discovery_label": "6 records"
+      },
+      {
+        "id": "items",
+        "nav_label": "Items",
+        "header_title": "Recovered Assets",
+        "header_subtitle": "Office junk, ritual hardware, and small tools sharpened by policy and panic.",
+        "empty_state_title": "No items logged",
+        "empty_state_body": "Nothing useful has survived long enough to be cataloged.",
+        "entry_count": 10,
+        "discovery_label": "10 records"
+      },
+      {
+        "id": "everrise_proofs",
+        "nav_label": "Proofs",
+        "header_title": "Everrise Proofs",
+        "header_subtitle": "Evidence that the company knew exactly what it was doing and did it anyway.",
+        "empty_state_title": "No proofs logged",
+        "empty_state_body": "You know there was a crime. You do not yet have the paper trail.",
+        "entry_count": 3,
+        "discovery_label": "3 records"
+      }
+    ],
+    "entry_microcopy": {
+      "companions": {
+        "facilities-goblin": {
+          "unlock_short": "Wall goblin logged.",
+          "first_seen_pop": "Something useful lives in the walls."
+        },
+        "former-executive-assistant": {
+          "unlock_short": "Calendar knife logged.",
+          "first_seen_pop": "She already knows who signed the damage."
+        },
+        "security-skeleton": {
+          "unlock_short": "Dead guard logged.",
+          "first_seen_pop": "Meridian still salutes the bones."
+        },
+        "payroll-wraith": {
+          "unlock_short": "Payroll anomaly logged.",
+          "first_seen_pop": "It can still count what Meridian stole."
+        },
+        "wellness-witch": {
+          "unlock_short": "Unauthorized care logged.",
+          "first_seen_pop": "The room softens. That is not safer."
+        }
+      },
+      "classes": {
+        "it-support": {
+          "unlock_short": "Assigned role logged.",
+          "first_seen_pop": "You were never here by accident."
+        },
+        "human-resources": {
+          "unlock_short": "HR field profile logged.",
+          "first_seen_pop": "Support language. Sharp edges."
+        },
+        "finance": {
+          "unlock_short": "Finance profile logged.",
+          "first_seen_pop": "Math finally picked a side."
+        },
+        "compliance": {
+          "unlock_short": "Compliance profile logged.",
+          "first_seen_pop": "The rules stopped pretending."
+        },
+        "operations": {
+          "unlock_short": "Operations profile logged.",
+          "first_seen_pop": "The machine wants speed. Use it back."
+        }
+      },
+      "bosses": {
+        "director-of-onboarding": {
+          "unlock_short": "Orientation host logged.",
+          "first_seen_pop": "Welcome to the filtration event."
+        },
+        "vp-of-throughput": {
+          "unlock_short": "Quota engine logged.",
+          "first_seen_pop": "Delay identified. Removal pending."
+        },
+        "everrise-board": {
+          "unlock_short": "Executive consensus logged.",
+          "first_seen_pop": "The apology has too many mouths."
+        }
+      },
+      "world_entries": {
+        "crown-meridian-holdings": {
+          "unlock_short": "Company record logged.",
+          "first_seen_pop": "The logo was always a threat."
+        },
+        "project-everrise": {
+          "unlock_short": "Project file logged.",
+          "first_seen_pop": "One strategy. One appetite. One disaster."
+        },
+        "meridian-spire": {
+          "unlock_short": "Site dossier opened.",
+          "first_seen_pop": "The building is policy with hallways."
+        }
+      },
+      "biomes": {
+        "orientation-arcade": {
+          "unlock_short": "Orientation floor logged.",
+          "first_seen_pop": "The applause is mostly machinery."
+        },
+        "throughput-maze": {
+          "unlock_short": "Throughput floor logged.",
+          "first_seen_pop": "Everything here wants a faster casualty."
+        },
+        "executive-apex": {
+          "unlock_short": "Executive floor logged.",
+          "first_seen_pop": "Glass, roots, and approved harm."
+        }
+      },
+      "factions": {
+        "everrise-steering-committee": {
+          "unlock_short": "Architects identified.",
+          "first_seen_pop": "They saw the cost and hit approve."
+        },
+        "the-offboarded": {
+          "unlock_short": "Offboarded logged.",
+          "first_seen_pop": "Some people were deleted badly."
+        },
+        "internal-audit-choir": {
+          "unlock_short": "Choir logged.",
+          "first_seen_pop": "The truth entered. They noticed."
+        },
+        "subbasement-mutual": {
+          "unlock_short": "Survivor network logged.",
+          "first_seen_pop": "Solidarity survived in the service routes."
+        },
+        "investor-relations": {
+          "unlock_short": "Investor face logged.",
+          "first_seen_pop": "They can explain blood into a metric."
+        },
+        "crown-meridian-holdings": {
+          "unlock_short": "Corporate body logged.",
+          "first_seen_pop": "This is the part still calling itself normal."
+        }
+      },
+      "items": {
+        "admin-keycard": {
+          "unlock_short": "Access upgraded.",
+          "first_seen_pop": "The door hates equality."
+        },
+        "patch-kit": {
+          "unlock_short": "Incident kit logged.",
+          "first_seen_pop": "Help arrived late, as designed."
+        },
+        "stress-ball-of-record": {
+          "unlock_short": "Coping tool logged.",
+          "first_seen_pop": "Soft object. Mean purpose."
+        },
+        "severance-envelope": {
+          "unlock_short": "Termination asset logged.",
+          "first_seen_pop": "Freedom and blood loss share stationery."
+        },
+        "expense-card": {
+          "unlock_short": "Expense tool logged.",
+          "first_seen_pop": "Budget approved the bad idea."
+        },
+        "proxy-stamp": {
+          "unlock_short": "Proxy tool logged.",
+          "first_seen_pop": "Responsibility changed offices."
+        },
+        "wellness-candle": {
+          "unlock_short": "Wellness item logged.",
+          "first_seen_pop": "It smells like therapy and arson."
+        },
+        "compliance-binder": {
+          "unlock_short": "Policy weapon logged.",
+          "first_seen_pop": "Every tab ends in consequences."
+        },
+        "broken-applause-sign": {
+          "unlock_short": "Morale hardware logged.",
+          "first_seen_pop": "It still cheers empty rooms."
+        },
+        "letter-opener-of-intent": {
+          "unlock_short": "Executive accessory logged.",
+          "first_seen_pop": "Some stationery wants blood."
+        }
+      },
+      "everrise_proofs": {
+        "orientation-badge-core": {
+          "unlock_short": "Assignment proof secured.",
+          "first_seen_pop": "You were selected, not trapped."
+        },
+        "quorum-seal": {
+          "unlock_short": "Approval proof secured.",
+          "first_seen_pop": "They modeled the deaths and continued."
+        },
+        "root-access-shard": {
+          "unlock_short": "Truth key secured.",
+          "first_seen_pop": "The building can still be made to confess."
+        }
+      }
+    }
+  }
+}

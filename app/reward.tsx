@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,7 +12,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  getLoopSurfaceArtSource,
+  getRewardPackageArtSource,
+  getRouteNodeArtSource,
+} from '@/src/assets/loop-art-sources';
 import { GameButton } from '@/src/components/game-button';
+import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import {
   getPartyScene,
   getRewardPackagePitch,
@@ -97,6 +104,16 @@ export default function RewardScreen() {
   const rewardPackagePitch = useMemo(
     () => getRewardPackagePitch(selectedRewardOption?.optionId),
     [selectedRewardOption?.optionId]
+  );
+  const rewardSurfaceArtSource = useMemo(
+    () => getLoopSurfaceArtSource('reward', settings),
+    [settings]
+  );
+  const selectedRewardArtSource = useMemo(
+    () =>
+      getRewardPackageArtSource(selectedRewardOption?.optionId, settings) ??
+      getRouteNodeArtSource('reward', settings),
+    [selectedRewardOption?.optionId, settings]
   );
 
   const handleSelectOption = async (optionId: string) => {
@@ -200,6 +217,16 @@ export default function RewardScreen() {
                     </Text>
                   ) : null}
                 </View>
+                <LoopArtPanel
+                  title="Package Read"
+                  body={
+                    selectedRewardOption
+                      ? `${selectedRewardOption.label} gets a fast visual tag, but the label and payout still decide the pick.`
+                      : 'Use the emblem as a fast read, then let the payout text make the actual decision.'
+                  }
+                  source={selectedRewardArtSource}
+                  backgroundSource={rewardSurfaceArtSource}
+                />
               </View>
 
               {hasSelectableOptions ? (
@@ -239,7 +266,19 @@ export default function RewardScreen() {
                           accessibilityRole="button"
                         >
                           <View style={styles.optionHeader}>
-                            <Text style={styles.optionTitle}>{option.label}</Text>
+                            <View style={styles.optionHeaderContent}>
+                              <View style={styles.optionIconWrap}>
+                                <Image
+                                  source={
+                                    getRewardPackageArtSource(option.optionId, settings) ??
+                                    getRouteNodeArtSource('reward', settings)
+                                  }
+                                  style={styles.optionIcon}
+                                  resizeMode="contain"
+                                />
+                              </View>
+                              <Text style={styles.optionTitle}>{option.label}</Text>
+                            </View>
                             {isSelected ? (
                               <Text style={styles.optionBadge}>Selected</Text>
                             ) : null}
@@ -431,8 +470,20 @@ function RewardStatCard({ label, value }: { label: string; value: string }) {
 
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text
+        style={styles.statValue}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {value}
+      </Text>
+      <Text
+        style={styles.statLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -565,6 +616,7 @@ function createStyles(
       fontWeight: '900',
       lineHeight: scaleLineHeight(26, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     statLabel: {
       color: colors.textMuted,
@@ -572,7 +624,9 @@ function createStyles(
       fontWeight: '700',
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      lineHeight: scaleLineHeight(16, settings),
       textAlign: 'center',
+      alignSelf: 'stretch',
     },
     previewCard: {
       backgroundColor: colors.surface,
@@ -628,6 +682,27 @@ function createStyles(
       justifyContent: 'space-between',
       alignItems: 'center',
       gap: spacing.sm,
+    },
+    optionHeaderContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      flex: 1,
+    },
+    optionIconWrap: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 8,
+    },
+    optionIcon: {
+      width: 24,
+      height: 24,
     },
     optionTitle: {
       color: colors.textPrimary,

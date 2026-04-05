@@ -10,6 +10,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  getEventArtSource,
+  getLoopSurfaceArtSource,
+} from '@/src/assets/loop-art-sources';
+import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { GameButton } from '@/src/components/game-button';
 import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
@@ -74,6 +79,14 @@ export default function EventScreen() {
 
     return getPartyScene('creepy-event-prompt', run.chosenCompanionIds);
   }, [run]);
+  const eventArtSource = useMemo(
+    () => getEventArtSource(eventScene?.eventId, settings),
+    [eventScene?.eventId, settings]
+  );
+  const eventSurfaceArtSource = useMemo(
+    () => getLoopSurfaceArtSource('event', settings),
+    [settings]
+  );
 
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'event'
@@ -180,6 +193,16 @@ export default function EventScreen() {
                     ))}
                   </View>
                 ) : null}
+                <LoopArtPanel
+                  title="Room Read"
+                  body={
+                    eventScene
+                      ? `${eventScene.title} should read at a glance, but the real decision still lives in the choice text below.`
+                      : 'Read the room first, then choose the line that keeps the next floor legible.'
+                  }
+                  source={eventArtSource}
+                  backgroundSource={eventSurfaceArtSource}
+                />
               </View>
 
               <View style={styles.panel}>
@@ -229,7 +252,7 @@ export default function EventScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Choices</Text>
                 <Text style={styles.panelBody}>
-                  Pick one path. Classes, companions, and good pairings can tilt the result, but the risk still belongs to you.
+                  Pick one path. The art sets the tone, but the labels and previews still carry the actual risk.
                 </Text>
                 <View style={styles.choiceList}>
                   {eventScene.choices.map((choice) => {
@@ -360,8 +383,20 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text
+        style={styles.statValue}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {value}
+      </Text>
+      <Text
+        style={styles.statLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -475,6 +510,8 @@ function createStyles(
     fontSize: scaleFontSize(18, settings),
     fontWeight: '900',
     lineHeight: scaleLineHeight(22, settings),
+    textAlign: 'center',
+    alignSelf: 'stretch',
   },
   statLabel: {
     color: colors.textMuted,
@@ -482,6 +519,9 @@ function createStyles(
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    lineHeight: scaleLineHeight(16, settings),
+    textAlign: 'center',
+    alignSelf: 'stretch',
   },
   detailCard: {
     backgroundColor: colors.surface,

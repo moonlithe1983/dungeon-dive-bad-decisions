@@ -719,8 +719,20 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text
+        style={styles.statValue}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {value}
+      </Text>
+      <Text
+        style={styles.statLabel}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -867,6 +879,8 @@ function createStyles(
       fontSize: scaleFontSize(22, settings),
       fontWeight: '900',
       lineHeight: scaleLineHeight(26, settings),
+      textAlign: 'center',
+      alignSelf: 'stretch',
     },
     statLabel: {
       color: colors.textMuted,
@@ -874,6 +888,9 @@ function createStyles(
       fontWeight: '700',
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      lineHeight: scaleLineHeight(16, settings),
+      textAlign: 'center',
+      alignSelf: 'stretch',
     },
     detailCard: {
       backgroundColor: colors.surface,

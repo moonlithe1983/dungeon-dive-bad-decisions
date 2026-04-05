@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Misbadged">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="20" y="30" width="88" height="56" rx="12"/>
+      <path d="M57 30 v56"/><circle cx="41" cy="49" r="8"/><path d="M67 48 h21 M63 65 h26"/>
+      <path d="M31 99 l66 -66"/>
+    </g>
+    </svg>

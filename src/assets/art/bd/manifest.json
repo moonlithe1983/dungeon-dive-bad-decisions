@@ -1,0 +1,233 @@
+{
+  "pack_id": "ddbd-bond-scene-headers-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "bond_scene_count": 10,
+  "bond_scenes": [
+    {
+      "id": "bond-facilities-goblin-former-executive-assistant",
+      "title": "Deniable Maintenance",
+      "pair": [
+        "facilities-goblin",
+        "former-executive-assistant"
+      ],
+      "tag": "repair with deniability"
+    },
+    {
+      "id": "bond-facilities-goblin-security-skeleton",
+      "title": "Service Corridor Etiquette",
+      "pair": [
+        "facilities-goblin",
+        "security-skeleton"
+      ],
+      "tag": "procedure meets patchwork"
+    },
+    {
+      "id": "bond-former-executive-assistant-security-skeleton",
+      "title": "Incident Room",
+      "pair": [
+        "former-executive-assistant",
+        "security-skeleton"
+      ],
+      "tag": "institutional survivors"
+    },
+    {
+      "id": "bond-payroll-wraith-facilities-goblin",
+      "title": "Honest Leak",
+      "pair": [
+        "payroll-wraith",
+        "facilities-goblin"
+      ],
+      "tag": "numbers and infrastructure"
+    },
+    {
+      "id": "bond-payroll-wraith-former-executive-assistant",
+      "title": "Corrected Records",
+      "pair": [
+        "payroll-wraith",
+        "former-executive-assistant"
+      ],
+      "tag": "guilt becomes useful"
+    },
+    {
+      "id": "bond-payroll-wraith-security-skeleton",
+      "title": "Quiet Shift",
+      "pair": [
+        "payroll-wraith",
+        "security-skeleton"
+      ],
+      "tag": "remnants on watch"
+    },
+    {
+      "id": "bond-wellness-witch-facilities-goblin",
+      "title": "Emergency Herbs",
+      "pair": [
+        "wellness-witch",
+        "facilities-goblin"
+      ],
+      "tag": "soft tools / ugly tools"
+    },
+    {
+      "id": "bond-wellness-witch-former-executive-assistant",
+      "title": "Pleasantries Over",
+      "pair": [
+        "wellness-witch",
+        "former-executive-assistant"
+      ],
+      "tag": "polite lies discarded"
+    },
+    {
+      "id": "bond-wellness-witch-security-skeleton",
+      "title": "Plain Honesty",
+      "pair": [
+        "wellness-witch",
+        "security-skeleton"
+      ],
+      "tag": "care without euphemism"
+    },
+    {
+      "id": "bond-payroll-wraith-wellness-witch",
+      "title": "Name the Harm",
+      "pair": [
+        "payroll-wraith",
+        "wellness-witch"
+      ],
+      "tag": "damage named plainly"
+    }
+  ],
+  "exports": {
+    "svg/default": [
+      "bond-facilities-goblin-former-executive-assistant_header.svg",
+      "bond-facilities-goblin-former-executive-assistant_panel.svg",
+      "bond-facilities-goblin-security-skeleton_header.svg",
+      "bond-facilities-goblin-security-skeleton_panel.svg",
+      "bond-former-executive-assistant-security-skeleton_header.svg",
+      "bond-former-executive-assistant-security-skeleton_panel.svg",
+      "bond-payroll-wraith-facilities-goblin_header.svg",
+      "bond-payroll-wraith-facilities-goblin_panel.svg",
+      "bond-payroll-wraith-former-executive-assistant_header.svg",
+      "bond-payroll-wraith-former-executive-assistant_panel.svg",
+      "bond-payroll-wraith-security-skeleton_header.svg",
+      "bond-payroll-wraith-security-skeleton_panel.svg",
+      "bond-payroll-wraith-wellness-witch_header.svg",
+      "bond-payroll-wraith-wellness-witch_panel.svg",
+      "bond-wellness-witch-facilities-goblin_header.svg",
+      "bond-wellness-witch-facilities-goblin_panel.svg",
+      "bond-wellness-witch-former-executive-assistant_header.svg",
+      "bond-wellness-witch-former-executive-assistant_panel.svg",
+      "bond-wellness-witch-security-skeleton_header.svg",
+      "bond-wellness-witch-security-skeleton_panel.svg"
+    ],
+    "svg/mono": [
+      "bond-facilities-goblin-former-executive-assistant_header.svg",
+      "bond-facilities-goblin-former-executive-assistant_panel.svg",
+      "bond-facilities-goblin-security-skeleton_header.svg",
+      "bond-facilities-goblin-security-skeleton_panel.svg",
+      "bond-former-executive-assistant-security-skeleton_header.svg",
+      "bond-former-executive-assistant-security-skeleton_panel.svg",
+      "bond-payroll-wraith-facilities-goblin_header.svg",
+      "bond-payroll-wraith-facilities-goblin_panel.svg",
+      "bond-payroll-wraith-former-executive-assistant_header.svg",
+      "bond-payroll-wraith-former-executive-assistant_panel.svg",
+      "bond-payroll-wraith-security-skeleton_header.svg",
+      "bond-payroll-wraith-security-skeleton_panel.svg",
+      "bond-payroll-wraith-wellness-witch_header.svg",
+      "bond-payroll-wraith-wellness-witch_panel.svg",
+      "bond-wellness-witch-facilities-goblin_header.svg",
+      "bond-wellness-witch-facilities-goblin_panel.svg",
+      "bond-wellness-witch-former-executive-assistant_header.svg",
+      "bond-wellness-witch-former-executive-assistant_panel.svg",
+      "bond-wellness-witch-security-skeleton_header.svg",
+      "bond-wellness-witch-security-skeleton_panel.svg"
+    ],
+    "png/header": [
+      "bond-facilities-goblin-former-executive-assistant_header_default_1080x220.png",
+      "bond-facilities-goblin-former-executive-assistant_header_mono_1080x220.png",
+      "bond-facilities-goblin-former-executive-assistant_panel_default_1080x320.png",
+      "bond-facilities-goblin-former-executive-assistant_panel_mono_1080x320.png",
+      "bond-facilities-goblin-security-skeleton_header_default_1080x220.png",
+      "bond-facilities-goblin-security-skeleton_header_mono_1080x220.png",
+      "bond-facilities-goblin-security-skeleton_panel_default_1080x320.png",
+      "bond-facilities-goblin-security-skeleton_panel_mono_1080x320.png",
+      "bond-former-executive-assistant-security-skeleton_header_default_1080x220.png",
+      "bond-former-executive-assistant-security-skeleton_header_mono_1080x220.png",
+      "bond-former-executive-assistant-security-skeleton_panel_default_1080x320.png",
+      "bond-former-executive-assistant-security-skeleton_panel_mono_1080x320.png",
+      "bond-payroll-wraith-facilities-goblin_header_default_1080x220.png",
+      "bond-payroll-wraith-facilities-goblin_header_mono_1080x220.png",
+      "bond-payroll-wraith-facilities-goblin_panel_default_1080x320.png",
+      "bond-payroll-wraith-facilities-goblin_panel_mono_1080x320.png",
+      "bond-payroll-wraith-former-executive-assistant_header_default_1080x220.png",
+      "bond-payroll-wraith-former-executive-assistant_header_mono_1080x220.png",
+      "bond-payroll-wraith-former-executive-assistant_panel_default_1080x320.png",
+      "bond-payroll-wraith-former-executive-assistant_panel_mono_1080x320.png",
+      "bond-payroll-wraith-security-skeleton_header_default_1080x220.png",
+      "bond-payroll-wraith-security-skeleton_header_mono_1080x220.png",
+      "bond-payroll-wraith-security-skeleton_panel_default_1080x320.png",
+      "bond-payroll-wraith-security-skeleton_panel_mono_1080x320.png",
+      "bond-payroll-wraith-wellness-witch_header_default_1080x220.png",
+      "bond-payroll-wraith-wellness-witch_header_mono_1080x220.png",
+      "bond-payroll-wraith-wellness-witch_panel_default_1080x320.png",
+      "bond-payroll-wraith-wellness-witch_panel_mono_1080x320.png",
+      "bond-wellness-witch-facilities-goblin_header_default_1080x220.png",
+      "bond-wellness-witch-facilities-goblin_header_mono_1080x220.png",
+      "bond-wellness-witch-facilities-goblin_panel_default_1080x320.png",
+      "bond-wellness-witch-facilities-goblin_panel_mono_1080x320.png",
+      "bond-wellness-witch-former-executive-assistant_header_default_1080x220.png",
+      "bond-wellness-witch-former-executive-assistant_header_mono_1080x220.png",
+      "bond-wellness-witch-former-executive-assistant_panel_default_1080x320.png",
+      "bond-wellness-witch-former-executive-assistant_panel_mono_1080x320.png",
+      "bond-wellness-witch-security-skeleton_header_default_1080x220.png",
+      "bond-wellness-witch-security-skeleton_header_mono_1080x220.png",
+      "bond-wellness-witch-security-skeleton_panel_default_1080x320.png",
+      "bond-wellness-witch-security-skeleton_panel_mono_1080x320.png"
+    ],
+    "png/compact": [
+      "bond-facilities-goblin-former-executive-assistant_header_default_360x74.png",
+      "bond-facilities-goblin-former-executive-assistant_header_mono_360x74.png",
+      "bond-facilities-goblin-former-executive-assistant_panel_default_360x106.png",
+      "bond-facilities-goblin-former-executive-assistant_panel_mono_360x106.png",
+      "bond-facilities-goblin-security-skeleton_header_default_360x74.png",
+      "bond-facilities-goblin-security-skeleton_header_mono_360x74.png",
+      "bond-facilities-goblin-security-skeleton_panel_default_360x106.png",
+      "bond-facilities-goblin-security-skeleton_panel_mono_360x106.png",
+      "bond-former-executive-assistant-security-skeleton_header_default_360x74.png",
+      "bond-former-executive-assistant-security-skeleton_header_mono_360x74.png",
+      "bond-former-executive-assistant-security-skeleton_panel_default_360x106.png",
+      "bond-former-executive-assistant-security-skeleton_panel_mono_360x106.png",
+      "bond-payroll-wraith-facilities-goblin_header_default_360x74.png",
+      "bond-payroll-wraith-facilities-goblin_header_mono_360x74.png",
+      "bond-payroll-wraith-facilities-goblin_panel_default_360x106.png",
+      "bond-payroll-wraith-facilities-goblin_panel_mono_360x106.png",
+      "bond-payroll-wraith-former-executive-assistant_header_default_360x74.png",
+      "bond-payroll-wraith-former-executive-assistant_header_mono_360x74.png",
+      "bond-payroll-wraith-former-executive-assistant_panel_default_360x106.png",
+      "bond-payroll-wraith-former-executive-assistant_panel_mono_360x106.png",
+      "bond-payroll-wraith-security-skeleton_header_default_360x74.png",
+      "bond-payroll-wraith-security-skeleton_header_mono_360x74.png",
+      "bond-payroll-wraith-security-skeleton_panel_default_360x106.png",
+      "bond-payroll-wraith-security-skeleton_panel_mono_360x106.png",
+      "bond-payroll-wraith-wellness-witch_header_default_360x74.png",
+      "bond-payroll-wraith-wellness-witch_header_mono_360x74.png",
+      "bond-payroll-wraith-wellness-witch_panel_default_360x106.png",
+      "bond-payroll-wraith-wellness-witch_panel_mono_360x106.png",
+      "bond-wellness-witch-facilities-goblin_header_default_360x74.png",
+      "bond-wellness-witch-facilities-goblin_header_mono_360x74.png",
+      "bond-wellness-witch-facilities-goblin_panel_default_360x106.png",
+      "bond-wellness-witch-facilities-goblin_panel_mono_360x106.png",
+      "bond-wellness-witch-former-executive-assistant_header_default_360x74.png",
+      "bond-wellness-witch-former-executive-assistant_header_mono_360x74.png",
+      "bond-wellness-witch-former-executive-assistant_panel_default_360x106.png",
+      "bond-wellness-witch-former-executive-assistant_panel_mono_360x106.png",
+      "bond-wellness-witch-security-skeleton_header_default_360x74.png",
+      "bond-wellness-witch-security-skeleton_header_mono_360x74.png",
+      "bond-wellness-witch-security-skeleton_panel_default_360x106.png",
+      "bond-wellness-witch-security-skeleton_panel_mono_360x106.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Keep scene title, pair names, and body copy in runtime text.",
+    "Do not rely on accent color alone to communicate lock, freshness, or pair identity.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

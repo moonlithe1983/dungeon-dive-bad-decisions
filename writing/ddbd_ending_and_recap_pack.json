@@ -1,0 +1,215 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "ending-and-recap-pack",
+  "sections": {
+    "ending_and_recap_pack": {
+      "screen_ui": {
+        "victory_banner": "Run Clear",
+        "victory_subtitle": "Meridian logged your survival incorrectly and too late.",
+        "ending_panel_title": "Ending State",
+        "ending_panel_subtitle": "What the building can no longer hide depends on what you carried out of it.",
+        "archive_panel_title": "Archive Recap",
+        "archive_panel_subtitle": "The record is alive now. It will not stay polite.",
+        "proofs_label": "Everrise proofs",
+        "truth_label": "Truth level",
+        "root_access_label": "Root access stance",
+        "summary_label": "What the clear means",
+        "open_archive_label": "Open archive recap",
+        "continue_label": "Continue",
+        "view_history_label": "View archive history",
+        "return_to_hub_label": "Return to hub"
+      },
+      "victory_stingers": {
+        "generic": [
+          "The building stops clapping before you do.",
+          "Somewhere above you, legal is learning the word evidence.",
+          "Meridian survives. Its excuses do not.",
+          "You did not save the company. You interrupted its wording.",
+          "The lights stay on. The lie does not.",
+          "A clear is still a report. This one bites back."
+        ],
+        "full_truth": [
+          "The applause dies like it has just seen payroll.",
+          "For one beautiful second, every euphemism in the tower sounds ashamed.",
+          "The record opens its mouth and management finally hears itself.",
+          "You force the company to use the one tone it never budgeted for: honesty."
+        ],
+        "partial_truth": [
+          "The truth gets out wearing a torn badge and somebody else’s access.",
+          "Not enough to cleanse the tower. More than enough to ruin a board meeting.",
+          "The confession arrives incomplete, which is still more than Meridian ever intended."
+        ],
+        "survival_only": [
+          "You leave alive, which Meridian will try very hard to misfile.",
+          "Survival is not silence. It is only delayed testimony.",
+          "The tower keeps its secrets for now. You keep your pulse."
+        ]
+      },
+      "ending_states": [
+        {
+          "id": "full-exposure",
+          "title": "Full Exposure",
+          "truth_level": "complete",
+          "proof_requirement": "all_three_proofs",
+          "root_access_state": "force-the-truth-to-surface",
+          "trigger_hint": "Use when the run ends with Orientation Badge Core, Quorum Seal, and Root Access Shard collected, and the player forces Root Access instead of accepting Meridian's framing.",
+          "clear_banner": "The illusion layer ruptures.",
+          "victory_stinger_primary": "The company finally has to use the language it earned.",
+          "victory_stinger_alternates": [
+            "Applause cuts out mid-syllable.",
+            "Opportunities relabel themselves as losses.",
+            "The archive stops asking permission."
+          ],
+          "ending_title": "Exposure, Not Mercy",
+          "ending_subtitle": "The tower stands. The story protecting it does not.",
+          "body_paragraphs": [
+            "When the last executive voice breaks, Meridian Spire does not collapse in righteous fire. It stays standing, which is somehow meaner and much more useful. The applause tracks cut out. Smiling prompts relabel themselves as losses, incidents, fatalities, and approved harms. The floor finally starts calling things what they are, and the silence after each correction lands harder than any boss did.",
+            "The erased begin returning to record. Names push back into payroll. Security footage reacquires bodies it was instructed not to remember. Surviving staff stop speaking in leadership-safe euphemism and start using the only language left that still has a spine. You have not destroyed the machine. You have forced it to testify against itself, which is the first honest thing Crown Meridian has ever built."
+          ],
+          "archive_header": "Final Record: Meridian Had the Numbers",
+          "archive_summary": "All three Everrise proofs align with a forced Root Access breach, producing the strongest clear. The archive can now state plainly that the player was assigned into the system, leadership modeled the casualties, and the tower's concealment layer was torn open anyway.",
+          "archive_closing_line": "The company remains operational. Its deniability does not."
+        },
+        {
+          "id": "controlled-detonation",
+          "title": "Controlled Detonation",
+          "truth_level": "high",
+          "proof_requirement": "all_three_proofs",
+          "root_access_state": "authenticate-with-stolen-authority",
+          "trigger_hint": "Use when all three Everrise proofs are collected, but the player enters Root Access through stolen legitimacy rather than open rupture.",
+          "clear_banner": "The truth gets in through a badge reader.",
+          "victory_stinger_primary": "Meridian's own permissions helped carry the knife.",
+          "victory_stinger_alternates": [
+            "Authority remains the easiest lock to pick because authority keeps trusting itself.",
+            "The building lets you through, then regrets the courtesy.",
+            "Turns out executive clearance was always a self-harm mechanic."
+          ],
+          "ending_title": "The Record Was Signed From Inside",
+          "ending_subtitle": "You used the company's native grammar long enough to make it confess.",
+          "body_paragraphs": [
+            "You do not rip the mask off Meridian Spire so much as walk around behind it with the right stolen smile. The system yields to credentials it never deserved, and that is its own kind of indictment. Root Access opens because legitimacy was always more important here than decency. You reach the truth by speaking the building's language one last time, then using it to jam the knife under the ribs.",
+            "The archive still fills. The proofs still line up. The company still loses control of the clean version of its own story. But some of the surviving mechanisms keep running, still convinced they were obeying someone important. This clear feels colder than Full Exposure, less like a public rupture and more like finding out the safe was never locked, only respected."
+          ],
+          "archive_header": "Final Record: Authority Was the Breach",
+          "archive_summary": "All three Everrise proofs are present, but Root Access was opened through recognized authority instead of open defiance. The archive gains the complete case file, though the final tone is infiltration rather than rupture.",
+          "archive_closing_line": "The confession is complete. The method is damning."
+        },
+        {
+          "id": "partial-exposure",
+          "title": "Partial Exposure",
+          "truth_level": "partial",
+          "proof_requirement": "one_or_two_proofs",
+          "root_access_state": "force-the-truth-to-surface",
+          "trigger_hint": "Use when the player forces Root Access with incomplete Everrise proof coverage.",
+          "clear_banner": "The tower confesses, but only in fragments.",
+          "victory_stinger_primary": "Not enough to bury Meridian. Plenty to frighten it.",
+          "victory_stinger_alternates": [
+            "The archive coughs up truth in damaged packets.",
+            "You force a confession with pages missing.",
+            "The lie breaks first. The paperwork catches up later."
+          ],
+          "ending_title": "A Testimony With Holes In It",
+          "ending_subtitle": "You got the truth out. Meridian made sure some of it stayed expensive.",
+          "body_paragraphs": [
+            "The concealment layer tears, but not evenly. Enough lies die to prove the shape of the crime. Not enough evidence survives to pin every hand to every signature. Applause cuts out in patches. Some screens relabel harm correctly. Others keep smiling through it like trained parasites. Meridian Spire starts telling on itself, then remembers there are still rooms it taught to swallow their own receipts.",
+            "The survivors who hear the broken confession understand more than leadership wanted and less than the dead deserved. Still, partial truth is not a small thing here. It is a weapon, a rumor, a floor-plan scribbled in blood and toner. You do not end the company. You make it expensive for the company to keep pretending it never knew."
+          ],
+          "archive_header": "Final Record: Confirmed Harm, Incomplete Chain",
+          "archive_summary": "Root Access was forced open, but one or more Everrise proofs were missing. The archive confirms systemic harm and executive deception, yet parts of the chain of authorship remain obscured.",
+          "archive_closing_line": "Enough truth escaped to ruin morale decks for years."
+        },
+        {
+          "id": "licensed-survival",
+          "title": "Licensed Survival",
+          "truth_level": "limited",
+          "proof_requirement": "one_or_two_proofs",
+          "root_access_state": "authenticate-with-stolen-authority",
+          "trigger_hint": "Use when the player survives the final confrontation with some proof in hand, but relies on recognized authority to pass Root Access and does not fully rupture concealment.",
+          "clear_banner": "You get out with evidence and a compromised signature.",
+          "victory_stinger_primary": "Meridian let you live because it misread what you were carrying.",
+          "victory_stinger_alternates": [
+            "A partial record with executive fingerprints is still a bomb.",
+            "The system approved its own injury request.",
+            "You leave with enough proof to make meetings quieter."
+          ],
+          "ending_title": "Stamped, Escaped, Not Forgiven",
+          "ending_subtitle": "The company still has cover. It has less of it now.",
+          "body_paragraphs": [
+            "You clear the tower without giving it the full public seizure it deserves. Root Access accepts the wrong kind of person because Meridian never learned the difference between rank and worth. That gets you through, gets you out, and gets some of the truth into the archive, but the final record lands like a controlled leak instead of a detonation.",
+            "This is the ending where leadership still tries to call the aftermath a contained issue. The problem for them is that containment now has names attached to it. You carry enough proof to spoil investor language, enough detail to make internal denials sweat, and enough survival left in you to keep being terribly inconvenient."
+          ],
+          "archive_header": "Final Record: Contained Lie, Escalating Leak",
+          "archive_summary": "The clear preserves evidence but not total exposure. The archive can connect major harms and executive knowledge, yet some concealment remains intact because Root Access was entered on the tower's terms.",
+          "archive_closing_line": "Not clean. Not complete. Still lethal to the official story."
+        },
+        {
+          "id": "quiet-survival",
+          "title": "Quiet Survival",
+          "truth_level": "minimal",
+          "proof_requirement": "zero_to_two_proofs",
+          "root_access_state": "leave-it-untouched",
+          "trigger_hint": "Use when the player clears the run but leaves Root Access untouched, regardless of proof count.",
+          "clear_banner": "You live first. The testimony comes later, if it comes at all.",
+          "victory_stinger_primary": "The tower keeps its deepest file. You keep breathing.",
+          "victory_stinger_alternates": [
+            "Some survivors leave with evidence. Some leave with enough strength to come back angry.",
+            "You deny Meridian one more body and call that a start.",
+            "The archive records the win anyway, even if the building keeps the ugliest page."
+          ],
+          "ending_title": "Deferred Testimony",
+          "ending_subtitle": "A successful clear does not always arrive with a clean confession attached.",
+          "body_paragraphs": [
+            "You leave Root Access pulsing in the floor like an unopened threat. Maybe you are too hurt. Maybe the timing is bad. Maybe survival finally wins the argument against revelation, which is not cowardice no matter what management would call it. Meridian keeps its deepest language to itself for one more cycle, and you keep the one thing the tower was absolutely willing to spend: your life.",
+            "This ending is quieter, but it is not nothing. A survivor walking out with even a fragment of the truth is still a systems problem for Crown Meridian. The archive marks what you saw, what you beat, and what remains sealed. Later, when someone finally tears that last cover off the machine, your record will be waiting there like a witness who never stopped taking notes."
+          ],
+          "archive_header": "Final Record: Survivor Exit, Truth Deferred",
+          "archive_summary": "The run clears without a Root Access breach. The archive preserves the floor path, bosses, and any recovered proofs, but the deepest executive confession remains sealed for now.",
+          "archive_closing_line": "Meridian counts this as a retention success. The archive disagrees."
+        }
+      ],
+      "archive_recap_variants": [
+        {
+          "id": "full-exposure-recap",
+          "maps_to_ending": "full-exposure",
+          "panel_title": "Archive Recap: Exposure Won",
+          "panel_subtitle": "All three proofs align. Root Access was forced.",
+          "panel_body": "This run leaves Meridian with no clean language left to hide behind. Assignment, casualty approval, and concealment failure all reached the same record. The archive can now describe the tower as intended harm operating at executive scale.",
+          "footer_note": "Truth level: complete."
+        },
+        {
+          "id": "controlled-detonation-recap",
+          "maps_to_ending": "controlled-detonation",
+          "panel_title": "Archive Recap: Permission Became the Wound",
+          "panel_subtitle": "All three proofs align. Root Access was authenticated, then abused correctly.",
+          "panel_body": "The archive reaches a full case file, but the route matters: Meridian's own authority stack was used to open the door. This recap should feel elegant, criminal, and deeply embarrassing for the company.",
+          "footer_note": "Truth level: high."
+        },
+        {
+          "id": "partial-exposure-recap",
+          "maps_to_ending": "partial-exposure",
+          "panel_title": "Archive Recap: The Confession Came Out Damaged",
+          "panel_subtitle": "Root Access was forced with missing proof coverage.",
+          "panel_body": "Enough was recovered to confirm systemic harm and executive knowledge. Not enough survived to complete the full authorship chain. The archive should sound angry, useful, and unfinished.",
+          "footer_note": "Truth level: partial."
+        },
+        {
+          "id": "licensed-survival-recap",
+          "maps_to_ending": "licensed-survival",
+          "panel_title": "Archive Recap: The Leak Has a Badge",
+          "panel_subtitle": "Some proof survived. The breach still moved through recognized access.",
+          "panel_body": "This clear leaves Meridian exposed but not stripped bare. The archive should emphasize that the player carried out enough evidence to poison the official version without yet burning it to the root.",
+          "footer_note": "Truth level: limited."
+        },
+        {
+          "id": "quiet-survival-recap",
+          "maps_to_ending": "quiet-survival",
+          "panel_title": "Archive Recap: Survival Logged, Core Truth Pending",
+          "panel_subtitle": "The run cleared without opening Root Access.",
+          "panel_body": "The archive records the clear, the bosses, and any proofs recovered, but the deepest executive confession remains sealed. This variant should value survival without pretending survival and revelation are the same achievement.",
+          "footer_note": "Truth level: minimal."
+        }
+      ]
+    }
+  }
+}

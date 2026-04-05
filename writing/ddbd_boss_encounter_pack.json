@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "boss-encounter-pack",
+  "sections": {
+    "boss_intro_stingers": [
+      {
+        "boss_id": "director-of-onboarding",
+        "title": "The Director of Onboarding",
+        "biome": "orientation-arcade",
+        "floor": 4,
+        "voice_profile": "Cheerful, confident, slightly too fast. Treats harm as if it were an employee-facing benefit.",
+        "canonical_intro_lines": [
+          "Welcome, candidate. Your continued distress confirms strong engagement.",
+          "Please hold for applause. We find encouragement improves compliance."
+        ],
+        "new_stingers": [
+          "Congratulations on reaching the advancement threshold. Please keep your limbs inside the growth track.",
+          "What a thrilling turnout. We love a candidate who survives long enough to be categorized.",
+          "Do not let the screaming distract you. It usually means the orientation is sticking.",
+          "You are moments away from discovering whether Meridian sees leadership potential or recyclable enthusiasm.",
+          "Please face the lights. It helps us separate confidence from residue.",
+          "This next exercise is mandatory, celebratory, and binding in all markets."
+        ]
+      },
+      {
+        "boss_id": "vp-of-throughput",
+        "title": "Vice President of Throughput",
+        "biome": "throughput-maze",
+        "floor": 7,
+        "voice_profile": "Flat, optimized, clinical, impatient with emotional language. Speaks as if time itself reports to it.",
+        "canonical_intro_lines": [
+          "You are not a crisis. You are a delay, and delays are removable.",
+          "Output has fallen below expectation. Thank you for volunteering as corrective material."
+        ],
+        "new_stingers": [
+          "Headcount variance detected. Converting remainder into throughput.",
+          "Your resistance has generated avoidable drag. We will now optimize it.",
+          "Please limit emotional leakage. It interferes with the queue.",
+          "The line has stalled around your continued existence.",
+          "We tested compassion. It reduced output.",
+          "You are now entering a corrective workflow. Completion is not optional."
+        ]
+      },
+      {
+        "boss_id": "everrise-board",
+        "title": "The Everrise Board",
+        "biome": "executive-apex",
+        "floor": 10,
+        "voice_profile": "Calm, unanimous, polished, never hurried. Speaks like a statement prepared before the casualties occurred.",
+        "canonical_intro_lines": [
+          "We regret the perception of harm. The outcome remains acceptable.",
+          "You call this a catastrophe because you were not seated for the vote."
+        ],
+        "new_stingers": [
+          "Thank you for escalating your objection to the highest available appetite.",
+          "Your testimony has been received, summarized, and marked non-blocking.",
+          "Please understand: this meeting was scheduled before you became inconvenient.",
+          "We do not deny the casualties. We deny their relevance to strategy.",
+          "You have mistaken access for influence. A common employee-facing error.",
+          "This is not retaliation. It is governance reaching full maturity."
+        ]
+      }
+    ],
+    "boss_archive_unlocks": [
+      {
+        "boss_id": "director-of-onboarding",
+        "title": "The Director of Onboarding",
+        "archive_toast": "Executive threat archived.",
+        "panel_title": "Archive Update: Orientation Was Policy",
+        "panel_subtitle": "The host is gone. The lie remains on record.",
+        "panel_body": "The first executive record confirms what the floor had been trying to hide under applause and prize lighting: onboarding was never a welcome. It was a filtration event. Meridian was not malfunctioning in the Orientation Arcade. It was performing its preferred version of care—bright, mandatory, and designed to sort people by how much harm they would endure while smiling.",
+        "button_label": "Open archive",
+        "continue_label": "Descend",
+        "record_label": "New executive threat logged",
+        "records_unlocked": [
+          "director-of-onboarding"
+        ]
+      },
+      {
+        "boss_id": "vp-of-throughput",
+        "title": "Vice President of Throughput",
+        "archive_toast": "Processing authority archived.",
+        "panel_title": "Archive Update: Efficiency Was the Weapon",
+        "panel_subtitle": "The machine stopped pretending numbers were neutral.",
+        "panel_body": "The second executive record makes the middle floors legible. The quotas, queue logic, and production rituals were not corruption layered onto the company. They were the company without the customer-facing paint. Meridian tracked the cost in bodies, time, and failure states, then called the losses acceptable variance because the line still moved.",
+        "button_label": "Review record",
+        "continue_label": "Keep moving",
+        "record_label": "New executive threat logged",
+        "records_unlocked": [
+          "vp-of-throughput"
+        ]
+      },
+      {
+        "boss_id": "everrise-board",
+        "title": "The Everrise Board",
+        "archive_toast": "Consensus body archived.",
+        "panel_title": "Archive Update: The Executive Story Broke",
+        "panel_subtitle": "The highest layer of the lie has lost control of the wording.",
+        "panel_body": "The final executive record does not destroy Meridian Spire. It ruins the company’s ability to explain itself cleanly. The Board was the polished consensus behind every euphemism, every approved casualty, and every statement prepared before the blood dried. Now the archive can name the structure plainly: Project Everrise was not a disaster that happened to Crown Meridian. It was Crown Meridian telling the truth about itself at scale.",
+        "button_label": "Open final record",
+        "continue_label": "View ending",
+        "record_label": "Final executive threat logged",
+        "records_unlocked": [
+          "everrise-board"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "pack_id": "ddbd-biome-background-overlay-pack-r2",
+  "project": "Dungeon Dive: Bad Decisions",
+  "fix_note": "R2 restores the missing dim overlays and all intended PNG exports.",
+  "biomes": [
+    {
+      "id": "orientation-arcade",
+      "title": "Orientation Arcade"
+    },
+    {
+      "id": "throughput-maze",
+      "title": "Throughput Maze"
+    },
+    {
+      "id": "executive-apex",
+      "title": "Executive Apex"
+    }
+  ],
+  "overlays": [
+    "overlay-dim-soft",
+    "overlay-dim-strong",
+    "overlay-blur-veil",
+    "overlay-focus-window"
+  ],
+  "exports": {
+    "svg/default": [
+      "biome-executive-apex-bg.svg",
+      "biome-orientation-arcade-bg.svg",
+      "biome-throughput-maze-bg.svg",
+      "overlay-blur-veil.svg",
+      "overlay-dim-soft.svg",
+      "overlay-dim-strong.svg",
+      "overlay-focus-window.svg"
+    ],
+    "png/360x640": [
+      "biome-executive-apex-bg_360x640.png",
+      "biome-orientation-arcade-bg_360x640.png",
+      "biome-throughput-maze-bg_360x640.png",
+      "overlay-blur-veil_360x640.png",
+      "overlay-dim-soft_360x640.png",
+      "overlay-dim-strong_360x640.png",
+      "overlay-focus-window_360x640.png"
+    ],
+    "png/1080x1920": [
+      "biome-executive-apex-bg_1080x1920.png",
+      "biome-orientation-arcade-bg_1080x1920.png",
+      "biome-throughput-maze-bg_1080x1920.png",
+      "overlay-blur-veil_1080x1920.png",
+      "overlay-dim-soft_1080x1920.png",
+      "overlay-dim-strong_1080x1920.png",
+      "overlay-focus-window_1080x1920.png"
+    ]
+  },
+  "usage_notes": [
+    "Prefer SVG at runtime when possible.",
+    "Backgrounds are decorative and should sit behind route, reward, event, recap, and hub chrome.",
+    "Use dim or blur overlays to preserve compact mobile readability rather than baking text into art.",
+    "Do not rely on background color differences alone to communicate danger or progression.",
+    "Choose stronger overlays for recap/event dense copy and lighter overlays for route/reward surfaces."
+  ]
+}

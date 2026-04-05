@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Biomes">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 91 q18 -43 36 0 q18 -49 36 0"/><path d="M20 91 h88"/>
+      <circle cx="42" cy="58" r="7" fill="#FFFFFF" stroke="none"/>
+      <rect x="57" y="45" width="14" height="24" rx="2"/>
+      <path d="M86 42 l10 15 -10 15 -10-15z"/>
+    </g>
+    </svg>

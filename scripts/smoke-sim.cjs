@@ -294,6 +294,12 @@ async function main() {
     'src/content/classes.ts'
   ));
   const {
+    getArchivedResultArtKey,
+    getEventArtKey,
+    getRewardPackageArtKey,
+    getRouteNodeArtKey,
+  } = require(path.join(workspaceRoot, 'src/assets/loop-art.ts'));
+  const {
     bondSceneDefinitions,
     getBondScenesForCompanion,
     getBondScenesUnlockedByBondGains,
@@ -453,6 +459,42 @@ async function main() {
       run.map.floors[4]?.label.startsWith('Team-Building Catacombs') &&
       run.map.floors[7]?.label.startsWith('Executive Suite of the Damned'),
     'Expected the live map to progress through all three authored biomes.'
+  );
+  assert(
+    getRouteNodeArtKey('battle') === 'route__high-risk' &&
+      getRouteNodeArtKey('event') === 'route__story-node' &&
+      getRouteNodeArtKey('reward') === 'route__package-node' &&
+      getRouteNodeArtKey('boss') === 'route__boss-floor',
+    'Expected route-node artwork mappings to stay aligned with live loop semantics.'
+  );
+  assert(
+    getEventArtKey('unsafe-team-building') === 'warm-badges-scene' &&
+      getEventArtKey('mandatory-feedback-loop') === 'applause-threshold-scene' &&
+      getEventArtKey('suspicious-elevator-pitch') === 'career-accelerator-scene' &&
+      getEventArtKey('shadow-it-market') === 'event-generic-backdrop',
+    'Expected event artwork mappings to cover the authored opening events and generic fallbacks.'
+  );
+  for (const [optionId, artKey] of Object.entries({
+    'expense-fraud': 'expense-account',
+    'per-diem-skimming': 'expense-account',
+    'black-card-overage': 'expense-account',
+    'triage-cart': 'sick-leave',
+    'wellness-cooler': 'sick-leave',
+    'concierge-crash-cart': 'sick-leave',
+    'contraband-locker': 'back-channel',
+    'swag-bag-heist': 'lunch-and-learn',
+    'golden-parachute-cache': 'exit-package',
+  })) {
+    assert(
+      getRewardPackageArtKey(optionId) === artKey,
+      `Expected reward artwork mapping ${optionId} -> ${artKey}.`
+    );
+  }
+  assert(
+    getArchivedResultArtKey('win') === 'status__hyped' &&
+      getArchivedResultArtKey('loss') === 'status__under-review' &&
+      getArchivedResultArtKey('abandon') === 'status__backlogged',
+    'Expected archived-run artwork mappings to stay aligned with recap outcomes.'
   );
 
   assert(

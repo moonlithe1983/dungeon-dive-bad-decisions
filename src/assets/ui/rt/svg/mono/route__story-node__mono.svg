@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Story node">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M31 36 h39 a9 9 0 0 1 9 9 v28 a9 9 0 0 1 -9 9 H52 l-14 12 v-12 h-7 a9 9 0 0 1 -9 -9 V45 a9 9 0 0 1 9 -9z"/>
+      <path d="M76 33 h20 a8 8 0 0 1 8 8 v31 a8 8 0 0 1 -8 8"/>
+      <path d="M47 55 h21"/><path d="M47 68 h17"/>
+      <circle cx="87" cy="58" r="11"/><circle cx="87" cy="58" r="4" fill="#FFFFFF" stroke="none"/>
+    </g>
+    </svg>

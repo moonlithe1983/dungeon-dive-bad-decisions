@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 640" width="360" height="640">
+
+    
+<defs>
+  <linearGradient id="bgDark" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#120206"/>
+    <stop offset="100%" stop-color="#080103"/>
+  </linearGradient>
+  <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="12"/>
+  </filter>
+  <filter id="medBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="22"/>
+  </filter>
+  <filter id="heavyBlur" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="34"/>
+  </filter>
+  <radialGradient id="emberGlow" cx="50%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#ffbf57" stop-opacity="0.28"/>
+    <stop offset="50%" stop-color="#ff9d1a" stop-opacity="0.12"/>
+    <stop offset="100%" stop-color="#ff9d1a" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="tealGlow" cx="50%" cy="20%" r="80%">
+    <stop offset="0%" stop-color="#75ebff" stop-opacity="0.20"/>
+    <stop offset="45%" stop-color="#46c7d9" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="#46c7d9" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="glassGlow" cx="50%" cy="20%" r="90%">
+    <stop offset="0%" stop-color="#e8f2fb" stop-opacity="0.18"/>
+    <stop offset="50%" stop-color="#b8bec8" stop-opacity="0.06"/>
+    <stop offset="100%" stop-color="#b8bec8" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#000000" stop-opacity="0.42"/>
+    <stop offset="22%" stop-color="#000000" stop-opacity="0.08"/>
+    <stop offset="78%" stop-color="#000000" stop-opacity="0.12"/>
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.48"/>
+  </linearGradient>
+</defs>
+
+    <rect width="360" height="640" fill="url(#bgDark)"/>
+    <rect width="360" height="640" fill="url(#tealGlow)"/>
+    <g>
+      <rect x="18" y="60" width="324" height="520" rx="24" fill="#0f0d13" opacity="0.72"/>
+      <path d="M28 96 H332 M28 170 H332 M28 244 H332 M28 318 H332 M28 392 H332 M28 466 H332 M28 540 H332" stroke="#6ea0c7" stroke-width="3" opacity="0.18"/>
+      <path d="M70 60 V580 M146 60 V580 M220 60 V580 M292 60 V580" stroke="#6ea0c7" stroke-width="3" opacity="0.14"/>
+      <g opacity="0.55">
+        <rect x="40" y="94" width="84" height="52" rx="10" fill="#18202a" stroke="#6ea0c7" stroke-width="2"/>
+        <rect x="150" y="186" width="78" height="48" rx="10" fill="#161c24" stroke="#46c7d9" stroke-width="2"/>
+        <rect x="236" y="284" width="82" height="46" rx="10" fill="#161c24" stroke="#6ea0c7" stroke-width="2"/>
+        <rect x="62" y="404" width="90" height="54" rx="10" fill="#171d26" stroke="#46c7d9" stroke-width="2"/>
+      </g>
+      <g filter="url(#softBlur)" opacity="0.28">
+        <circle cx="300" cy="112" r="22" fill="#46c7d9"/>
+        <circle cx="82" cy="256" r="18" fill="#ffbf57"/>
+        <circle cx="260" cy="474" r="20" fill="#46c7d9"/>
+      </g>
+      <path d="M26 132 L334 132" stroke="#ffbf57" stroke-width="8" opacity="0.12"/>
+      <path d="M26 448 L334 448" stroke="#46c7d9" stroke-width="8" opacity="0.12"/>
+      <g opacity="0.34">
+        <path d="M108 236 H156" stroke="#f5efe2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M184 360 H246" stroke="#f5efe2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M246 522 H302" stroke="#f5efe2" stroke-width="4" stroke-linecap="round"/>
+      </g>
+      <g filter="url(#medBlur)" opacity="0.12">
+        <rect x="26" y="164" width="308" height="18" rx="9" fill="#46c7d9"/>
+        <rect x="26" y="496" width="308" height="18" rx="9" fill="#ffbf57"/>
+      </g>
+      <rect width="360" height="640" fill="url(#vignette)"/>
+    </g>
+    
+</svg>

@@ -1,0 +1,11 @@
+asset_id,category,recommended_accessibility_label,notes
+event-screen-panel,event-ui-chrome,event screen panel background,Decorative container; do not expose as standalone focus target.
+event-choice-card,event-ui-chrome,event choice card frame,"Parent choice control should announce title, summary, and availability."
+event-choice-selected,event-ui-chrome,selected event choice card frame,Selection state should be announced on the parent control.
+event-confirm-button,event-button,confirm selected event choice,Use with visible runtime text label.
+event-details-button,event-button,show more event details,Use with visible runtime text label or disclosure text.
+event-continue-button,event-button,continue from event result,Use with visible runtime text label.
+event-generic-backdrop,event-illustration,generic event illustration background,Supportive scene art only; do not rely on it for gameplay meaning.
+warm-badges-scene,event-illustration,Warm Badges event illustration,Support with visible event title and prompt text.
+applause-threshold-scene,event-illustration,Applause Threshold event illustration,Support with visible event title and prompt text.
+career-accelerator-scene,event-illustration,Career Accelerator event illustration,Support with visible event title and prompt text.

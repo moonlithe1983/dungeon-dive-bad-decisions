@@ -1,0 +1,36 @@
+{
+  "pack_id": "ddbd-store-media-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "contains": {
+    "icon": [
+      "ddbd_play_icon_default",
+      "ddbd_play_icon_mono"
+    ],
+    "feature": [
+      "ddbd_feature_graphic_default",
+      "ddbd_feature_graphic_mono"
+    ],
+    "screens": [
+      "ss_title_template_default",
+      "ss_route_template_default",
+      "ss_battle_template_default",
+      "ss_reward_template_default",
+      "ss_event_template_default",
+      "ss_recap_template_default",
+      "ss_title_template_mono",
+      "ss_route_template_mono",
+      "ss_battle_template_mono",
+      "ss_reward_template_mono",
+      "ss_event_template_mono",
+      "ss_recap_template_mono",
+      "ss_store_guide_1080x1920"
+    ]
+  },
+  "usage_notes": [
+    "Prefer the 512x512 PNG for the Google Play listing icon master.",
+    "Do not pre-apply rounded corners or shadows to the Play listing icon.",
+    "Keep feature graphic free of screenshots and device frames.",
+    "Use raw screenshots for Play listing screenshots; these templates are non-device composition guides only.",
+    "Store-media captions should remain short and large enough to survive mobile scaling."
+  ]
+}

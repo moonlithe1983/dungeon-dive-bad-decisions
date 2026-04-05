@@ -1,0 +1,86 @@
+{
+  "pack_id": "ddbd-event-readability-pack-r1",
+  "project": "Dungeon Dive: Bad Decisions",
+  "integrated_live_events": [
+    "warm-badges",
+    "applause-threshold",
+    "career-accelerator"
+  ],
+  "exports": {
+    "svg/default": [
+      "applause-threshold-scene.svg",
+      "career-accelerator-scene.svg",
+      "event-choice-card.svg",
+      "event-choice-selected.svg",
+      "event-confirm-button.svg",
+      "event-continue-button.svg",
+      "event-details-button.svg",
+      "event-generic-backdrop.svg",
+      "event-screen-panel.svg",
+      "warm-badges-scene.svg"
+    ],
+    "svg/mono": [
+      "applause-threshold-scene.svg",
+      "career-accelerator-scene.svg",
+      "event-choice-card.svg",
+      "event-choice-selected.svg",
+      "event-confirm-button.svg",
+      "event-continue-button.svg",
+      "event-details-button.svg",
+      "event-generic-backdrop.svg",
+      "event-screen-panel.svg",
+      "warm-badges-scene.svg"
+    ],
+    "png/128": [
+      "applause-threshold-scene_default_170x90.png",
+      "applause-threshold-scene_mono_170x90.png",
+      "career-accelerator-scene_default_170x90.png",
+      "career-accelerator-scene_mono_170x90.png",
+      "event-choice-card_default_150x85.png",
+      "event-choice-card_mono_150x85.png",
+      "event-choice-selected_default_150x85.png",
+      "event-choice-selected_mono_150x85.png",
+      "event-confirm-button_default_130x38.png",
+      "event-confirm-button_mono_130x38.png",
+      "event-continue-button_default_130x38.png",
+      "event-continue-button_mono_130x38.png",
+      "event-details-button_default_130x38.png",
+      "event-details-button_mono_130x38.png",
+      "event-generic-backdrop_default_170x90.png",
+      "event-generic-backdrop_mono_170x90.png",
+      "warm-badges-scene_default_170x90.png",
+      "warm-badges-scene_mono_170x90.png"
+    ],
+    "png/256": [
+      "applause-threshold-scene_default_340x180.png",
+      "applause-threshold-scene_mono_340x180.png",
+      "career-accelerator-scene_default_340x180.png",
+      "career-accelerator-scene_mono_340x180.png",
+      "event-choice-card_default_300x170.png",
+      "event-choice-card_mono_300x170.png",
+      "event-choice-selected_default_300x170.png",
+      "event-choice-selected_mono_300x170.png",
+      "event-confirm-button_default_260x76.png",
+      "event-confirm-button_mono_260x76.png",
+      "event-continue-button_default_260x76.png",
+      "event-continue-button_mono_260x76.png",
+      "event-details-button_default_260x76.png",
+      "event-details-button_mono_260x76.png",
+      "event-generic-backdrop_default_340x180.png",
+      "event-generic-backdrop_mono_340x180.png",
+      "event-screen-panel_default_180x320.png",
+      "event-screen-panel_default_360x640.png",
+      "event-screen-panel_mono_180x320.png",
+      "event-screen-panel_mono_360x640.png",
+      "warm-badges-scene_default_340x180.png",
+      "warm-badges-scene_mono_340x180.png"
+    ]
+  },
+  "notes": [
+    "Prefer SVG at runtime when possible.",
+    "Do not convey event meaning through color alone.",
+    "Pair scene art with visible event title, prompt, and choice text.",
+    "Keep button and card frames decorative; parent controls should carry semantics.",
+    "Mono assets are intended as high-contrast-safe fallbacks."
+  ]
+}

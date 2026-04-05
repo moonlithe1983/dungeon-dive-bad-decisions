@@ -1,0 +1,21 @@
+asset_id,category,recommended_accessibility_label,notes
+applause-drone_header,enemy-header-art,Applause Drone enemy header art,Use with visible runtime title and threat/countermeasure text.
+applause-drone_intro,enemy-intro-panel,Applause Drone enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+badge-clerk_header,enemy-header-art,Badge Clerk enemy header art,Use with visible runtime title and threat/countermeasure text.
+badge-clerk_intro,enemy-intro-panel,Badge Clerk enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+corrective-usher_header,enemy-header-art,Corrective Usher enemy header art,Use with visible runtime title and threat/countermeasure text.
+corrective-usher_intro,enemy-intro-panel,Corrective Usher enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+queue-leech_header,enemy-header-art,Queue Leech enemy header art,Use with visible runtime title and threat/countermeasure text.
+queue-leech_intro,enemy-intro-panel,Queue Leech enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+kpi-penitent_header,enemy-header-art,KPI Penitent enemy header art,Use with visible runtime title and threat/countermeasure text.
+kpi-penitent_intro,enemy-intro-panel,KPI Penitent enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+hold-music-revenant_header,enemy-header-art,Hold Music Revenant enemy header art,Use with visible runtime title and threat/countermeasure text.
+hold-music-revenant_intro,enemy-intro-panel,Hold Music Revenant enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+toner-seraph_header,enemy-header-art,Toner Seraph enemy header art,Use with visible runtime title and threat/countermeasure text.
+toner-seraph_intro,enemy-intro-panel,Toner Seraph enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+proxy-notary_header,enemy-header-art,Proxy Notary enemy header art,Use with visible runtime title and threat/countermeasure text.
+proxy-notary_intro,enemy-intro-panel,Proxy Notary enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+investor-smile_header,enemy-header-art,Investor Smile enemy header art,Use with visible runtime title and threat/countermeasure text.
+investor-smile_intro,enemy-intro-panel,Investor Smile enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."
+quorum-bailiff_header,enemy-header-art,Quorum Bailiff enemy header art,Use with visible runtime title and threat/countermeasure text.
+quorum-bailiff_intro,enemy-intro-panel,Quorum Bailiff enemy intro panel background,"Keep intro line, biome, and floor-band text in runtime UI."

@@ -1,0 +1,26 @@
+asset_id,screen,spoken_label,role,decorative_only,notes
+route/high-risk,run-map,Route node: High risk,interactive-node-icon,no,Use together with visible text label and a non-color distinction.
+route/story-node,run-map,Route node: Story node,interactive-node-icon,no,Use together with visible text label and a non-color distinction.
+route/package-node,run-map,Route node: Package node,interactive-node-icon,no,Use together with visible text label and a non-color distinction.
+route/elite-threat,run-map,Route node: Elite threat,interactive-node-icon,no,Use together with visible text label and a non-color distinction.
+route/boss-floor,run-map,Route node: Boss floor,interactive-node-icon,no,Use together with visible text label and a non-color distinction.
+status/hyped,battle,Status: Hyped,status-icon,no,"Use together with text, tooltip, or toast. Avoid color-only communication."
+status/misbadged,battle,Status: Misbadged,status-icon,no,"Use together with text, tooltip, or toast. Avoid color-only communication."
+status/routed,battle,Status: Routed,status-icon,no,"Use together with text, tooltip, or toast. Avoid color-only communication."
+status/backlogged,battle,Status: Backlogged,status-icon,no,"Use together with text, tooltip, or toast. Avoid color-only communication."
+status/under-review,battle,Status: Under Review,status-icon,no,"Use together with text, tooltip, or toast. Avoid color-only communication."
+proof/orientation-badge-core,"codex,end-run",Proof: Orientation Badge Core,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+proof/quorum-seal,"codex,end-run",Proof: Quorum Seal,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+proof/root-access-shard,"codex,end-run",Proof: Root Access Shard,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/companions,codex,Archive category: Companions,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/roles,codex,Archive category: Roles,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/bosses,codex,Archive category: Bosses,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/world,codex,Archive category: World,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/biomes,codex,Archive category: Biomes,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/factions,codex,Archive category: Factions,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/items,codex,Archive category: Items,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+codex/proofs,codex,Archive category: Proofs,archive-icon,no,Can be decorative if adjacent readable text already names the record.
+marker/focus-ring,shared-ui,Focused,state-indicator,no,Decorative if focus is already announced by the OS; otherwise expose as focused state only.
+marker/selected-ring,shared-ui,Selected,state-indicator,no,Should not be focusable by itself; announce parent element as selected.
+marker/target-reticle,battle,Targeted,state-indicator,no,"Announce on the parent combat target, not as a separate element."
+marker/locked-overlay,shared-ui,Locked,state-indicator,no,Announce parent element as locked/unavailable.

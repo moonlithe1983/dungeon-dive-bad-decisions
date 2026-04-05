@@ -1,0 +1,26 @@
+asset_id,label,screen,badge_style,default_svg,mono_svg,png_128,png_256
+route/high-risk,High risk,run-map,hex,svg/default/route__high-risk.svg,svg/mono/route__high-risk__mono.svg,png/128/route__high-risk.png,png/256/route__high-risk@2x.png
+route/story-node,Story node,run-map,hex,svg/default/route__story-node.svg,svg/mono/route__story-node__mono.svg,png/128/route__story-node.png,png/256/route__story-node@2x.png
+route/package-node,Package node,run-map,hex,svg/default/route__package-node.svg,svg/mono/route__package-node__mono.svg,png/128/route__package-node.png,png/256/route__package-node@2x.png
+route/elite-threat,Elite threat,run-map,hex,svg/default/route__elite-threat.svg,svg/mono/route__elite-threat__mono.svg,png/128/route__elite-threat.png,png/256/route__elite-threat@2x.png
+route/boss-floor,Boss floor,run-map,hex,svg/default/route__boss-floor.svg,svg/mono/route__boss-floor__mono.svg,png/128/route__boss-floor.png,png/256/route__boss-floor@2x.png
+status/hyped,Hyped,battle,circle,svg/default/status__hyped.svg,svg/mono/status__hyped__mono.svg,png/128/status__hyped.png,png/256/status__hyped@2x.png
+status/misbadged,Misbadged,battle,circle,svg/default/status__misbadged.svg,svg/mono/status__misbadged__mono.svg,png/128/status__misbadged.png,png/256/status__misbadged@2x.png
+status/routed,Routed,battle,circle,svg/default/status__routed.svg,svg/mono/status__routed__mono.svg,png/128/status__routed.png,png/256/status__routed@2x.png
+status/backlogged,Backlogged,battle,circle,svg/default/status__backlogged.svg,svg/mono/status__backlogged__mono.svg,png/128/status__backlogged.png,png/256/status__backlogged@2x.png
+status/under-review,Under Review,battle,circle,svg/default/status__under-review.svg,svg/mono/status__under-review__mono.svg,png/128/status__under-review.png,png/256/status__under-review@2x.png
+proof/orientation-badge-core,Orientation Badge Core,"codex,end-run",round,svg/default/proof__orientation-badge-core.svg,svg/mono/proof__orientation-badge-core__mono.svg,png/128/proof__orientation-badge-core.png,png/256/proof__orientation-badge-core@2x.png
+proof/quorum-seal,Quorum Seal,"codex,end-run",round,svg/default/proof__quorum-seal.svg,svg/mono/proof__quorum-seal__mono.svg,png/128/proof__quorum-seal.png,png/256/proof__quorum-seal@2x.png
+proof/root-access-shard,Root Access Shard,"codex,end-run",round,svg/default/proof__root-access-shard.svg,svg/mono/proof__root-access-shard__mono.svg,png/128/proof__root-access-shard.png,png/256/proof__root-access-shard@2x.png
+codex/companions,Companions,codex,round,svg/default/codex__companions.svg,svg/mono/codex__companions__mono.svg,png/128/codex__companions.png,png/256/codex__companions@2x.png
+codex/roles,Roles,codex,round,svg/default/codex__roles.svg,svg/mono/codex__roles__mono.svg,png/128/codex__roles.png,png/256/codex__roles@2x.png
+codex/bosses,Bosses,codex,round,svg/default/codex__bosses.svg,svg/mono/codex__bosses__mono.svg,png/128/codex__bosses.png,png/256/codex__bosses@2x.png
+codex/world,World,codex,round,svg/default/codex__world.svg,svg/mono/codex__world__mono.svg,png/128/codex__world.png,png/256/codex__world@2x.png
+codex/biomes,Biomes,codex,round,svg/default/codex__biomes.svg,svg/mono/codex__biomes__mono.svg,png/128/codex__biomes.png,png/256/codex__biomes@2x.png
+codex/factions,Factions,codex,round,svg/default/codex__factions.svg,svg/mono/codex__factions__mono.svg,png/128/codex__factions.png,png/256/codex__factions@2x.png
+codex/items,Items,codex,round,svg/default/codex__items.svg,svg/mono/codex__items__mono.svg,png/128/codex__items.png,png/256/codex__items@2x.png
+codex/proofs,Proofs,codex,round,svg/default/codex__proofs.svg,svg/mono/codex__proofs__mono.svg,png/128/codex__proofs.png,png/256/codex__proofs@2x.png
+marker/focus-ring,Focus ring,shared-ui,none,svg/default/marker__focus-ring.svg,svg/mono/marker__focus-ring__mono.svg,png/128/marker__focus-ring.png,png/256/marker__focus-ring@2x.png
+marker/selected-ring,Selected ring,shared-ui,none,svg/default/marker__selected-ring.svg,svg/mono/marker__selected-ring__mono.svg,png/128/marker__selected-ring.png,png/256/marker__selected-ring@2x.png
+marker/target-reticle,Target reticle,battle,none,svg/default/marker__target-reticle.svg,svg/mono/marker__target-reticle__mono.svg,png/128/marker__target-reticle.png,png/256/marker__target-reticle@2x.png
+marker/locked-overlay,Locked overlay,shared-ui,none,svg/default/marker__locked-overlay.svg,svg/mono/marker__locked-overlay__mono.svg,png/128/marker__locked-overlay.png,png/256/marker__locked-overlay@2x.png

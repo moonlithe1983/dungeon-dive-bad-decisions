@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Routed">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 42 h50"/><path d="M59 28 l20 14 -20 14"/>
+      <path d="M23 88 q26 -24 50 0 q10 10 17 10 h15"/><path d="M89 84 l16 14 -16 14" transform="translate(0,-10)"/>
+    </g>
+    </svg>

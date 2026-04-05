@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Bosses">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M25 45 C24 18, 44 10, 56 28"/>
+      <path d="M103 45 C104 18, 84 10, 72 28"/>
+      <path d="M34 90 V48 l30 -17 30 17 v42 l-30 17z"/>
+      <path d="M56 58 h16 v11 H56z M47 49 h10 v11 H47z M71 49 h10 v11 H71z M47 65 h10 v11 H47z M71 65 h10 v11 H71z"/>
+      <path d="M51 79 l7 -9 6 9 6 -9 7 9"/>
+    </g>
+    </svg>

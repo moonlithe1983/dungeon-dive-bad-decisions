@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Hyped">
+    
+    <g fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M34 88 V58 q0-11 10-15 l14-7 V92 H44 q-10 0-10-4z"/>
+      <path d="M58 36 l28-9 v74 l-28-9z"/>
+      <path d="M94 44 l14-8"/><path d="M98 59 h18"/><path d="M94 74 l14 8"/>
+    </g>
+    </svg>

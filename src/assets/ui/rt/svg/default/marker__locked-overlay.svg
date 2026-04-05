@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Locked overlay">
+    
+    <rect x="37" y="57" width="54" height="38" rx="7" fill="none" stroke="#FFB347" stroke-width="4"/>
+    <path d="M46 57 v-8 a18 18 0 0 1 36 0 v8" fill="none" stroke="#FFF4E3" stroke-width="4" stroke-linecap="round"/>
+    
+    </svg>

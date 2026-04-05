@@ -1,0 +1,534 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "status-and-countermeasure-pack",
+  "status_effect_pack": [
+    {
+      "id": "hyped",
+      "name": "Hyped",
+      "category": "harmful-status",
+      "tooltip_short": "Forced enthusiasm makes the next punishments land harder.",
+      "rules_copy": "The room has you performing instead of surviving. While Hyped is active, applause-driven follow-ups and crowd-pressure effects get nastier.",
+      "flavor_line": "The building mistakes reaction for consent.",
+      "counterplay_hint": "Break the loop early with burst, silence, stun, or any line that stops repeated participation effects.",
+      "common_sources": [
+        "applause-drone",
+        "audience-warm-up-manager",
+        "director-of-onboarding"
+      ],
+      "ui_toast_gain": "Status applied: Hyped",
+      "ui_toast_clear": "The applause loses interest."
+    },
+    {
+      "id": "misbadged",
+      "name": "Misbadged",
+      "category": "harmful-status",
+      "tooltip_short": "The system no longer agrees on who you are.",
+      "rules_copy": "Your record has been reassigned. Targeting, protections, or recognition-based effects can misfire until Misbadged is cleared.",
+      "flavor_line": "Someone else’s name is now trying to survive in your body.",
+      "counterplay_hint": "Cleanse it fast or remove the source before the reassignment becomes the encounter’s main joke.",
+      "common_sources": [
+        "badge-clerk",
+        "corrective-usher"
+      ],
+      "ui_toast_gain": "Status applied: Misbadged",
+      "ui_toast_clear": "Your badge stops arguing with your face."
+    },
+    {
+      "id": "routed",
+      "name": "Routed",
+      "category": "harmful-status",
+      "tooltip_short": "The floor is choosing your position for you.",
+      "rules_copy": "Approved pathways close around you. Forced movement, boundary punishment, and positional follow-ups become easier for the enemy.",
+      "flavor_line": "A friendly boundary is still a boundary.",
+      "counterplay_hint": "Hold ground, interrupt the ushering effect, or plan for movement before the room does it for you.",
+      "common_sources": [
+        "corrective-usher",
+        "quorum-bailiff",
+        "everrise-board"
+      ],
+      "ui_toast_gain": "Status applied: Routed",
+      "ui_toast_clear": "The floor stops directing your future."
+    },
+    {
+      "id": "backlogged",
+      "name": "Backlogged",
+      "category": "harmful-status",
+      "tooltip_short": "Unfinished work is piling up and becoming teeth.",
+      "rules_copy": "Delayed harm is now on the books. Repeat hits, duplicate tasks, and unresolved queue effects scale up while Backlogged remains active.",
+      "flavor_line": "What was ignored has finally found a project plan.",
+      "counterplay_hint": "Close the ticket quickly: burst the source, reduce repeats, or refuse long attrition loops.",
+      "common_sources": [
+        "queue-leech",
+        "vp-of-throughput"
+      ],
+      "ui_toast_gain": "Status applied: Backlogged",
+      "ui_toast_clear": "The queue finally stops breeding."
+    },
+    {
+      "id": "under-review",
+      "name": "Under Review",
+      "category": "harmful-status",
+      "tooltip_short": "Your next mistake now belongs to a process.",
+      "rules_copy": "The system is watching for violations. The next punishable action or marked hit triggers added scrutiny, escalation, or damage.",
+      "flavor_line": "In Meridian, judgment becomes automatic the moment it becomes efficient.",
+      "counterplay_hint": "Purge the mark before committing to a big turn, or switch to safer, lower-risk lines until the review window closes.",
+      "common_sources": [
+        "kpi-penitent",
+        "calibration-committee",
+        "vp-of-throughput"
+      ],
+      "ui_toast_gain": "Status applied: Under Review",
+      "ui_toast_clear": "The meeting ends without consensus."
+    },
+    {
+      "id": "on-hold",
+      "name": "On Hold",
+      "category": "harmful-status",
+      "tooltip_short": "Procedural time is eating your turn.",
+      "rules_copy": "Your action flow bogs down. Draw, speed, escape options, or follow-up timing can stall while the hold music owns the room.",
+      "flavor_line": "An associate will never be with you shortly.",
+      "counterplay_hint": "Silence, disrupt, or end the encounter before delay turns into architecture.",
+      "common_sources": [
+        "hold-music-revenant",
+        "vp-of-throughput"
+      ],
+      "ui_toast_gain": "Status applied: On Hold",
+      "ui_toast_clear": "The line disconnects with no apology."
+    },
+    {
+      "id": "blackened",
+      "name": "Blackened",
+      "category": "harmful-status",
+      "tooltip_short": "Hot toner and binding residue are fouling recovery.",
+      "rules_copy": "You are clogged with print-shop fallout. Sustain, cleansing, or precision lines lose efficiency until Blackened is cleared.",
+      "flavor_line": "The page is inside your lungs now.",
+      "counterplay_hint": "Bring cleanse, prevention, or enough burst to stop the copy cycle before it stacks.",
+      "common_sources": [
+        "toner-seraph",
+        "vp-of-throughput"
+      ],
+      "ui_toast_gain": "Status applied: Blackened",
+      "ui_toast_clear": "The toner finally stops writing on you."
+    },
+    {
+      "id": "proxy-signed",
+      "name": "Proxy-Signed",
+      "category": "harmful-status",
+      "tooltip_short": "Authority has agreed to something awful on your behalf.",
+      "rules_copy": "Enemy effects arrive with delegated approval. Protection windows, consent checks, or defensive assumptions become less reliable while Proxy-Signed is active.",
+      "flavor_line": "The signature is valid. The morality is not.",
+      "counterplay_hint": "Prioritize cleanse or delete the notary before the paperwork turns every hit into policy.",
+      "common_sources": [
+        "proxy-notary",
+        "everrise-board"
+      ],
+      "ui_toast_gain": "Status applied: Proxy-Signed",
+      "ui_toast_clear": "The paperwork loses standing."
+    },
+    {
+      "id": "exposed",
+      "name": "Exposed",
+      "category": "harmful-status",
+      "tooltip_short": "The room understands your weak angle now.",
+      "rules_copy": "Your vulnerabilities have been packaged for distribution. Precision hits, investor-safe punishments, and follow-up damage land cleaner while Exposed remains active.",
+      "flavor_line": "They found the version of your pain that tests well.",
+      "counterplay_hint": "Clean it, cover it, or force the enemy to spend turns surviving instead of narrating your collapse.",
+      "common_sources": [
+        "investor-smile",
+        "investor-relations-avatar",
+        "everrise-board"
+      ],
+      "ui_toast_gain": "Status applied: Exposed",
+      "ui_toast_clear": "The narrative stops improving around your suffering."
+    },
+    {
+      "id": "overruled",
+      "name": "Overruled",
+      "category": "harmful-status",
+      "tooltip_short": "Consensus has become force and your last plan no longer counts.",
+      "rules_copy": "A prior action, stance, or prepared line gets cancelled, shoved aside, or treated as nonbinding. Overruled punishes overcommitment and single big setup turns.",
+      "flavor_line": "Once enough executives agree, even physics starts nodding.",
+      "counterplay_hint": "Use layered pressure instead of one fragile masterpiece, and interrupt board-law effects before they carry the vote.",
+      "common_sources": [
+        "quorum-bailiff",
+        "everrise-board"
+      ],
+      "ui_toast_gain": "Status applied: Overruled",
+      "ui_toast_clear": "The room no longer has the numbers."
+    },
+    {
+      "id": "break-deferred",
+      "name": "Break Deferred",
+      "category": "harmful-status",
+      "tooltip_short": "Rest has been moved to a future that does not care about you.",
+      "rules_copy": "Healing, recovery, and reset lines lose bite while Break Deferred is active. Hunger, panic, or attrition pressure gains ground instead.",
+      "flavor_line": "Your meal period has been rescheduled into suffering.",
+      "counterplay_hint": "Either front-load survival tools that work under healing pressure or kill the engine before the denial compounds.",
+      "common_sources": [
+        "lunch-break-denial-engine",
+        "vp-of-throughput"
+      ],
+      "ui_toast_gain": "Status applied: Break Deferred",
+      "ui_toast_clear": "The break room briefly remembers labor law."
+    },
+    {
+      "id": "calibrated",
+      "name": "Calibrated",
+      "category": "harmful-status",
+      "tooltip_short": "The system is correcting toward whatever hurts most.",
+      "rules_copy": "Outlier strengths get flattened. High-roll turns, snowball engines, and obvious build spikes are normalized downward while Calibrated remains active.",
+      "flavor_line": "You are being adjusted into a more manageable disappointment.",
+      "counterplay_hint": "Do not spread power thin. Push one clean lane hard enough to break the model before the model finishes correcting you.",
+      "common_sources": [
+        "calibration-committee",
+        "vp-of-throughput",
+        "everrise-board"
+      ],
+      "ui_toast_gain": "Status applied: Calibrated",
+      "ui_toast_clear": "The committee loses confidence in its numbers."
+    }
+  ],
+  "enemy_countermeasure_callout_pack": {
+    "normal_enemies": [
+      {
+        "id": "cm-applause-drone",
+        "enemy_id": "applause-drone",
+        "title": "Countermeasure: Kill the Applause Loop",
+        "biome": "Orientation Arcade",
+        "status_pressure": [
+          "hyped"
+        ],
+        "callout_short": "Interrupt repeated participation before it turns into damage infrastructure.",
+        "callout_long": "Applause Drone is weak when the room stays awkward. Burst, silence, stun, or any fast disruption keeps its cheerful rhythm from becoming a real threat.",
+        "recommended_answers": [
+          "burst",
+          "silence",
+          "stun",
+          "tempo"
+        ],
+        "punishes": [
+          "slow setup",
+          "passive attrition",
+          "letting crowd effects stack"
+        ]
+      },
+      {
+        "id": "cm-badge-clerk",
+        "enemy_id": "badge-clerk",
+        "title": "Countermeasure: Fix the Identity Problem Fast",
+        "biome": "Orientation Arcade",
+        "status_pressure": [
+          "misbadged"
+        ],
+        "callout_short": "This enemy gets better the longer the system disagrees on who you are.",
+        "callout_long": "Badge Clerk is a paperwork assassin. Cleanse Misbadged early or delete the clerk before reassignment starts making your protections and targeting feel stupid on purpose.",
+        "recommended_answers": [
+          "cleanse",
+          "single-target",
+          "tempo",
+          "disruption"
+        ],
+        "punishes": [
+          "slow correction",
+          "recognition-based defenses",
+          "messy target priority"
+        ]
+      },
+      {
+        "id": "cm-corrective-usher",
+        "enemy_id": "corrective-usher",
+        "title": "Countermeasure: Refuse the Friendly Boundary",
+        "biome": "Orientation Arcade",
+        "status_pressure": [
+          "routed",
+          "misbadged"
+        ],
+        "callout_short": "The usher wants your position first and your health second.",
+        "callout_long": "Corrective Usher punishes players who let the room decide where they stand. Hold ground, plan movement, and interrupt boundary effects before your options get politely reduced to one.",
+        "recommended_answers": [
+          "positioning",
+          "rooted defense",
+          "interrupt",
+          "burst"
+        ],
+        "punishes": [
+          "bad placement",
+          "reaction-only play",
+          "unplanned movement"
+        ]
+      },
+      {
+        "id": "cm-queue-leech",
+        "enemy_id": "queue-leech",
+        "title": "Countermeasure: Close the Ticket",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "backlogged"
+        ],
+        "callout_short": "Unresolved work is its favorite food source.",
+        "callout_long": "Queue Leech thrives in long, sloppy fights. Finish it cleanly, limit repeats, and avoid any line that creates extra unresolved tasks for it to turn into damage.",
+        "recommended_answers": [
+          "burst",
+          "frontload",
+          "clean sequencing",
+          "anti-repeat"
+        ],
+        "punishes": [
+          "long fights",
+          "duplicate effects",
+          "untidy turns"
+        ]
+      },
+      {
+        "id": "cm-kpi-penitent",
+        "enemy_id": "kpi-penitent",
+        "title": "Countermeasure: Do Not Let Shame Scale",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "under-review"
+        ],
+        "callout_short": "It converts systemic failure into personal punishment.",
+        "callout_long": "KPI Penitent gets meaner when you let it narrate the fight as your fault. Strip Under Review, stay efficient, and avoid handing it a giant punish window off one ambitious turn.",
+        "recommended_answers": [
+          "cleanse",
+          "precision",
+          "tempo",
+          "safe turns"
+        ],
+        "punishes": [
+          "greedy setup",
+          "mark neglect",
+          "overcommitting"
+        ]
+      },
+      {
+        "id": "cm-hold-music-revenant",
+        "enemy_id": "hold-music-revenant",
+        "title": "Countermeasure: Do Not Wait Politely",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "on-hold"
+        ],
+        "callout_short": "Delay is not neutral here. It is the attack pattern.",
+        "callout_long": "Hold Music Revenant wants you trapped in procedural time. Silence, disrupt, or rush it down before On Hold turns the whole fight into customer service purgatory.",
+        "recommended_answers": [
+          "silence",
+          "burst",
+          "action advantage",
+          "disruption"
+        ],
+        "punishes": [
+          "stall plans",
+          "slow cycling",
+          "passive defense"
+        ]
+      },
+      {
+        "id": "cm-toner-seraph",
+        "enemy_id": "toner-seraph",
+        "title": "Countermeasure: Stop the Copies",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "blackened"
+        ],
+        "callout_short": "Printer angels win by making recovery filthy and repeatable.",
+        "callout_long": "Toner Seraph pressures cleanse and sustain at the same time. Bring prevention, clear Blackened quickly, or end the fight before the room smells like a legally binding lung problem.",
+        "recommended_answers": [
+          "cleanse",
+          "prevention",
+          "burst",
+          "anti-repeat"
+        ],
+        "punishes": [
+          "attrition-only plans",
+          "delayed healing",
+          "letting print loops stack"
+        ]
+      },
+      {
+        "id": "cm-proxy-notary",
+        "enemy_id": "proxy-notary",
+        "title": "Countermeasure: Kill the Signature, Not the Excuse",
+        "biome": "Executive Apex",
+        "status_pressure": [
+          "proxy-signed"
+        ],
+        "callout_short": "Delegated authority is still authority until you break the pen.",
+        "callout_long": "Proxy Notary is dangerous because it makes every bad outcome feel pre-approved. Precision it down or cleanse Proxy-Signed before your defenses discover they were never invited to the meeting.",
+        "recommended_answers": [
+          "single-target",
+          "cleanse",
+          "interrupt",
+          "priority removal"
+        ],
+        "punishes": [
+          "shared damage assumptions",
+          "slow target selection",
+          "paperwork neglect"
+        ]
+      },
+      {
+        "id": "cm-investor-smile",
+        "enemy_id": "investor-smile",
+        "title": "Countermeasure: Deny the Optics",
+        "biome": "Executive Apex",
+        "status_pressure": [
+          "exposed"
+        ],
+        "callout_short": "This enemy only needs one clean angle to monetize your mistake.",
+        "callout_long": "Investor Smile loves exposed targets and tidy narratives. Remove Exposed, keep pressure high, and do not let it spend multiple turns converting your pain into shareholder confidence.",
+        "recommended_answers": [
+          "cover",
+          "cleanse",
+          "pressure",
+          "tempo"
+        ],
+        "punishes": [
+          "long set pieces",
+          "low-pressure defense",
+          "visible weak points"
+        ]
+      },
+      {
+        "id": "cm-quorum-bailiff",
+        "enemy_id": "quorum-bailiff",
+        "title": "Countermeasure: Bring More Than One Plan",
+        "biome": "Executive Apex",
+        "status_pressure": [
+          "overruled",
+          "routed"
+        ],
+        "callout_short": "Board-law punishes fragile masterpieces.",
+        "callout_long": "Quorum Bailiff is built to physically enforce consensus. Do not stake the whole fight on one giant setup turn. Layer threats, keep redundancy, and interrupt the enforcement phase before the vote carries.",
+        "recommended_answers": [
+          "redundancy",
+          "multi-lane pressure",
+          "interrupt",
+          "durable offense"
+        ],
+        "punishes": [
+          "single huge setup",
+          "telegraphed turns",
+          "soft positioning"
+        ]
+      }
+    ],
+    "minibosses": [
+      {
+        "id": "cm-audience-warm-up-manager",
+        "enemy_id": "audience-warm-up-manager",
+        "title": "Countermeasure: Let the Room Die Quiet",
+        "biome": "Orientation Arcade",
+        "status_pressure": [
+          "hyped"
+        ],
+        "callout_short": "Its strongest weapon is a room willing to participate.",
+        "callout_long": "Audience Warm-Up Manager scales off momentum and performative energy. Silence the crowd, break repeated action chains, and do not reward it with a fight long enough to become an event.",
+        "recommended_answers": [
+          "silence",
+          "burst",
+          "anti-repeat",
+          "tempo"
+        ],
+        "punishes": [
+          "snowball negligence",
+          "long openers",
+          "letting Hype stack"
+        ]
+      },
+      {
+        "id": "cm-incentive-podium",
+        "enemy_id": "incentive-podium",
+        "title": "Countermeasure: Refuse Premium Advancement",
+        "biome": "Orientation Arcade",
+        "status_pressure": [
+          "hyped",
+          "misbadged"
+        ],
+        "callout_short": "The prize is bait and the bait is working as designed.",
+        "callout_long": "Incentive Podium turns greed into line-of-play errors. Stay disciplined, hit it with clean single-target pressure, and do not chase value so hard that the cost finishes the encounter for it.",
+        "recommended_answers": [
+          "discipline",
+          "precision",
+          "tempo",
+          "anti-greed routing"
+        ],
+        "punishes": [
+          "shiny-object play",
+          "overextending for rewards",
+          "messy sequencing"
+        ]
+      },
+      {
+        "id": "cm-lunch-break-denial-engine",
+        "enemy_id": "lunch-break-denial-engine",
+        "title": "Countermeasure: Treat Hunger as Urgent Damage",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "break-deferred",
+          "backlogged"
+        ],
+        "callout_short": "If you plan to recover later, it has already won half the argument.",
+        "callout_long": "Lunch Break Denial Engine punishes delayed healing and patient recovery lines. Bring sustain that works under pressure or kill it before the fight turns into a labor-law violation with hit points.",
+        "recommended_answers": [
+          "frontloaded sustain",
+          "burst",
+          "cleanse",
+          "short fights"
+        ],
+        "punishes": [
+          "late healing",
+          "greedy setup",
+          "attrition mirrors"
+        ]
+      },
+      {
+        "id": "cm-calibration-committee",
+        "enemy_id": "calibration-committee",
+        "title": "Countermeasure: Break the Model Before It Finishes Modeling You",
+        "biome": "Throughput Maze",
+        "status_pressure": [
+          "under-review",
+          "calibrated"
+        ],
+        "callout_short": "This fight exists to flatten obvious strengths into acceptable losses.",
+        "callout_long": "Calibration Committee loves balanced teams that forgot to specialize. Pick one pressure lane, push it hard, and clear review marks before the committee turns your best turn into a case study.",
+        "recommended_answers": [
+          "focus",
+          "specialization",
+          "cleanse",
+          "pressure"
+        ],
+        "punishes": [
+          "spread-out builds",
+          "cute multi-engine setups",
+          "mark neglect"
+        ]
+      },
+      {
+        "id": "cm-investor-relations-avatar",
+        "enemy_id": "investor-relations-avatar",
+        "title": "Countermeasure: Ruin the Story Before It Tests Well",
+        "biome": "Executive Apex",
+        "status_pressure": [
+          "exposed",
+          "proxy-signed"
+        ],
+        "callout_short": "It wins when your suffering becomes premium packaging.",
+        "callout_long": "Investor Relations Avatar wants a polished, understandable death. Keep the fight ugly, fast, and deniable. Strip Exposed, disrupt its narrative setup, and never give it a clean follow-up window.",
+        "recommended_answers": [
+          "disruption",
+          "tempo",
+          "cleanse",
+          "pressure"
+        ],
+        "punishes": [
+          "drawn-out fights",
+          "visible weak points",
+          "letting narrative effects resolve"
+        ]
+      }
+    ]
+  }
+}

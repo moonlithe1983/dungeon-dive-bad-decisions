@@ -1,0 +1,33 @@
+{
+  "pack_id": "ddbd-marker-patch-n3",
+  "description": "Patch pack to complete N3 marker set by adding the missing new-badge asset and updated marker semantics.",
+  "style_lock": {
+    "visual_style": "Flat vector + distressed corporate grime",
+    "ui_direction": "Dark UI with horror accents",
+    "tone": "Corporate HR portal with game-show absurdity + corporate horror",
+    "accessibility_bias": "Conservative clarity-first universal design"
+  },
+  "assets": [
+    {
+      "id": "new-badge",
+      "family": "markers",
+      "paths": {
+        "svg_default": "svg/default/new-badge.svg",
+        "svg_mono": "svg/mono/new-badge.svg",
+        "png_128": "png/128/new-badge.png",
+        "png_256": "png/256/new-badge.png",
+        "png_128_mono": "png/128/new-badge-mono.png",
+        "png_256_mono": "png/256/new-badge-mono.png"
+      },
+      "semantics": {
+        "state": "new / freshly logged / freshly unlocked",
+        "runtime_text_source": "codex_ui.screen.fresh_tag = 'New'",
+        "exposure_rule": "marker only; announce the parent content state instead of the badge itself"
+      }
+    }
+  ],
+  "docs": {
+    "accessibility_labels_map": "docs/accessibility_labels_map.csv",
+    "preview": "preview/ddbd_marker_patch_preview.png"
+  }
+}

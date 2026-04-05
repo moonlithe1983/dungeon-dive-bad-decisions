@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Target reticle">
+    
+    <circle cx="64" cy="64" r="28" fill="none" stroke="#FFB347" stroke-width="5"/>
+    <circle cx="64" cy="64" r="6" fill="#FFF4E3"/>
+    <path d="M64 20 v14 M64 94 v14 M20 64 h14 M94 64 h14" stroke="#FFF4E3" stroke-width="5" stroke-linecap="round"/>
+    
+    </svg>

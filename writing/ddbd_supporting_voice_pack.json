@@ -1,0 +1,384 @@
+{
+  "schema_version": "1.0",
+  "project": "Dungeon Dive: Bad Decisions",
+  "content_export": "supporting-voice-pack",
+  "sections": {
+    "starting_trio_chemistry_lines": {
+      "party": [
+        "facilities-goblin",
+        "former-executive-assistant",
+        "security-skeleton"
+      ],
+      "entries": [
+        {
+          "id": "first-meeting",
+          "title": "On First Meeting",
+          "lines": [
+            {
+              "speaker": "facilities-goblin",
+              "text": "Good news. The pipes still scream, which means the floor is alive."
+            },
+            {
+              "speaker": "former-executive-assistant",
+              "text": "That is not, under any recognized policy, good news."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "It is the best news this building usually offers."
+            }
+          ]
+        },
+        {
+          "id": "first-route-choice",
+          "title": "At the First Route Choice",
+          "lines": [
+            {
+              "speaker": "former-executive-assistant",
+              "text": "Left path says ‘priority access.’ Right path says ‘surprise evaluation.’"
+            },
+            {
+              "speaker": "facilities-goblin",
+              "text": "Take the one with exposed wiring."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "At least that sign is being honest."
+            }
+          ]
+        },
+        {
+          "id": "battle-intro",
+          "title": "On Entering Battle",
+          "lines": [
+            {
+              "speaker": "security-skeleton",
+              "text": "Please remain calm. Panic creates paperwork."
+            },
+            {
+              "speaker": "facilities-goblin",
+              "text": "Panic also creates openings."
+            },
+            {
+              "speaker": "former-executive-assistant",
+              "text": "Wonderful. We’re workshopping a brand."
+            }
+          ]
+        },
+        {
+          "id": "narrow-win",
+          "title": "After a Narrow Win",
+          "lines": [
+            {
+              "speaker": "facilities-goblin",
+              "text": "Did you see that? I fixed the room with violence."
+            },
+            {
+              "speaker": "former-executive-assistant",
+              "text": "That was not repair."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "In this building, the distinction is academic."
+            }
+          ]
+        },
+        {
+          "id": "suspicious-reward-screen",
+          "title": "On a Suspicious Reward Screen",
+          "lines": [
+            {
+              "speaker": "former-executive-assistant",
+              "text": "No legitimate benefits package glows."
+            },
+            {
+              "speaker": "facilities-goblin",
+              "text": "Counterpoint: free stuff."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "Counter-counterpoint: nothing in Meridian is free. Some of it is merely prepaid."
+            }
+          ]
+        },
+        {
+          "id": "creepy-event-prompt",
+          "title": "On a Creepy Event Prompt",
+          "lines": [
+            {
+              "speaker": "security-skeleton",
+              "text": "I have guarded five executive floors and three mass apologies. This is worse."
+            },
+            {
+              "speaker": "facilities-goblin",
+              "text": "Can I keep whatever jumps out?"
+            },
+            {
+              "speaker": "former-executive-assistant",
+              "text": "Only if it is useful, deniable, or both."
+            }
+          ]
+        },
+        {
+          "id": "low-health",
+          "title": "When the Player Is Close to Death",
+          "lines": [
+            {
+              "speaker": "former-executive-assistant",
+              "text": "You are not dying in front of middle management. That encourages them."
+            },
+            {
+              "speaker": "facilities-goblin",
+              "text": "Hold still. I can make this survivable or interesting."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "Aim for survivable. We’ve already had interesting."
+            }
+          ]
+        },
+        {
+          "id": "first-boss-door",
+          "title": "On the First Boss Door",
+          "lines": [
+            {
+              "speaker": "facilities-goblin",
+              "text": "Big door. Fancy lights. Something expensive behind it."
+            },
+            {
+              "speaker": "former-executive-assistant",
+              "text": "Something promoted behind it."
+            },
+            {
+              "speaker": "security-skeleton",
+              "text": "Same thing."
+            }
+          ]
+        }
+      ]
+    },
+    "reward_packages": [
+      {
+        "id": "patch-stack",
+        "name": "Patch Stack",
+        "description": "Clean up messes. Fixes, cleanse, control.",
+        "implies_build_direction": [
+          "cleanse",
+          "control",
+          "stabilize"
+        ]
+      },
+      {
+        "id": "hostile-takeover",
+        "name": "Hostile Takeover",
+        "description": "Hit first. Hit harder. End arguments.",
+        "implies_build_direction": [
+          "aggression",
+          "burst",
+          "tempo"
+        ]
+      },
+      {
+        "id": "paper-armor",
+        "name": "Paper Armor",
+        "description": "Block, stabilize, stop bleeding value.",
+        "implies_build_direction": [
+          "defense",
+          "block",
+          "survival"
+        ]
+      },
+      {
+        "id": "escalation-clause",
+        "name": "Escalation Clause",
+        "description": "More status. More spread. More problems.",
+        "implies_build_direction": [
+          "status",
+          "spread",
+          "attrition"
+        ]
+      },
+      {
+        "id": "lunch-and-learn",
+        "name": "Lunch-and-Learn",
+        "description": "Companion juice. Synergy now, payoff later.",
+        "implies_build_direction": [
+          "companions",
+          "synergy",
+          "scaling"
+        ]
+      },
+      {
+        "id": "expense-account",
+        "name": "Expense Account",
+        "description": "More resources, better upgrades, richer run.",
+        "implies_build_direction": [
+          "economy",
+          "upgrades",
+          "resource-gain"
+        ]
+      },
+      {
+        "id": "back-channel",
+        "name": "Back Channel",
+        "description": "Better draw, better setup, uglier tricks.",
+        "implies_build_direction": [
+          "setup",
+          "card-flow",
+          "trickery"
+        ]
+      },
+      {
+        "id": "overtime-spiral",
+        "name": "Overtime Spiral",
+        "description": "Repeat actions, chain turns, snowball momentum.",
+        "implies_build_direction": [
+          "chaining",
+          "repeat-actions",
+          "momentum"
+        ]
+      },
+      {
+        "id": "sick-leave",
+        "name": "Sick Leave",
+        "description": "Recover, reset, survive bad floors.",
+        "implies_build_direction": [
+          "healing",
+          "recovery",
+          "reset"
+        ]
+      },
+      {
+        "id": "exit-package",
+        "name": "Exit Package",
+        "description": "Desperate power for low-health comebacks.",
+        "implies_build_direction": [
+          "comeback",
+          "low-health",
+          "clutch"
+        ]
+      },
+      {
+        "id": "policy-knife",
+        "name": "Policy Knife",
+        "description": "Precision tools for priority targets.",
+        "implies_build_direction": [
+          "single-target",
+          "precision",
+          "elites"
+        ]
+      },
+      {
+        "id": "budget-freeze",
+        "name": "Budget Freeze",
+        "description": "Slow enemies down and choke their plans.",
+        "implies_build_direction": [
+          "slow",
+          "disruption",
+          "control"
+        ]
+      }
+    ],
+    "defeat_next_run_ideas": [
+      {
+        "id": "rushed-down-early",
+        "trigger_label": "You got rushed down early.",
+        "line": "You brought a memo to a knife fight. Start next run with faster damage or cheaper control.",
+        "implies_adjustment": [
+          "early-game",
+          "faster-damage",
+          "cheap-control"
+        ]
+      },
+      {
+        "id": "died-to-attrition",
+        "trigger_label": "You died to attrition.",
+        "line": "The Spire did not beat you quickly. It beat you professionally. Bring sustain.",
+        "implies_adjustment": [
+          "sustain",
+          "healing",
+          "durability"
+        ]
+      },
+      {
+        "id": "statuses-killed-you",
+        "trigger_label": "Statuses killed you.",
+        "line": "Your bloodstream got audited. Pack cleanse, prevention, or shorter fights.",
+        "implies_adjustment": [
+          "cleanse",
+          "prevention",
+          "burst"
+        ]
+      },
+      {
+        "id": "build-came-online-too-late",
+        "trigger_label": "Your build came online too late.",
+        "line": "Great long-term vision. Shame about the short term. Front-load your first three floors.",
+        "implies_adjustment": [
+          "frontload",
+          "early-power",
+          "tempo"
+        ]
+      },
+      {
+        "id": "boss-outscaled-you",
+        "trigger_label": "The boss outscaled you.",
+        "line": "You survived the meeting and lost to the follow-up. Add a real finisher.",
+        "implies_adjustment": [
+          "finisher",
+          "boss-damage",
+          "scaling"
+        ]
+      },
+      {
+        "id": "spread-power-too-thin",
+        "trigger_label": "You spread power too thin.",
+        "line": "This run died in committee. Pick one lane and overfund it.",
+        "implies_adjustment": [
+          "focus",
+          "specialization",
+          "build-identity"
+        ]
+      },
+      {
+        "id": "bad-route-choice",
+        "trigger_label": "Bad route choice punished you.",
+        "line": "You chose greed over safety and Meridian noticed. Take the boring door once in a while.",
+        "implies_adjustment": [
+          "routing",
+          "risk-management",
+          "consistency"
+        ]
+      },
+      {
+        "id": "companion-mismatch",
+        "trigger_label": "Companion mismatch hurt you.",
+        "line": "Good personalities. Bad team. Bring companions who solve the same problem on purpose.",
+        "implies_adjustment": [
+          "team-synergy",
+          "role-coverage",
+          "party-planning"
+        ]
+      },
+      {
+        "id": "defense-fine-damage-not",
+        "trigger_label": "Defense was fine, damage was not.",
+        "line": "Congratulations on your very durable collapse. Convert safety into pressure sooner.",
+        "implies_adjustment": [
+          "damage-conversion",
+          "pressure",
+          "closing-speed"
+        ]
+      },
+      {
+        "id": "damage-fine-defense-not",
+        "trigger_label": "Damage was fine, defense was not.",
+        "line": "You nearly won the sprint and lost the building. Add one plan for when the enemy gets a turn.",
+        "implies_adjustment": [
+          "defense",
+          "stabilization",
+          "contingency"
+        ]
+      }
+    ]
+  }
+}

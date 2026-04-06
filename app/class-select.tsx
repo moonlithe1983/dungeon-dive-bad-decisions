@@ -17,6 +17,7 @@ import { classDefinitions } from '@/src/content/classes';
 import {
   COMPANY_NAME,
   TOWER_NAME,
+  createTicketBrief,
   getClassNarrative,
   getCompanyDisasterSummary,
 } from '@/src/content/company-lore';
@@ -72,6 +73,16 @@ export default function ClassSelectScreen() {
   const selectedNarrative = selectedClassId
     ? getClassNarrative(selectedClassId)
     : null;
+  const ticketBrief = useMemo(() => {
+    if (!selectedClassId) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: selectedClassId,
+      floorIndex: 1,
+    });
+  }, [selectedClassId]);
 
   useEffect(() => {
     if (!profile || unlockedClasses.length !== 1) {
@@ -213,6 +224,22 @@ export default function ClassSelectScreen() {
                     <Text style={styles.selectionActionLine}>
                       {selectedNarrative?.openingHook ?? getCompanyDisasterSummary()}
                     </Text>
+                    {ticketBrief ? (
+                      <>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Assigned Ticket: </Text>
+                          {ticketBrief.ticketId}
+                        </Text>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Subject: </Text>
+                          {ticketBrief.subject}
+                        </Text>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Escalation Track: </Text>
+                          {ticketBrief.escalationTrack}
+                        </Text>
+                      </>
+                    ) : null}
                     {selectedStartingHp ? (
                       <Text style={styles.selectionActionLine}>
                         <Text style={styles.selectionActionLabel}>
@@ -248,6 +275,22 @@ export default function ClassSelectScreen() {
                 </Pressable>
                 {showRoleDetails && selectedNarrative ? (
                   <View style={styles.selectionDetailCard}>
+                    {ticketBrief ? (
+                      <>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Filed By:</Text>{' '}
+                          {ticketBrief.filedBy}
+                        </Text>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Current Owner:</Text>{' '}
+                          {ticketBrief.currentOwner}
+                        </Text>
+                        <Text style={styles.selectionActionLine}>
+                          <Text style={styles.selectionActionLabel}>Why It Climbs:</Text>{' '}
+                          {ticketBrief.summary}
+                        </Text>
+                      </>
+                    ) : null}
                     <Text style={styles.selectionActionLine}>
                       <Text style={styles.selectionActionLabel}>Leadership Broke:</Text>{' '}
                       {selectedNarrative.leadershipFailure}
@@ -291,7 +334,7 @@ export default function ClassSelectScreen() {
                     disabled={!selectedClassId}
                   />
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={() => {
                       router.push('/' as Href);
                     }}

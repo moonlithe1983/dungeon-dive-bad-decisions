@@ -30,7 +30,7 @@ export function PlaceholderRouteScreen({
   eyebrow,
   title,
   description,
-  actions = [{ label: 'Return to Title', href: '/' }],
+  actions = [{ label: 'Employee Portal', href: '/' }],
 }: PlaceholderRouteScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea}>

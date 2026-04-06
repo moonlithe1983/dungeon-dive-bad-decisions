@@ -556,6 +556,7 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
               enemyName: combatResult.combat.enemy.name,
             }),
             defeatSummary: createArchivedRunDefeatSummary({
+              run: failedRun,
               combat: combatResult.combat,
               currentNodeLabel: currentNode.label,
             }),
@@ -580,91 +581,15 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
         combatState: null,
       };
 
-      if (currentNode.kind === 'boss') {
-        const resolution = applyResolvedNodeStats(resolveCurrentRunNode({
-          ...resolvedCombatRun,
-          pendingReward: null,
-        }));
-
-        if (resolution.completedRun) {
-          await clearActiveRunAsync({
-            archive: {
-              result: 'win',
-              run: resolution.run,
-              bossesKilledDelta: 1,
-              outcome: createArchivedRunOutcomeNote({
-                result: 'win',
-                run: resolution.run,
-                currentNodeLabel: resolution.resolvedNode.label,
-              }),
-            },
-          });
-          await refreshBootstrapState();
-
-          setCurrentRunReady(set, resolution.run);
-          set({
-            isPerformingCombatAction: false,
-          });
-
-          return {
-            run: resolution.run,
-            outcome: 'victory',
-            nextRoute: '/end-run',
-          };
-        }
-
-        const savedRun = await saveActiveRunAsync(resolution.run);
-        await refreshBootstrapState();
-        setCurrentRunReady(set, savedRun);
-        set({
-          isPerformingCombatAction: false,
-        });
-
-        return {
-          run: savedRun,
-          outcome: 'victory',
-          nextRoute: '/run-map',
-        };
-      }
-
       const pendingReward = createPendingReward(
         resolvedCombatRun,
         currentNode,
         'battle-victory'
       );
-      const resolution = applyResolvedNodeStats(resolveCurrentRunNode({
+      const savedRun = await saveActiveRunAsync({
         ...resolvedCombatRun,
         pendingReward,
-      }));
-
-      if (resolution.completedRun) {
-        await clearActiveRunAsync({
-          archive: {
-            result: 'win',
-            run: resolution.run,
-            bossesKilledDelta: resolution.resolvedNode.kind === 'boss' ? 1 : 0,
-            outcome: createArchivedRunOutcomeNote({
-              result: 'win',
-              run: resolution.run,
-              currentNodeLabel: resolution.resolvedNode.label,
-            }),
-          },
-        });
-        await refreshBootstrapState();
-
-        setCurrentRunReady(set, resolution.run);
-        set({
-          isPerformingCombatAction: false,
-        });
-
-        return {
-          run: resolution.run,
-          outcome: 'victory',
-          nextRoute: '/end-run',
-        };
-      }
-
-      const savedRun = await saveActiveRunAsync(resolution.run);
+      });
       await refreshBootstrapState();
 
       setCurrentRunReady(set, savedRun);

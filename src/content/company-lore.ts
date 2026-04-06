@@ -2,6 +2,26 @@ export const COMPANY_NAME = 'Crown Meridian Holdings';
 export const TOWER_NAME = 'Meridian Spire';
 export const DISASTER_NAME = 'Project Everrise';
 
+type TicketStage = {
+  id: 'intake' | 'compliance' | 'synergy' | 'executive';
+  label: string;
+  owner: string;
+  pressure: string;
+  lossTitle: string;
+  lossLine: string;
+  winLine: string;
+  abandonLine: string;
+};
+
+export type TicketBrief = {
+  ticketId: string;
+  subject: string;
+  filedBy: string;
+  escalationTrack: string;
+  currentOwner: string;
+  summary: string;
+};
+
 type ClassNarrative = {
   roleLabel: string;
   openingHook: string;
@@ -30,6 +50,73 @@ const defaultNarrative: ClassNarrative = {
   combatBrief:
     'Win fast, document faster, and never give leadership an excuse to say the damage was your initiative.',
 };
+
+const classTicketSubjects: Record<string, string> = {
+  'it-support': 'SEV-1 Everrise cross-department outage',
+  'customer-service-rep': 'Customer-facing escalation cascade',
+  'sales-rep': 'Revenue promise breach and pipeline fallout',
+  intern: 'Unauthorized prototype contamination event',
+  paralegal: 'Privilege, liability, and records exposure spiral',
+};
+
+const ticketStages: TicketStage[] = [
+  {
+    id: 'intake',
+    label: 'Basement intake triage',
+    owner: 'Facilities, service desk, and local management',
+    pressure:
+      'The case still looks small enough for middle management to misroute, which is why it keeps surviving.',
+    lossTitle: 'Ticket Lost In Intake',
+    lossLine:
+      'The issue died before it escaped the floor where leadership still thought denial counted as containment.',
+    winLine:
+      'The intake mess finally stopped bouncing between teams and started breaking the people who caused it.',
+    abandonLine:
+      "You parked the ticket before it escaped intake and became someone else's incident report.",
+  },
+  {
+    id: 'compliance',
+    label: 'Formal compliance escalation',
+    owner: 'HR, policy, and employee-risk containment',
+    pressure:
+      'Badge access, retention risk, and policy exposure have forced the problem into formal review.',
+    lossTitle: 'Ticket Buried In Compliance',
+    lossLine:
+      'The issue reached formal review, where process became more lethal than the original failure.',
+    winLine:
+      'Compliance could no longer hide the blast radius behind policy language, so the case escalated upward anyway.',
+    abandonLine:
+      'You stepped away while compliance still believed another memo might solve the body count.',
+  },
+  {
+    id: 'synergy',
+    label: 'Cross-functional morale escalation',
+    owner: 'Retreat leadership, culture theater, and alignment enforcement',
+    pressure:
+      'The problem now threatens morale, optics, and every fake promise leadership made at the offsite.',
+    lossTitle: 'Ticket Crashed In Alignment',
+    lossLine:
+      'The issue turned into an org-wide spectacle and the spectacle won.',
+    winLine:
+      'The retreat layer failed to spin the disaster into culture, so the case climbed into executive territory.',
+    abandonLine:
+      'You left before alignment theater could finish converting the incident into company myth.',
+  },
+  {
+    id: 'executive',
+    label: 'Executive containment breach',
+    owner: 'Upper management, payroll exposure, and access control',
+    pressure:
+      'The issue now threatens executive scheduling, payroll legitimacy, and the people who thought they could outrank consequences.',
+    lossTitle: 'Ticket Escalated Past Rescue',
+    lossLine:
+      'The issue reached the top floor, where power stopped pretending it wanted the truth to survive.',
+    winLine:
+      'The full escalation chain finally broke and left the executives holding their own disaster in both hands.',
+    abandonLine:
+      'You withdrew while the executive layer was still deciding whose career should die first.',
+  },
+];
 
 const classNarratives: Record<string, ClassNarrative> = {
   'it-support': {
@@ -119,8 +206,122 @@ const classNarratives: Record<string, ClassNarrative> = {
   },
 };
 
+function hashString(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
+
+function getTicketStage(floorIndex: number) {
+  if (floorIndex >= 10) {
+    return ticketStages[3];
+  }
+
+  if (floorIndex >= 7) {
+    return ticketStages[2];
+  }
+
+  if (floorIndex >= 4) {
+    return ticketStages[1];
+  }
+
+  return ticketStages[0];
+}
+
+function createTicketId(classId: string, runId?: string | null) {
+  const tokenSource = runId && runId.length > 0 ? runId : `${classId}-prep`;
+  const numeric = (hashString(tokenSource) % 90000) + 10000;
+
+  return `CMD-${numeric}`;
+}
+
+function getTicketSubject(classId: string) {
+  return classTicketSubjects[classId] ?? 'Cross-department Everrise incident';
+}
+
 export function getClassNarrative(classId: string) {
   return classNarratives[classId] ?? defaultNarrative;
+}
+
+export function createTicketBrief(input: {
+  classId: string;
+  floorIndex: number;
+  runId?: string | null;
+  currentNodeLabel?: string | null;
+}) : TicketBrief {
+  const narrative = getClassNarrative(input.classId);
+  const stage = getTicketStage(input.floorIndex);
+  const currentOwner = input.currentNodeLabel
+    ? `${stage.owner}. Current stop: ${input.currentNodeLabel}.`
+    : stage.owner;
+
+  return {
+    ticketId: createTicketId(input.classId, input.runId),
+    subject: getTicketSubject(input.classId),
+    filedBy: narrative.roleLabel,
+    escalationTrack: stage.label,
+    currentOwner,
+    summary: `${stage.pressure} ${narrative.stake}`,
+  };
+}
+
+export function createTicketOutcomeCopy(input: {
+  result: 'win' | 'loss' | 'abandon';
+  classId: string;
+  floorIndex: number;
+  currentNodeLabel?: string | null;
+  enemyName?: string | null;
+  pendingRewardLost?: boolean;
+}) {
+  const ticket = createTicketBrief({
+    classId: input.classId,
+    floorIndex: input.floorIndex,
+  });
+  const stage = getTicketStage(input.floorIndex);
+  const location = input.currentNodeLabel ? ` at ${input.currentNodeLabel}` : '';
+
+  if (input.result === 'win') {
+    return {
+      title: 'Ticket Closed',
+      detail: `${ticket.ticketId} - ${ticket.subject} closed${location} on floor ${input.floorIndex}. ${stage.winLine}`,
+    };
+  }
+
+  if (input.result === 'loss') {
+    const enemyClause = input.enemyName ? ` ${input.enemyName} turned the escalation into a killbox.` : '';
+
+    return {
+      title: stage.lossTitle,
+      detail: `${ticket.ticketId} - ${ticket.subject} failed${location} on floor ${input.floorIndex}.${enemyClause} ${stage.lossLine}`,
+    };
+  }
+
+  return {
+    title: 'Ticket Parked In Queue',
+    detail: `${ticket.ticketId} - ${ticket.subject} was abandoned${location} on floor ${input.floorIndex}. ${stage.abandonLine}${
+      input.pendingRewardLost ? ' A pending payout was left behind.' : ''
+    }`,
+  };
+}
+
+export function createTicketFailureLead(input: {
+  classId: string;
+  floorIndex: number;
+  currentNodeLabel: string;
+  enemyName: string;
+}) {
+  const ticket = createTicketBrief({
+    classId: input.classId,
+    floorIndex: input.floorIndex,
+    currentNodeLabel: input.currentNodeLabel,
+  });
+  const stage = getTicketStage(input.floorIndex);
+
+  return `${ticket.ticketId} - ${ticket.subject} died in ${stage.label.toLowerCase()} at ${input.currentNodeLabel} when ${input.enemyName} won the escalation exchange.`;
 }
 
 export function getCompanyDisasterSummary() {

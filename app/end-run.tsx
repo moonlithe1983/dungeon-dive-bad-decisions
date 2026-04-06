@@ -18,6 +18,7 @@ import { GameButton } from '@/src/components/game-button';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
 import { getCompanionDefinition } from '@/src/content/companions';
+import { createTicketBrief } from '@/src/content/company-lore';
 import { getItemDefinition } from '@/src/content/items';
 import {
   loadLatestRunHistoryEntryAsync,
@@ -178,6 +179,18 @@ export default function EndRunScreen() {
       .filter(Boolean)
       .join(' ');
   }, [activeCompanionName, archivedRun, carriedItemNames]);
+  const ticketBrief = useMemo(() => {
+    if (!archivedRun) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: archivedRun.classId,
+      floorIndex: archivedRun.floorReached,
+      runId: archivedRun.runId,
+      currentNodeLabel: archivedRun.recap?.defeatSummary?.nodeLabel ?? null,
+    });
+  }, [archivedRun]);
   const endRunSurfaceArtSource = useMemo(
     () => getLoopSurfaceArtSource('end-run', settings),
     [settings]
@@ -203,6 +216,21 @@ export default function EndRunScreen() {
       archivedRun.recap?.defeatSummary?.recommendation ??
       'A loss should tell you what failed and point at the next experiment immediately.'
     );
+  }, [archivedRun]);
+  const restartReadTitle = useMemo(() => {
+    if (!archivedRun) {
+      return 'Archive Read';
+    }
+
+    if (archivedRun.result === 'win') {
+      return 'Closure Note';
+    }
+
+    if (archivedRun.result === 'abandon') {
+      return 'Reopen Conditions';
+    }
+
+    return 'Postmortem Directive';
   }, [archivedRun]);
 
   const handleReturnToTitle = () => {
@@ -258,7 +286,7 @@ export default function EndRunScreen() {
                 loadError ??
                 'The archived result could not be reconstructed from run history.'
               }
-              primaryLabel="Return to Title"
+              primaryLabel="Employee Portal"
               onPrimaryPress={handleReturnToTitle}
             />
           ) : loadStatus === 'missing' || !archivedRun ? (
@@ -269,7 +297,7 @@ export default function EndRunScreen() {
                   ? 'No archived recap matched this run ID.'
                   : 'There is no archived run recap available yet.'
               }
-              primaryLabel="Return to Title"
+              primaryLabel="Employee Portal"
               onPrimaryPress={handleReturnToTitle}
             />
           ) : (
@@ -307,8 +335,30 @@ export default function EndRunScreen() {
                   <Text style={styles.panelBody}>Build snapshot: {buildSummary}.</Text>
                 ) : null}
               </View>
+
+              {ticketBrief ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Ticket Record</Text>
+                  <Text style={styles.ticketTitle}>
+                    {ticketBrief.ticketId} - {ticketBrief.subject}
+                  </Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine label="Filed by" value={ticketBrief.filedBy} />
+                    <DetailLine
+                      label="Escalation track"
+                      value={ticketBrief.escalationTrack}
+                    />
+                    <DetailLine
+                      label="Current owner"
+                      value={ticketBrief.currentOwner}
+                    />
+                  </View>
+                  <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
+                </View>
+              ) : null}
+
               <LoopArtPanel
-                title="Next Experiment"
+                title={restartReadTitle}
                 body={restartReadBody}
                 source={archivedResultArtSource}
                 backgroundSource={endRunSurfaceArtSource}
@@ -438,7 +488,7 @@ export default function EndRunScreen() {
                 <View style={styles.actionGroup}>
                   <GameButton label="Run It Back" onPress={handleRunItBack} />
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={handleReturnToTitle}
                     variant="secondary"
                   />
@@ -642,6 +692,12 @@ function createStyles(
       lineHeight: scaleLineHeight(16, settings),
       textAlign: 'center',
       alignSelf: 'stretch',
+    },
+    ticketTitle: {
+      color: colors.accent,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(24, settings),
     },
     detailCard: {
       backgroundColor: colors.surface,

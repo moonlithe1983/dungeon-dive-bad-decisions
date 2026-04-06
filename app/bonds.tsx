@@ -346,7 +346,7 @@ export default function BondsScreen() {
               onPrimaryPress={() => {
                 void handleRefresh();
               }}
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               onSecondaryPress={() => {
                 router.push('/' as Href);
               }}
@@ -359,7 +359,7 @@ export default function BondsScreen() {
               onPrimaryPress={() => {
                 void handleRefresh();
               }}
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               onSecondaryPress={() => {
                 router.push('/' as Href);
               }}
@@ -639,7 +639,7 @@ export default function BondsScreen() {
                     }}
                   />
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={() => {
                       router.push('/' as Href);
                     }}

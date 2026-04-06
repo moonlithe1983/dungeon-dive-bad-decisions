@@ -103,7 +103,7 @@ export default function PrivacyScreen() {
                 variant="secondary"
               />
               <GameButton
-                label="Return to Title"
+                label="Employee Portal"
                 onPress={() => {
                   router.push('/' as Href);
                 }}

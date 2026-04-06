@@ -1,4 +1,8 @@
 import { createAuthoredDefeatRecommendation } from '@/src/content/authored-voice';
+import {
+  createTicketFailureLead,
+  createTicketOutcomeCopy,
+} from '@/src/content/company-lore';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import type { CombatState } from '@/src/types/combat';
 import type {
@@ -120,34 +124,14 @@ export function createArchivedRunOutcomeNote(input: {
   enemyName?: string | null;
   pendingRewardLost?: boolean;
 }): ArchivedRunOutcomeNote {
-  const locationLabel = input.currentNodeLabel
-    ? ` in ${input.currentNodeLabel}`
-    : '';
-
-  if (input.result === 'win') {
-    return {
-      title: 'Dive Cleared',
-      detail: input.currentNodeLabel
-        ? `Finished the run by clearing ${input.currentNodeLabel} on floor ${input.run.floorIndex}.`
-        : `Finished the run and exited alive on floor ${input.run.floorIndex}.`,
-    };
-  }
-
-  if (input.result === 'loss') {
-    return {
-      title: 'Run Collapsed',
-      detail: input.enemyName
-        ? `Defeated by ${input.enemyName}${locationLabel} on floor ${input.run.floorIndex}.`
-        : `Collapsed${locationLabel} on floor ${input.run.floorIndex}.`,
-    };
-  }
-
-  return {
-    title: 'Dive Abandoned',
-    detail: `Archived voluntarily${locationLabel} on floor ${input.run.floorIndex}.${
-      input.pendingRewardLost ? ' A pending reward was left behind.' : ''
-    }`,
-  };
+  return createTicketOutcomeCopy({
+    result: input.result,
+    classId: input.run.heroClassId,
+    floorIndex: input.run.floorIndex,
+    currentNodeLabel: input.currentNodeLabel,
+    enemyName: input.enemyName,
+    pendingRewardLost: input.pendingRewardLost,
+  });
 }
 
 function pickDefeatFinalBlow(combat: CombatState) {
@@ -168,9 +152,17 @@ function createDefeatRecommendation(combat: CombatState) {
 }
 
 export function createArchivedRunDefeatSummary(input: {
+  run: RunState;
   combat: CombatState;
   currentNodeLabel: string;
 }): ArchivedRunDefeatSummary {
+  const stageLead = createTicketFailureLead({
+    classId: input.run.heroClassId,
+    floorIndex: input.run.floorIndex,
+    currentNodeLabel: input.currentNodeLabel,
+    enemyName: input.combat.enemy.name,
+  });
+
   return {
     nodeLabel: input.currentNodeLabel,
     enemyName: input.combat.enemy.name,
@@ -178,6 +170,6 @@ export function createArchivedRunDefeatSummary(input: {
     finalBlow: pickDefeatFinalBlow(input.combat),
     heroStatusLabels: input.combat.heroStatuses.map(formatCombatStatusLabel),
     enemyStatusLabels: input.combat.enemyStatuses.map(formatCombatStatusLabel),
-    recommendation: createDefeatRecommendation(input.combat),
+    recommendation: `${stageLead} ${createDefeatRecommendation(input.combat)}`,
   };
 }

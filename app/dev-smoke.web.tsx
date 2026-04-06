@@ -32,7 +32,7 @@ export default function DevSmokeWebScreen() {
         </View>
 
         <GameButton
-          label="Return to Title"
+          label="Employee Portal"
           onPress={() => {
             router.replace('/' as Href);
           }}

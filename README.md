@@ -16,9 +16,12 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
 - Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
 - Decision-path presentation: mission/context panels are progressively disclosed, route/event/reward choices now sit higher in the hierarchy, and player-facing copy avoids fake choice scaffolding
+- Ticket-flavor presentation: setup, run-map, battle, reward, and end-run now thread an explicit ticket ID, subject, escalation track, and owner through the run
 - Authored voice layer: early-floor lore beats, starting-trio chemistry, early event overlays, codex bios, reward build-lane cues, and defeat advice now use the April 4 narrative pack instead of lighter placeholder prose
 - Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
+- In-run reference access: Codex entry points now exist on run-map, battle, event, and reward, and the Codex can return directly to the active run screen
 - Combat readability: live battle status labels now use readable durations/summaries, and repeated crew chatter is rotated or hidden behind tactical detail instead of crowding the main turn view
+- Resume clarity: title-screen resume labels now reflect the actual saved scene, such as reward, battle, event, or route selection, instead of only a generic dive label
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
 - Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
@@ -114,10 +117,9 @@ Expected output:
 
 Important notes:
 
-- the canonical working repo is now the short-path workspace `C:\ddbd`
 - a locally built release artifact currently exists at `android/app/build/outputs/apk/release/app-release.apk`
-- if you rebuild from any legacy long-path copy of the repo, Windows native path-length failures may still occur during packaging
-- before handing builds to testers or the store, rebuild the release APK from the final accepted source in `C:\ddbd` so the artifact is known current
+- the Expo launcher now resolves the real workspace path before invoking Expo, so the current checked-out repo is the source you should rebuild from
+- before handing builds to testers or the store, rebuild the release APK from the final accepted source in the current repo checkout so the artifact is known current
 
 ## Save Model
 
@@ -202,11 +204,12 @@ The game is in release-candidate hardening mode:
 - tester-facing support/privacy/settings copy no longer exposes placeholder or future-feature language
 - the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
-- the canonical short-path workspace `C:\ddbd` can produce a local release APK and currently contains `android/app/build/outputs/apk/release/app-release.apk`
-- the local Android launcher now resolves the real workspace path first, so `npm run android` works from both `C:\ddbd` and the restored junction path without the earlier Expo root-resolution failure
+- the local Android launcher now resolves the real workspace path first, so `npm run android` works from the current repo checkout without the earlier Expo root-resolution failure
 - the native-only `dev-smoke` route now surfaces local-only UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, and `Run It Back` usage
-- the legacy long-path workspace may still fail native packaging because of Windows path-length limits
-- before tester or store distribution after future source changes, rebuild from the final accepted `C:\ddbd` source and re-verify install behavior
+- the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
+- the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
+- the April 6 emulator pass confirmed title -> new run -> run-map -> battle -> reward -> cold relaunch resume -> reward claim -> end-run
+- before tester or store distribution after future source changes, rebuild from the final accepted source in the current repo checkout and re-verify install behavior
 - the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, setup compression, settings preview, and `dev-smoke` telemetry surfaces before broader playtesting and upload
 
 ## Launch Defaults
@@ -238,7 +241,9 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 
 - `PROJECT_HANDOFF_2026-04-05.md`
 - `PROJECT_HANDOFF_2026-04-05.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-05.docx`
+- `PROJECT_HANDOFF_2026-04-06.md`
+- `PROJECT_HANDOFF_2026-04-06.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-06.docx`
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
 - `PROJECT_HANDOFF_2026-04-04.md`

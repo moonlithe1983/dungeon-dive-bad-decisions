@@ -97,7 +97,7 @@ export default function SupportScreen() {
                 variant="secondary"
               />
               <GameButton
-                label="Return to Title"
+                label="Employee Portal"
                 onPress={() => {
                   router.push('/' as Href);
                 }}

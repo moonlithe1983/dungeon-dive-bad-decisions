@@ -23,6 +23,7 @@ import {
   getPartyScene,
   getRewardPackagePitch,
 } from '@/src/content/authored-voice';
+import { createTicketBrief } from '@/src/content/company-lore';
 import { getItemDefinition } from '@/src/content/items';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import { useRunStore } from '@/src/state/runStore';
@@ -105,6 +106,18 @@ export default function RewardScreen() {
     () => getRewardPackagePitch(selectedRewardOption?.optionId),
     [selectedRewardOption?.optionId]
   );
+  const ticketBrief = useMemo(() => {
+    if (!run || !pendingReward) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: run.heroClassId,
+      floorIndex: run.floorIndex,
+      runId: run.runId,
+      currentNodeLabel: currentNode?.label ?? pendingReward.title,
+    });
+  }, [currentNode?.label, pendingReward, run]);
   const rewardSurfaceArtSource = useMemo(
     () => getLoopSurfaceArtSource('reward', settings),
     [settings]
@@ -171,7 +184,7 @@ export default function RewardScreen() {
               body="There is no active run to pay out."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               secondaryHref="/"
             />
           ) : isPreparingReward && !pendingReward ? (
@@ -182,11 +195,30 @@ export default function RewardScreen() {
               body="There is no reward waiting right now."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               secondaryHref="/"
             />
           ) : (
             <>
+              {ticketBrief ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Ticket Payout</Text>
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>
+                      {ticketBrief.ticketId} - {ticketBrief.subject}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      {pendingReward.sourceKind === 'battle-victory'
+                        ? 'This payout came off a cleared escalation gate. Take what helps the ticket survive the next floor.'
+                        : 'This room still belongs to the same case file. Pick the haul that best keeps the escalation moving upward.'}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      Current track: {ticketBrief.escalationTrack}
+                    </Text>
+                  </View>
+                </View>
+              ) : null}
+
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>{pendingReward.title}</Text>
                 <Text style={styles.panelBody}>{pendingReward.description}</Text>
@@ -216,6 +248,11 @@ export default function RewardScreen() {
                       Build lane: {rewardPackagePitch.name}. {rewardPackagePitch.description}
                     </Text>
                   ) : null}
+                  <Text style={styles.previewEdge}>
+                    {pendingReward.sourceKind === 'battle-victory'
+                      ? 'Escalation cleared: this is the recovered payout before the ticket climbs again.'
+                      : 'Side-room seizure: this is optional contraband tied to the same active ticket.'}
+                  </Text>
                 </View>
               </View>
 
@@ -375,6 +412,14 @@ export default function RewardScreen() {
                     label="Return to Map"
                     onPress={() => {
                       router.replace('/run-map' as Href);
+                    }}
+                    variant="secondary"
+                    disabled={isClaimingReward || isSelectingRewardOption}
+                  />
+                  <GameButton
+                    label="Open Codex"
+                    onPress={() => {
+                      router.push('/codex?returnTo=%2Freward' as Href);
                     }}
                     variant="secondary"
                     disabled={isClaimingReward || isSelectingRewardOption}

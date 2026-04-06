@@ -24,6 +24,7 @@ import { getClassDefinition } from '@/src/content/classes';
 import {
   COMPANY_NAME,
   TOWER_NAME,
+  createTicketBrief,
   getClassNarrative,
 } from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
@@ -142,14 +143,20 @@ export default function RunMapScreen() {
 
     return getCompanionDefinition(reserveCompanionId)?.name ?? reserveCompanionId;
   }, [reserveCompanionId]);
-  const carriedItemNames = useMemo(() => {
+  const carriedItems = useMemo(() => {
     if (!run) {
       return [];
     }
 
-    return run.inventoryItemIds.map(
-      (itemId) => getItemDefinition(itemId)?.name ?? humanizeId(itemId)
-    );
+    return run.inventoryItemIds.map((itemId) => {
+      const item = getItemDefinition(itemId);
+
+      return {
+        id: itemId,
+        name: item?.name ?? humanizeId(itemId),
+        effectSummary: item?.effectSummary ?? 'Effect summary missing.',
+      };
+    });
   }, [run]);
   const companionSupportCards = useMemo(() => {
     if (!run) {
@@ -209,6 +216,18 @@ export default function RunMapScreen() {
   const pendingRewardItem = run?.pendingReward?.itemId
     ? getItemDefinition(run.pendingReward.itemId)
     : null;
+  const ticketBrief = useMemo(() => {
+    if (!run) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: run.heroClassId,
+      floorIndex: run.floorIndex,
+      runId: run.runId,
+      currentNodeLabel: currentNode?.label ?? null,
+    });
+  }, [currentNode?.label, run]);
   const abandonWarning = useMemo(() => {
     if (!run) {
       return 'Abandoning ends the current dive and clears the active save.';
@@ -289,7 +308,7 @@ export default function RunMapScreen() {
               <Text style={styles.panelTitle}>Resume Error</Text>
               <Text style={styles.errorBody}>{error}</Text>
               <GameButton
-                label="Return to Title"
+                label="Employee Portal"
                 onPress={() => {
                   router.push('/' as Href);
                 }}
@@ -299,11 +318,12 @@ export default function RunMapScreen() {
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>No Active Dive</Text>
               <Text style={styles.panelBody}>
-                No active dive was found. Start a new descent from the title screen.
+                No active dive was found. Start a new descent from the employee
+                portal.
               </Text>
               <View style={styles.actionGroup}>
                 <GameButton
-                  label="Return to Title"
+                  label="Employee Portal"
                   onPress={() => {
                     router.push('/' as Href);
                   }}
@@ -355,6 +375,24 @@ export default function RunMapScreen() {
                 ) : null}
               </View>
 
+              {ticketBrief ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Assigned Ticket</Text>
+                  <Text style={styles.panelBody}>
+                    {ticketBrief.ticketId} - {ticketBrief.subject}
+                  </Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine label="Filed by" value={ticketBrief.filedBy} />
+                    <DetailLine
+                      label="Escalation track"
+                      value={ticketBrief.escalationTrack}
+                    />
+                    <DetailLine label="Current owner" value={ticketBrief.currentOwner} />
+                  </View>
+                  <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
+                </View>
+              ) : null}
+
               {floorBeat ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>{floorBeat.title}</Text>
@@ -373,15 +411,24 @@ export default function RunMapScreen() {
                     <DetailLine label="Current lead" value={activeCompanionName ?? 'Unknown'} />
                     <DetailLine label="Reserve" value={reserveCompanionName ?? 'Unknown'} />
                   </View>
-                  <GameButton
-                    label={
-                      isRotatingActiveCompanion ? 'Rotating...' : 'Swap Lead and Reserve'
-                    }
-                    onPress={() => {
-                      void handleRotateCompanion();
-                    }}
-                    disabled={isRotatingActiveCompanion}
-                  />
+                  <View style={styles.actionGroup}>
+                    <GameButton
+                      label={
+                        isRotatingActiveCompanion ? 'Rotating...' : 'Swap Lead and Reserve'
+                      }
+                      onPress={() => {
+                        void handleRotateCompanion();
+                      }}
+                      disabled={isRotatingActiveCompanion}
+                    />
+                    <GameButton
+                      label="Open Codex"
+                      onPress={() => {
+                        router.push('/codex?returnTo=%2Frun-map' as Href);
+                      }}
+                      variant="secondary"
+                    />
+                  </View>
                 </View>
               ) : null}
 
@@ -458,7 +505,14 @@ export default function RunMapScreen() {
                       }}
                     />
                     <GameButton
-                      label="Return to Title"
+                      label="Open Codex"
+                      onPress={() => {
+                        router.push('/codex?returnTo=%2Frun-map' as Href);
+                      }}
+                      variant="secondary"
+                    />
+                    <GameButton
+                      label="Employee Portal"
                       onPress={() => {
                         router.push('/' as Href);
                       }}
@@ -542,7 +596,14 @@ export default function RunMapScreen() {
                         }}
                       />
                       <GameButton
-                        label="Return to Title"
+                        label="Open Codex"
+                        onPress={() => {
+                          router.push('/codex?returnTo=%2Frun-map' as Href);
+                        }}
+                        variant="secondary"
+                      />
+                      <GameButton
+                        label="Employee Portal"
                         onPress={() => {
                           router.push('/' as Href);
                         }}
@@ -575,12 +636,22 @@ export default function RunMapScreen() {
                       <DetailLine
                         label="Gear"
                         value={
-                          carriedItemNames.length > 0
-                            ? carriedItemNames.join(', ')
+                          carriedItems.length > 0
+                            ? carriedItems.map((item) => item.name).join(', ')
                             : 'No contraband equipped yet'
                         }
                       />
                     </View>
+                    {carriedItems.length > 0 ? (
+                      <View style={styles.supportList}>
+                        {carriedItems.map((item) => (
+                          <View key={item.id} style={styles.supportCard}>
+                            <Text style={styles.supportTitle}>{item.name}</Text>
+                            <Text style={styles.supportBody}>{item.effectSummary}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    ) : null}
                     {companionSupportCards.length > 0 ? (
                       <View style={styles.supportList}>
                         {companionSupportCards.map((card) => (
@@ -621,7 +692,8 @@ export default function RunMapScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Run Exit</Text>
                 <Text style={styles.panelBody}>
-                  Returning to title keeps the dive ready to resume. Abandoning it ends the climb and records the fallout.
+                  Returning to the employee portal keeps the dive ready to
+                  resume. Abandoning it ends the climb and records the fallout.
                 </Text>
                 {isAbandonConfirming ? (
                   <View style={styles.warningCard}>

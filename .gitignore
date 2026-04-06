@@ -54,6 +54,7 @@ app-example
 .gradle-local/
 .codex-logs/
 .vscode/
+.tmp_app_needs_read/
 
 # local logs and smoke artifacts
 *.log
@@ -62,6 +63,10 @@ android-*.xml
 codex-*.png
 codex-*.xml
 emulator-smoke.png
+sanity-*.png
+title-*.png
 tmp-*.png
 tmp-*.xml
+tmp_*.png
+tmp_*.xml
 /release/*.apk

@@ -107,7 +107,7 @@ export default function DevSmokeScreen() {
             </Text>
           </View>
           <GameButton
-            label="Return to Title"
+            label="Employee Portal"
             onPress={() => {
               router.replace('/' as Href);
             }}
@@ -219,7 +219,7 @@ export default function DevSmokeScreen() {
           ) : null}
 
           <GameButton
-            label="Return to Title"
+            label="Employee Portal"
             onPress={() => {
               router.replace('/' as Href);
             }}

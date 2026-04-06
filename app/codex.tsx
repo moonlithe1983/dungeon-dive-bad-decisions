@@ -1,4 +1,4 @@
-import { router, type Href } from 'expo-router';
+import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -126,6 +126,7 @@ const codexCategories: CodexCategoryDefinition[] = [
 ];
 
 export default function CodexScreen() {
+  const params = useLocalSearchParams<{ returnTo?: string | string[] }>();
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const bootstrapProfile = useGameStore((state) => state.profile);
@@ -140,6 +141,22 @@ export default function CodexScreen() {
   const resolvedProfile = profile ?? bootstrapProfile;
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const returnHref = useMemo(() => {
+    const candidate = Array.isArray(params.returnTo)
+      ? params.returnTo[0]
+      : params.returnTo;
+
+    if (
+      candidate === '/run-map' ||
+      candidate === '/battle' ||
+      candidate === '/reward' ||
+      candidate === '/event'
+    ) {
+      return candidate as Href;
+    }
+
+    return null;
+  }, [params.returnTo]);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -275,9 +292,9 @@ export default function CodexScreen() {
               body={loadError ?? 'The codex could not be reconstructed.'}
               primaryLabel="Try Again"
               onPrimaryPress={handleRefresh}
-              secondaryLabel="Return to Title"
+              secondaryLabel={returnHref ? 'Back to Run' : 'Employee Portal'}
               onSecondaryPress={() => {
-                router.push('/' as Href);
+                router.push(returnHref ?? ('/' as Href));
               }}
             />
           ) : (
@@ -431,8 +448,17 @@ export default function CodexScreen() {
                       void handleRefresh();
                     }}
                   />
+                  {returnHref ? (
+                    <GameButton
+                      label="Back to Run"
+                      onPress={() => {
+                        router.push(returnHref);
+                      }}
+                      variant="secondary"
+                    />
+                  ) : null}
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={() => {
                       router.push('/' as Href);
                     }}

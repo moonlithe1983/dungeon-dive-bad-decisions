@@ -313,7 +313,7 @@ export default function SettingsScreen() {
                 <Text style={styles.panelTitle}>Actions</Text>
                 <View style={styles.actionGroup}>
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={() => {
                       router.push('/' as Href);
                     }}

@@ -15,6 +15,7 @@ import { GameButton } from '@/src/components/game-button';
 import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
+import { createTicketBrief } from '@/src/content/company-lore';
 import { getCompanionRewardEdgePreview } from '@/src/content/reward-companion-hooks';
 import { getActiveTeamSynergyCardsForParty } from '@/src/content/team-synergies';
 import {
@@ -67,6 +68,16 @@ export default function CompanionSelectScreen() {
     profile?.unlockedCompanionIds.includes(companion.id)
   );
   const hasMultipleClassChoices = (profile?.unlockedClassIds.length ?? 0) > 1;
+  const ticketBrief = useMemo(() => {
+    if (!selectedClassId) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: selectedClassId,
+      floorIndex: 1,
+    });
+  }, [selectedClassId]);
 
   useEffect(() => {
     if (!profile || profile.unlockedClassIds.length !== 1 || selectedClassId) {
@@ -102,7 +113,7 @@ export default function CompanionSelectScreen() {
             <View style={styles.panel}>
               <View style={styles.actionGroup}>
                 <GameButton
-                  label="Return to Title"
+                  label="Employee Portal"
                   onPress={() => {
                     router.push('/' as Href);
                   }}
@@ -138,6 +149,20 @@ export default function CompanionSelectScreen() {
                 : `${selectedClass?.name ?? selectedClassId} is locked in. Pick one lead and one reserve to support the run.`}
             </Text>
           </View>
+
+          {ticketBrief ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Assigned Ticket</Text>
+              <Text style={styles.panelBody}>
+                {ticketBrief.ticketId} - {ticketBrief.subject}
+              </Text>
+              <View style={styles.selectionDetailCard}>
+                <Text style={styles.panelBody}>Filed by: {ticketBrief.filedBy}</Text>
+                <Text style={styles.panelBody}>Track: {ticketBrief.escalationTrack}</Text>
+                <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
+              </View>
+            </View>
+          ) : null}
 
           {openingScene ? (
             <View style={styles.panel}>

@@ -202,7 +202,7 @@ export default function ProgressionScreen() {
               }
               primaryLabel="Try Again"
               onPrimaryPress={handleRefresh}
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               onSecondaryPress={() => {
                 router.push('/' as Href);
               }}
@@ -213,7 +213,7 @@ export default function ProgressionScreen() {
               body="The profile did not finish loading, so progression data cannot be displayed yet."
               primaryLabel="Reload Progression"
               onPrimaryPress={handleRefresh}
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               onSecondaryPress={() => {
                 router.push('/' as Href);
               }}
@@ -369,7 +369,7 @@ export default function ProgressionScreen() {
                     onPress={handleRefresh}
                   />
                   <GameButton
-                    label="Return to Title"
+                    label="Employee Portal"
                     onPress={() => {
                       router.push('/' as Href);
                     }}

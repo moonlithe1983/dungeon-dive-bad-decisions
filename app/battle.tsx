@@ -18,7 +18,10 @@ import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { getRunNodeRoute } from '@/src/engine/run/progress-run';
 import { getClassDefinition } from '@/src/content/classes';
-import { createClassEncounterBrief } from '@/src/content/company-lore';
+import {
+  createClassEncounterBrief,
+  createTicketBrief,
+} from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getEnemyTeamCountermeasureCards } from '@/src/content/enemy-team-reactions';
 import { getItemDefinition } from '@/src/content/items';
@@ -183,6 +186,18 @@ export default function BattleScreen() {
         : [],
     [run]
   );
+  const ticketBrief = useMemo(() => {
+    if (!run || !currentNode) {
+      return null;
+    }
+
+    return createTicketBrief({
+      classId: run.heroClassId,
+      floorIndex: run.floorIndex,
+      runId: run.runId,
+      currentNodeLabel: currentNode.label,
+    });
+  }, [currentNode, run]);
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'battle' && currentNode.kind !== 'boss'
       ? getRunNodeRoute(currentNode.kind)
@@ -301,6 +316,24 @@ export default function BattleScreen() {
             <LoadingPanel label="Constructing the current encounter..." />
           ) : (
             <>
+              {ticketBrief ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Active Ticket</Text>
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>
+                      {ticketBrief.ticketId} - {ticketBrief.subject}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      Escalation track: {ticketBrief.escalationTrack}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      Current owner: {ticketBrief.currentOwner}
+                    </Text>
+                    <Text style={styles.detailCardBody}>{ticketBrief.summary}</Text>
+                  </View>
+                </View>
+              ) : null}
+
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>{currentNode.label}</Text>
                 <Text style={styles.panelBody}>{currentNode.description}</Text>
@@ -318,7 +351,9 @@ export default function BattleScreen() {
                   <Text style={styles.readLabel}>Enemy Intent</Text>
                   <Text style={styles.readValue}>{combatState.enemy.intent}</Text>
                   <Text style={styles.readHint}>
-                    Keep the board readable: the enemy acts right after you unless you end the fight first.
+                    {currentNode.kind === 'boss'
+                      ? 'This is the escalation gate for the current ticket. Close it fast or the next layer gets a vote.'
+                      : 'Keep the board readable: the enemy acts right after you unless you end the fight first.'}
                   </Text>
                 </View>
                 <View style={styles.tagRow}>
@@ -409,6 +444,14 @@ export default function BattleScreen() {
                   label="Retreat to Map"
                   onPress={() => {
                     router.replace('/run-map' as Href);
+                  }}
+                  variant="secondary"
+                  disabled={isPerformingCombatAction}
+                />
+                <GameButton
+                  label="Open Codex"
+                  onPress={() => {
+                    router.push('/codex?returnTo=%2Fbattle' as Href);
                   }}
                   variant="secondary"
                   disabled={isPerformingCombatAction}

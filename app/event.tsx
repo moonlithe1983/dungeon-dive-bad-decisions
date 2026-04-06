@@ -145,7 +145,7 @@ export default function EventScreen() {
               body="There is no active event node to continue. Return to the map and reopen the run from there."
               primaryLabel="Return to Map"
               primaryHref="/run-map"
-              secondaryLabel="Return to Title"
+              secondaryLabel="Employee Portal"
               secondaryHref="/"
             />
           ) : wrongSceneRoute ? (
@@ -252,6 +252,14 @@ export default function EventScreen() {
                     label="Return to Map"
                     onPress={() => {
                       router.replace('/run-map' as Href);
+                    }}
+                    variant="secondary"
+                    disabled={isApplyingEventChoice}
+                  />
+                  <GameButton
+                    label="Open Codex"
+                    onPress={() => {
+                      router.push('/codex?returnTo=%2Fevent' as Href);
                     }}
                     variant="secondary"
                     disabled={isApplyingEventChoice}

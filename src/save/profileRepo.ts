@@ -9,10 +9,12 @@ import { getDatabaseAsync } from '@/src/save/db';
 import { LATEST_SCHEMA_VERSION } from '@/src/save/migrations';
 import {
   DEFAULT_META_UPGRADE_LEVELS,
+  DEFAULT_PROFILE_ONBOARDING,
   DEFAULT_PROFILE_SETTINGS,
   DEFAULT_PROFILE_STATE,
   DEFAULT_PROFILE_STATS,
   type MetaUpgradeLevels,
+  type ProfileOnboardingState,
   type ProfileSettingsState,
   type ProfileState,
   type ProfileStats,
@@ -86,6 +88,17 @@ function isProfileStats(value: unknown): value is ProfileStats {
     typeof (value as Partial<ProfileStats>).totalWins === 'number' &&
     typeof (value as Partial<ProfileStats>).totalDeaths === 'number' &&
     typeof (value as Partial<ProfileStats>).totalBossesKilled === 'number'
+  );
+}
+
+function isProfileOnboardingState(
+  value: unknown
+): value is ProfileOnboardingState {
+  return (
+    Boolean(value) &&
+    typeof value === 'object' &&
+    typeof (value as Partial<ProfileOnboardingState>).narrativeIntroSeen ===
+      'boolean'
   );
 }
 
@@ -171,9 +184,20 @@ function normalizeStats(stats: ProfileStats): ProfileStats {
   };
 }
 
+function normalizeOnboarding(
+  onboarding: ProfileOnboardingState,
+  stats: ProfileStats
+): ProfileOnboardingState {
+  return {
+    narrativeIntroSeen:
+      onboarding.narrativeIntroSeen || stats.totalRuns > 0 || stats.totalWins > 0,
+  };
+}
+
 function normalizeProfileState(profile: ProfileState): ProfileState {
   const createdAt = profile.createdAt || createTimestamp();
   const updatedAt = profile.updatedAt || createdAt;
+  const normalizedStats = normalizeStats(profile.stats);
 
   return {
     profileId: profile.profileId,
@@ -199,8 +223,9 @@ function normalizeProfileState(profile: ProfileState): ProfileState {
     unlockedEventIds: sanitizeFreeformIds(profile.unlockedEventIds),
     bondLevels: normalizeBondLevels(profile.bondLevels),
     metaUpgradeLevels: normalizeMetaUpgradeLevels(profile.metaUpgradeLevels),
+    onboarding: normalizeOnboarding(profile.onboarding, normalizedStats),
     settings: normalizeSettings(profile.settings),
-    stats: normalizeStats(profile.stats),
+    stats: normalizedStats,
     createdAt,
     updatedAt,
   };
@@ -225,6 +250,7 @@ function createDefaultProfile(): ProfileState {
     unlockedEventIds: DEFAULT_PROFILE_STATE.unlockedEventIds,
     bondLevels: DEFAULT_PROFILE_STATE.bondLevels,
     metaUpgradeLevels: DEFAULT_META_UPGRADE_LEVELS,
+    onboarding: DEFAULT_PROFILE_ONBOARDING,
     settings: DEFAULT_PROFILE_SETTINGS,
     stats: DEFAULT_PROFILE_STATS,
     createdAt: timestamp,
@@ -275,6 +301,9 @@ function parseProfileRow(row: ProfileRow | null) {
       metaUpgradeLevels: isMetaUpgradeLevels(candidate.metaUpgradeLevels)
         ? candidate.metaUpgradeLevels
         : DEFAULT_META_UPGRADE_LEVELS,
+      onboarding: isProfileOnboardingState(candidate.onboarding)
+        ? candidate.onboarding
+        : DEFAULT_PROFILE_ONBOARDING,
       settings: isProfileSettingsState(candidate.settings)
         ? candidate.settings
         : DEFAULT_PROFILE_SETTINGS,

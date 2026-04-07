@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Support
 
-Last updated: April 5, 2026
+Last updated: April 7, 2026
 
 ## Current Launch Defaults
 
@@ -37,8 +37,9 @@ If you report a problem, include:
 - settings now include a live preview so readability, contrast, and motion choices can be checked before a run starts
 - battle, reward, event, and route screens now prioritize the immediate player decision and progressively disclose deeper flavor/detail
 - one full 10-floor Android release-build validation pass has already been completed on the prior candidate
-- fresh-profile onboarding now starts with an assigned IT Support role and three default companion options
+- fresh-profile onboarding now starts with a short title intro, an assigned IT Support role briefing, and then three default companion options
 - the current polished source now includes compact route choice, loop-facing art panels, stronger defeat recap, authored early-run writing integration, and clearer progressive-disclosure treatment on event/setup screens
-- the April 5 local release APK was rebuilt from the current source and verified to launch from a clean install on Android
+- the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
+- the April 7 local release APK was rebuilt from the current source and verified on Android through title -> new run -> run-map -> battle -> reward -> resume -> end-run
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
 - the `Smoke Lab` route is native-dev only and now surfaces local-only UX telemetry for manual QA; it is not part of the public release build or support burden

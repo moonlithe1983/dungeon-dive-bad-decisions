@@ -91,6 +91,8 @@ export type ArchivedRunDefeatSummary = {
   finalBlow: string;
   heroStatusLabels: string[];
   enemyStatusLabels: string[];
+  heroStatusNotes?: string[];
+  enemyStatusNotes?: string[];
   recommendation: string;
 };
 

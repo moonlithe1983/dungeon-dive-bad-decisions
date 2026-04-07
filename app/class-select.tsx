@@ -42,7 +42,7 @@ export default function ClassSelectScreen() {
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const selectedClassId = useRunStore((state) => state.selectedClassId);
   const setSelectedClassId = useRunStore((state) => state.setSelectedClassId);
-  const [showRoleDetails, setShowRoleDetails] = useState(false);
+  const [showRoleDetails, setShowRoleDetails] = useState(true);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 

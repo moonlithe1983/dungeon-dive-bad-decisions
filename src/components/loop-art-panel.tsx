@@ -47,14 +47,21 @@ export function LoopArtPanel({
             resizeMode="contain"
           />
         ) : null}
-        <Image
-          source={source}
-          style={[
-            styles.foregroundArt,
-            isPortrait ? styles.foregroundArtPortrait : null,
-          ]}
-          resizeMode="contain"
-        />
+        {isPortrait ? (
+          <View style={styles.portraitWell}>
+            <Image
+              source={source}
+              style={styles.portraitArt}
+              resizeMode="contain"
+            />
+          </View>
+        ) : (
+          <Image
+            source={source}
+            style={styles.foregroundArt}
+            resizeMode="contain"
+          />
+        )}
       </View>
       <View style={styles.copyWrap}>
         <Text style={styles.title}>{title}</Text>
@@ -91,8 +98,9 @@ function createStyles(
       paddingVertical: spacing.sm + 2,
     },
     artFramePortrait: {
-      minHeight: 156,
+      minHeight: 212,
       paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
     },
     backgroundArt: {
       ...StyleSheet.absoluteFillObject,
@@ -106,10 +114,21 @@ function createStyles(
       height: 88,
       alignSelf: 'center',
     },
-    foregroundArtPortrait: {
-      width: '58%',
-      maxWidth: 132,
-      height: 120,
+    portraitWell: {
+      width: '56%',
+      maxWidth: 180,
+      aspectRatio: 0.74,
+      borderRadius: 18,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.sm + 2,
+    },
+    portraitArt: {
+      width: '100%',
+      height: '100%',
     },
     copyWrap: {
       gap: spacing.xs + 2,

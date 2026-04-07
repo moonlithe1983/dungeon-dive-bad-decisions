@@ -66,7 +66,7 @@ function createPreviewParts({
   const parts: string[] = [];
 
   if (metaCurrency > 0) {
-    parts.push(`+${metaCurrency} scrap`);
+    parts.push(`+${metaCurrency} chits`);
   }
 
   if (runHealing > 0) {
@@ -591,7 +591,7 @@ function createShadowItMarketChoices(run: RunState): EventChoice[] {
       id: 'broker-a-resale-cut',
       label: 'Broker A Resale Cut',
       description:
-        'Skip the hardware and take your payment in clean scrap and deniable introductions.',
+        'Skip the hardware and take your payment in clean chits and deniable introductions.',
       preview: createPreviewParts({
         metaCurrency: 10,
         runHealing: 0,

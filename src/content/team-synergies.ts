@@ -77,7 +77,7 @@ const teamSynergyDefinitions: TeamSynergyDefinition[] = [
     id: 'executive-triage',
     title: 'Executive Triage',
     summary:
-      'Patch deals +1 damage and takes 1 less retaliation. CC the Reserve pays +1 scrap. Expense Fraud pays +2 scrap.',
+      'Patch deals +1 damage and takes 1 less retaliation. CC the Reserve pays +1 chits. Expense Fraud pays +2 chits.',
     requiredClassId: 'it-support',
     requiredActiveCompanionId: 'former-executive-assistant',
     combatBonuses: [
@@ -149,7 +149,7 @@ const teamSynergyDefinitions: TeamSynergyDefinition[] = [
     id: 'boardroom-lockdown',
     title: 'Boardroom Lockdown',
     summary:
-      'Escalate deals +2 damage and takes 1 less retaliation. Nominate the Reserve Bidder pays +2 scrap. Black Card Overage pays +2 scrap.',
+      'Escalate deals +2 damage and takes 1 less retaliation. Nominate the Reserve Bidder pays +2 chits. Black Card Overage pays +2 chits.',
     requiredCompanionIds: ['former-executive-assistant', 'security-skeleton'],
     combatBonuses: [
       {
@@ -185,7 +185,7 @@ const teamSynergyDefinitions: TeamSynergyDefinition[] = [
     id: 'panic-copy',
     title: 'Panic Copy',
     summary:
-      'Patch deals +2 damage. Feed It Receipts gains +1 scrap and +1 HP. Contraband Locker pays +2 scrap.',
+      'Patch deals +2 damage. Feed It Receipts gains +1 chits and +1 HP. Contraband Locker pays +2 chits.',
     requiredClassId: 'intern',
     requiredActiveCompanionId: 'possessed-copier',
     combatBonuses: [
@@ -222,7 +222,7 @@ const teamSynergyDefinitions: TeamSynergyDefinition[] = [
     id: 'disaster-salvage',
     title: 'Disaster Salvage',
     summary:
-      'Stabilize restores +1 HP. Let the Reserve Haggle gains +1 scrap and +1 HP. Concierge Crash Cart restores +2 HP.',
+      'Stabilize restores +1 HP. Let the Reserve Haggle gains +1 chits and +1 HP. Concierge Crash Cart restores +2 HP.',
     requiredCompanionIds: ['facilities-goblin', 'disillusioned-temp'],
     combatBonuses: [
       {

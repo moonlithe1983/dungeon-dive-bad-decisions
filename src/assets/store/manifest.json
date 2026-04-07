@@ -27,7 +27,8 @@
     ]
   },
   "usage_notes": [
-    "Prefer the 512x512 PNG for the Google Play listing icon master.",
+    "The canonical Play listing icon master is png/icon/ddbd_play_icon_default_512x512.png.",
+    "The canonical Play feature graphic master is png/feature/ddbd_feature_graphic_default_1024x500.png.",
     "Do not pre-apply rounded corners or shadows to the Play listing icon.",
     "Keep feature graphic free of screenshots and device frames.",
     "Use raw screenshots for Play listing screenshots; these templates are non-device composition guides only.",

@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -71,6 +71,9 @@ export default function BattleScreen() {
   );
   const [showTactics, setShowTactics] = useState(false);
   const [showFullLog, setShowFullLog] = useState(false);
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  const resultSummaryOffsetRef = useRef(0);
+  const previousLogCountRef = useRef<number | null>(null);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -210,6 +213,20 @@ export default function BattleScreen() {
     const entries = combatState.log.slice().reverse();
     return showFullLog ? entries : entries.slice(0, 4);
   }, [combatState, showFullLog]);
+  const latestLogEntry = useMemo(() => {
+    if (!combatState || combatState.log.length === 0) {
+      return 'No actions have resolved yet. Read the enemy intent, then take the first swing.';
+    }
+
+    return combatState.log[combatState.log.length - 1] ?? 'No recent exchange logged.';
+  }, [combatState]);
+  const previousLogEntry = useMemo(() => {
+    if (!combatState || combatState.log.length < 2) {
+      return null;
+    }
+
+    return combatState.log[combatState.log.length - 2] ?? null;
+  }, [combatState]);
   const crewChannelSceneId = useMemo(() => {
     if (!run || !combatState || !currentNode) {
       return null;
@@ -243,6 +260,23 @@ export default function BattleScreen() {
     });
   }, [crewChannelSceneId, currentNode, recordCrewScene, run]);
 
+  useEffect(() => {
+    const nextLogCount = combatState?.log.length ?? null;
+
+    if (
+      nextLogCount != null &&
+      previousLogCountRef.current != null &&
+      nextLogCount > previousLogCountRef.current
+    ) {
+      scrollViewRef.current?.scrollTo({
+        y: Math.max(0, resultSummaryOffsetRef.current - 12),
+        animated: true,
+      });
+    }
+
+    previousLogCountRef.current = nextLogCount;
+  }, [combatState?.log.length]);
+
   const handleAction = async (actionId: CombatActionId) => {
     const result = await performCombatAction(actionId);
 
@@ -263,6 +297,7 @@ export default function BattleScreen() {
       <StatusBar style="light" />
 
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.scrollContent}
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -393,27 +428,22 @@ export default function BattleScreen() {
                 ) : null}
               </View>
 
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Pick One Action</Text>
-                <Text style={styles.panelBody}>
-                  Each action tells you the immediate tradeoff. Extra rules live in details, not in your way.
-                </Text>
-                <View style={styles.actionList}>
-                  {actions.map((action) => (
-                    <View key={action.id} style={styles.actionCard}>
-                      <GameButton
-                        label={isPerformingCombatAction ? 'Resolving...' : action.label}
-                        onPress={() => {
-                          void handleAction(action.id);
-                        }}
-                        disabled={isPerformingCombatAction}
-                      />
-                      <Text style={styles.actionDescription}>{action.core}</Text>
-                      {action.modifiers ? (
-                        <Text style={styles.actionModifiers}>{action.modifiers}</Text>
-                      ) : null}
-                    </View>
-                  ))}
+              <View
+                style={styles.panel}
+                onLayout={(event) => {
+                  resultSummaryOffsetRef.current = event.nativeEvent.layout.y;
+                }}
+              >
+                <Text style={styles.panelTitle}>Last Exchange</Text>
+                <Text style={styles.resultLead}>{latestLogEntry}</Text>
+                {previousLogEntry ? (
+                  <Text style={styles.panelBody}>Just before that: {previousLogEntry}</Text>
+                ) : null}
+                <View style={styles.detailCard}>
+                  <Text style={styles.detailCardTitle}>Read This Before Your Next Action</Text>
+                  <Text style={styles.detailCardBody}>
+                    HP is your remaining health. Statuses are ongoing effects that keep changing the fight after a button press.
+                  </Text>
                 </View>
               </View>
 
@@ -456,6 +486,30 @@ export default function BattleScreen() {
                   variant="secondary"
                   disabled={isPerformingCombatAction}
                 />
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Pick One Action</Text>
+                <Text style={styles.panelBody}>
+                  Read the last exchange first, then choose the action that changes the next trade in your favor.
+                </Text>
+                <View style={styles.actionList}>
+                  {actions.map((action) => (
+                    <View key={action.id} style={styles.actionCard}>
+                      <GameButton
+                        label={isPerformingCombatAction ? 'Resolving...' : action.label}
+                        onPress={() => {
+                          void handleAction(action.id);
+                        }}
+                        disabled={isPerformingCombatAction}
+                      />
+                      <Text style={styles.actionDescription}>{action.core}</Text>
+                      {action.modifiers ? (
+                        <Text style={styles.actionModifiers}>{action.modifiers}</Text>
+                      ) : null}
+                    </View>
+                  ))}
+                </View>
               </View>
 
               <View style={styles.panel}>
@@ -968,6 +1022,12 @@ function createStyles(
       fontSize: scaleFontSize(13, settings),
       lineHeight: scaleLineHeight(19, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    resultLead: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(21, settings),
     },
     actionGroup: {
       gap: spacing.sm + 2,

@@ -80,7 +80,9 @@ export default function RewardScreen() {
       ) ?? pendingReward.options[0]
     );
   }, [pendingReward]);
-  const hasSelectableOptions = Boolean(pendingReward?.options?.length);
+  const hasSelectableOptions = Boolean(
+    pendingReward?.options?.length && pendingReward.options.length > 1
+  );
   const rewardItem = useMemo(() => {
     if (!pendingReward?.itemId) {
       return null;
@@ -128,6 +130,9 @@ export default function RewardScreen() {
       getRouteNodeArtSource('reward', settings),
     [selectedRewardOption?.optionId, settings]
   );
+  const selectedPackageHeading = hasSelectableOptions
+    ? 'Selected Package'
+    : 'Current Payout';
 
   const handleSelectOption = async (optionId: string) => {
     if (
@@ -163,16 +168,16 @@ export default function RewardScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.shell}>
-          <View style={styles.heroCard}>
-            <Text style={styles.eyebrow}>REWARD</Text>
-            <Text style={styles.title}>Claim The Haul</Text>
-            <Text style={styles.subtitle}>
-              Pick the package that makes the next rooms easier to survive.
-            </Text>
-            <Text style={styles.body}>
-              Scrap helps the long game. Healing and contraband keep this run alive right now.
-            </Text>
-          </View>
+            <View style={styles.heroCard}>
+              <Text style={styles.eyebrow}>REWARD</Text>
+              <Text style={styles.title}>Claim The Haul</Text>
+              <Text style={styles.subtitle}>
+                Pick the package that makes the next rooms easier to survive.
+              </Text>
+              <Text style={styles.body}>
+                Chits are your between-dive currency for the Breakroom Hub. Healing and contraband help this run survive right now.
+              </Text>
+            </View>
 
           {loadState === 'idle' || loadState === 'loading' ? (
             <LoadingPanel label="Reopening the loot paperwork..." />
@@ -223,11 +228,11 @@ export default function RewardScreen() {
                 <Text style={styles.panelTitle}>{pendingReward.title}</Text>
                 <Text style={styles.panelBody}>{pendingReward.description}</Text>
                 <View style={styles.statGrid}>
-                  <RewardStatCard label="Scrap" value={`+${pendingReward.metaCurrency}`} />
+                  <RewardStatCard label="Chits" value={`+${pendingReward.metaCurrency}`} />
                   <RewardStatCard label="Recovery" value={`+${pendingReward.runHealing} HP`} />
                 </View>
                 <View style={styles.previewCard}>
-                  <Text style={styles.previewLabel}>Selected Package</Text>
+                  <Text style={styles.previewLabel}>{selectedPackageHeading}</Text>
                   <Text style={styles.previewValue}>
                     {selectedRewardOption?.label ?? 'Standard payout'}
                   </Text>
@@ -313,9 +318,9 @@ export default function RewardScreen() {
                               <Text style={styles.optionBadge}>Selected</Text>
                             ) : null}
                           </View>
-                          <Text style={styles.optionBody}>{option.description}</Text>
+                            <Text style={styles.optionBody}>{option.description}</Text>
                           <View style={styles.optionStats}>
-                            <RewardOptionPill label="Scrap" value={`+${option.metaCurrency}`} />
+                            <RewardOptionPill label="Chits" value={`+${option.metaCurrency}`} />
                             <RewardOptionPill label="HP" value={`+${option.runHealing}`} />
                             <RewardOptionPill label="Item" value={optionItem?.name ?? 'None'} />
                           </View>
@@ -406,22 +411,6 @@ export default function RewardScreen() {
                           : 'Claim Reward'
                     }
                     onPress={handleClaim}
-                    disabled={isClaimingReward || isSelectingRewardOption}
-                  />
-                  <GameButton
-                    label="Return to Map"
-                    onPress={() => {
-                      router.replace('/run-map' as Href);
-                    }}
-                    variant="secondary"
-                    disabled={isClaimingReward || isSelectingRewardOption}
-                  />
-                  <GameButton
-                    label="Open Codex"
-                    onPress={() => {
-                      router.push('/codex?returnTo=%2Freward' as Href);
-                    }}
-                    variant="secondary"
                     disabled={isClaimingReward || isSelectingRewardOption}
                   />
                 </View>

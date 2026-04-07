@@ -389,6 +389,8 @@ function isArchivedRunDefeatSummary(value: unknown): value is ArchivedRunDefeatS
     typeof candidate.finalBlow === 'string' &&
     isStringArray(candidate.heroStatusLabels) &&
     isStringArray(candidate.enemyStatusLabels) &&
+    (candidate.heroStatusNotes == null || isStringArray(candidate.heroStatusNotes)) &&
+    (candidate.enemyStatusNotes == null || isStringArray(candidate.enemyStatusNotes)) &&
     typeof candidate.recommendation === 'string'
   );
 }

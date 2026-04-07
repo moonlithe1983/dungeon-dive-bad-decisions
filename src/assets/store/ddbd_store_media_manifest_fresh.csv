@@ -1,6 +1,6 @@
 asset_id,type,usage,notes
-ddbd_play_icon_default,store-icon,Google Play listing icon,Exported as 512x512 PNG master. Keep square and do not pre-round corners.
-ddbd_feature_graphic_default,feature-graphic,Google Play feature graphic,Graphic-only treatment. Do not place screenshots or device frames inside the feature graphic.
+ddbd_play_icon_default,store-icon,Google Play listing icon,Canonical approved icon master at png/icon/ddbd_play_icon_default_512x512.png. Keep square and do not pre-round corners.
+ddbd_feature_graphic_default,feature-graphic,Google Play feature graphic,Canonical approved feature graphic at png/feature/ddbd_feature_graphic_default_1024x500.png. Graphic-only treatment; do not place screenshots or device frames inside the feature graphic.
 ss_title_template_default,screenshot-template,title screen screenshot composition,Use as a composition guide over a raw screenshot. Avoid device frames in store screenshots.
 ss_route_template_default,screenshot-template,route screen screenshot composition,Use as a composition guide over a raw screenshot. Avoid device frames in store screenshots.
 ss_battle_template_default,screenshot-template,battle screen screenshot composition,Use as a composition guide over a raw screenshot. Avoid device frames in store screenshots.

@@ -38,7 +38,6 @@ import {
 } from '@/src/engine/run/progress-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
-import { useGameStore } from '@/src/state/gameStore';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   scaleFontSize,
@@ -82,10 +81,43 @@ function getRoleCue(node: RunNodeState) {
   return 'Risk Event';
 }
 
+function describeFloorObjective(
+  floor: RunFloorState | null,
+  currentNode: RunNodeState | null
+) {
+  if (!floor) {
+    return 'Pick the next room to keep the ticket moving.';
+  }
+
+  const activeNodes = floor.nodes.filter((node) => node.status === 'active');
+  const hasBossNode = floor.nodes.some((node) => node.kind === 'boss');
+  const activeBossNode = activeNodes.find((node) => node.kind === 'boss') ?? null;
+  const activePrepNodes = activeNodes.filter((node) => node.kind !== 'boss');
+
+  if (activeBossNode && activeNodes.length === 1) {
+    return `Boss gate unlocked: clear ${activeBossNode.label} to reach the next floor.`;
+  }
+
+  if (hasBossNode && activePrepNodes.length > 0) {
+    return activePrepNodes.length > 1
+      ? 'Pick one prep room. Clearing it skips the other prep room and unlocks the boss gate for this floor.'
+      : 'Clear one prep room. The boss gate unlocks right after; you do not need to clear every room on the floor.';
+  }
+
+  if (activeNodes.length > 1) {
+    return 'Pick one active room. Clearing it advances the floor; the other room is an alternate path, not another requirement.';
+  }
+
+  if (currentNode) {
+    return `Clear ${currentNode.label} to advance the ticket upward.`;
+  }
+
+  return 'Pick one active room to keep climbing.';
+}
+
 export default function RunMapScreen() {
   const { run, currentFloor, currentNode, loadState, error, recoveredFromBackup } =
     useHydratedRun();
-  const profile = useGameStore((state) => state.profile);
   const abandonCurrentRun = useRunStore((state) => state.abandonCurrentRun);
   const chooseCurrentNode = useRunStore((state) => state.chooseCurrentNode);
   const isAbandoningRun = useRunStore((state) => state.isAbandoningRun);
@@ -101,7 +133,7 @@ export default function RunMapScreen() {
   );
   const [isAbandonConfirming, setIsAbandonConfirming] = useState(false);
   const [showCrewNotes, setShowCrewNotes] = useState(false);
-  const [showBriefing, setShowBriefing] = useState(false);
+  const [showBriefing, setShowBriefing] = useState(true);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -193,6 +225,10 @@ export default function RunMapScreen() {
 
     return getEarlyFloorBeat(run.floorIndex);
   }, [run]);
+  const floorObjective = useMemo(
+    () => describeFloorObjective(selectedFloor ?? currentFloor, currentNode),
+    [currentFloor, currentNode, selectedFloor]
+  );
   const routeScene = useMemo(() => {
     if (!run) {
       return null;
@@ -329,17 +365,9 @@ export default function RunMapScreen() {
                   }}
                 />
                 <GameButton
-                  label={
-                    (profile?.unlockedClassIds.length ?? 0) > 1
-                      ? 'Class Select'
-                      : 'Companion Select'
-                  }
+                  label="Role Briefing"
                   onPress={() => {
-                    router.push(
-                      ((profile?.unlockedClassIds.length ?? 0) > 1
-                        ? '/class-select'
-                        : '/companion-select') as Href
-                    );
+                    router.push('/class-select' as Href);
                   }}
                   variant="secondary"
                 />
@@ -361,13 +389,14 @@ export default function RunMapScreen() {
                 <View style={styles.statGrid}>
                   <StatCard label="HP" value={`${run.hero.currentHp}/${run.hero.maxHp}`} />
                   <StatCard label="Lead" value={activeCompanionName ?? 'Unknown'} />
-                  <StatCard label="Route" value={String(floorChoices.length)} />
+                  <StatCard label="Choices" value={`${floorChoices.length} open`} />
                 </View>
                 <Text style={styles.panelBody}>
                   {selectedFloor?.label ?? currentFloor?.label ?? 'Current floor'}.
                   {' '}
                   {selectedFloor?.description ?? currentFloor?.description}
                 </Text>
+                <Text style={styles.noticeText}>{floorObjective}</Text>
                 {recoveredFromBackup ? (
                   <Text style={styles.noticeText}>
                     Recovered from your latest emergency save.
@@ -399,6 +428,39 @@ export default function RunMapScreen() {
                   <Text style={styles.panelBody}>{floorBeat.summary}</Text>
                 </View>
               ) : null}
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Decision Support</Text>
+                <Text style={styles.panelBody}>{floorObjective}</Text>
+                <Text style={styles.panelBody}>
+                  HP is your current health for this dive. Chits are the permanent
+                  currency you earn from payouts and spend between dives.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine label="Lead" value={activeCompanionName ?? 'Unknown'} />
+                  <DetailLine label="Reserve" value={reserveCompanionName ?? 'Unknown'} />
+                  <DetailLine
+                    label="Gear"
+                    value={
+                      carriedItems.length > 0
+                        ? carriedItems.map((item) => item.name).join(', ')
+                        : 'No contraband equipped yet'
+                    }
+                  />
+                </View>
+                {companionSupportCards.length > 0 ? (
+                  <View style={styles.supportList}>
+                    {companionSupportCards.map((card) => (
+                      <View key={card.companionId} style={styles.supportCard}>
+                        <Text style={styles.supportTitle}>
+                          {card.companionName} ({card.role === 'active' ? 'Lead' : 'Reserve'})
+                        </Text>
+                        <Text style={styles.supportBody}>{card.summary}</Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
 
               {canRotateAtFloorStart ? (
                 <View style={styles.panel}>
@@ -486,11 +548,11 @@ export default function RunMapScreen() {
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Reward Waiting</Text>
                   <Text style={styles.panelBody}>
-                    Claim the current haul before you commit to another room.
+                    Claim the current haul before you do anything else. This is the only forward path right now.
                   </Text>
                   <View style={styles.detailCard}>
                     <DetailLine label="Package" value={run.pendingReward.title} />
-                    <DetailLine label="Scrap" value={`+${run.pendingReward.metaCurrency}`} />
+                    <DetailLine label="Chits" value={`+${run.pendingReward.metaCurrency}`} />
                     <DetailLine label="Recovery" value={`+${run.pendingReward.runHealing} HP`} />
                     <DetailLine
                       label="Item"
@@ -504,27 +566,13 @@ export default function RunMapScreen() {
                         router.push('/reward' as Href);
                       }}
                     />
-                    <GameButton
-                      label="Open Codex"
-                      onPress={() => {
-                        router.push('/codex?returnTo=%2Frun-map' as Href);
-                      }}
-                      variant="secondary"
-                    />
-                    <GameButton
-                      label="Employee Portal"
-                      onPress={() => {
-                        router.push('/' as Href);
-                      }}
-                      variant="secondary"
-                    />
                   </View>
                 </View>
               ) : (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Choose Your Next Stop</Text>
                   <Text style={styles.panelBody}>
-                    Pick the route that best matches what this run needs right now.
+                    Pick one room. The objective below tells you whether this floor needs a prep room, a boss gate, or just a straight advance.
                   </Text>
                   <LoopArtPanel
                     title={currentNode ? 'Selected Route' : 'Route Preview'}
@@ -616,10 +664,10 @@ export default function RunMapScreen() {
 
               <View style={styles.panel}>
                 <Pressable
-                  style={styles.toggleRow}
-                  onPress={() => {
-                    setShowCrewNotes((current) => !current);
-                  }}
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowCrewNotes((current) => !current);
+                    }}
                   accessibilityRole="button"
                 >
                   <Text style={styles.panelTitle}>Crew Notes</Text>
@@ -684,7 +732,7 @@ export default function RunMapScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Keep this hidden unless you need the fine print. Your route choice should stay readable first.
+                    Extra crew detail lives here once you want the fine print. The decision support panel above keeps the must-know notes closer to the route choice.
                   </Text>
                 )}
               </View>

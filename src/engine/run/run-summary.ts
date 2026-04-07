@@ -3,6 +3,7 @@ import {
   createTicketFailureLead,
   createTicketOutcomeCopy,
 } from '@/src/content/company-lore';
+import { getStatusDefinition } from '@/src/content/statuses';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import type { CombatState } from '@/src/types/combat';
 import type {
@@ -170,6 +171,20 @@ export function createArchivedRunDefeatSummary(input: {
     finalBlow: pickDefeatFinalBlow(input.combat),
     heroStatusLabels: input.combat.heroStatuses.map(formatCombatStatusLabel),
     enemyStatusLabels: input.combat.enemyStatuses.map(formatCombatStatusLabel),
+    heroStatusNotes: input.combat.heroStatuses.map((status) => {
+      const statusLabel = formatCombatStatusLabel(status);
+      const summary =
+        getStatusDefinition(status.id)?.effectSummary ??
+        'Ongoing combat effect with no archived explanation.';
+      return `${statusLabel}: ${summary}`;
+    }),
+    enemyStatusNotes: input.combat.enemyStatuses.map((status) => {
+      const statusLabel = formatCombatStatusLabel(status);
+      const summary =
+        getStatusDefinition(status.id)?.effectSummary ??
+        'Ongoing combat effect with no archived explanation.';
+      return `${statusLabel}: ${summary}`;
+    }),
     recommendation: `${stageLead} ${createDefeatRecommendation(input.combat)}`,
   };
 }

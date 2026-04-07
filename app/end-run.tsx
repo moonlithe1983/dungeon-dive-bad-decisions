@@ -24,7 +24,6 @@ import {
   loadLatestRunHistoryEntryAsync,
   loadRunHistoryEntryByRunIdAsync,
 } from '@/src/save/runRepo';
-import { useGameStore } from '@/src/state/gameStore';
 import { useRunStore } from '@/src/state/runStore';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
@@ -56,7 +55,6 @@ export default function EndRunScreen() {
   const clearCurrentRunState = useRunStore((state) => state.clearCurrentRunState);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const recordRunItBack = useUxTelemetryStore((state) => state.recordRunItBack);
-  const profile = useGameStore((state) => state.profile);
   const [archivedRun, setArchivedRun] = useState<RunHistoryEntry | null>(null);
   const [loadStatus, setLoadStatus] = useState<EndRunLoadStatus>('loading');
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -214,7 +212,7 @@ export default function EndRunScreen() {
 
     return (
       archivedRun.recap?.defeatSummary?.recommendation ??
-      'A loss should tell you what failed and point at the next experiment immediately.'
+      'A loss should tell you what failed, explain any status effects in plain language, and point at the next experiment immediately.'
     );
   }, [archivedRun]);
   const restartReadTitle = useMemo(() => {
@@ -242,8 +240,7 @@ export default function EndRunScreen() {
     recordRunItBack();
     beginNewRunSetup();
     clearCurrentRunState();
-    const hasSingleOpeningClass = (profile?.unlockedClassIds.length ?? 0) <= 1;
-    router.replace((hasSingleOpeningClass ? '/companion-select' : '/class-select') as Href);
+    router.replace('/class-select' as Href);
   };
 
   return (
@@ -390,6 +387,11 @@ export default function EndRunScreen() {
                       <Text style={styles.panelBody}>
                         {archivedRun.recap.defeatSummary.heroStatusLabels.join(', ')}
                       </Text>
+                      {archivedRun.recap.defeatSummary.heroStatusNotes?.length ? (
+                        <Text style={styles.panelBody}>
+                          Meaning: {archivedRun.recap.defeatSummary.heroStatusNotes.join(' ')}
+                        </Text>
+                      ) : null}
                     </>
                   ) : null}
                   {archivedRun.recap.defeatSummary.enemyStatusLabels.length > 0 ? (
@@ -398,6 +400,11 @@ export default function EndRunScreen() {
                       <Text style={styles.panelBody}>
                         {archivedRun.recap.defeatSummary.enemyStatusLabels.join(', ')}
                       </Text>
+                      {archivedRun.recap.defeatSummary.enemyStatusNotes?.length ? (
+                        <Text style={styles.panelBody}>
+                          Meaning: {archivedRun.recap.defeatSummary.enemyStatusNotes.join(' ')}
+                        </Text>
+                      ) : null}
                     </>
                   ) : null}
                   <Text style={styles.summaryLead}>Next run idea</Text>
@@ -413,7 +420,7 @@ export default function EndRunScreen() {
                   <Text style={styles.panelBody}>{archivedRun.recap.outcome.detail}</Text>
                   <View style={styles.statGrid}>
                     <StatCard
-                      label="Meta Earned"
+                      label="Chits Earned"
                       value={`+${archivedRun.recap.stats.metaCurrencyEarned}`}
                     />
                     <StatCard
@@ -483,10 +490,10 @@ export default function EndRunScreen() {
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Next Run</Text>
                 <Text style={styles.panelBody}>
-                  The run is safely archived. If the postmortem gave you a clear next experiment, run it back while it is still hot.
+                  The run is safely archived. If the postmortem gave you a clear next experiment, start another dive while the lesson is still fresh.
                 </Text>
                 <View style={styles.actionGroup}>
-                  <GameButton label="Run It Back" onPress={handleRunItBack} />
+                  <GameButton label="Start Another Dive" onPress={handleRunItBack} />
                   <GameButton
                     label="Employee Portal"
                     onPress={handleReturnToTitle}

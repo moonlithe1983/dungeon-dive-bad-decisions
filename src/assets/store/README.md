@@ -1,6 +1,6 @@
 # DDBD Store Media Pack R1
 
-This pack contains a first release-facing store media set for Google Play prep.
+This pack contains the current approved Google Play store-media set for Dungeon Dive: Bad Decisions.
 
 ## Included
 
@@ -34,8 +34,10 @@ This pack follows the locked direction:
 
 ## Usage
 
-- Use the 512x512 icon PNG as the Play listing icon master.
+- Use `png/icon/ddbd_play_icon_default_512x512.png` as the Play listing icon master.
 - Keep the icon square; do not pre-round the corners.
+- Use `png/feature/ddbd_feature_graphic_default_1024x500.png` as the Play feature graphic master.
+- The live Expo config now points app icon, adaptive icon, splash image, and web favicon at the approved icon export so runtime and store branding stay aligned.
 - Use the feature graphic as a pure graphic treatment, not a screenshot collage.
 - Use the screenshot templates as non-device composition overlays or reference layouts.
 - Keep actual store screenshots centered on real UI, readable states, and large text.

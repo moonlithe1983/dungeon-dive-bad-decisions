@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GameButton } from '@/src/components/game-button';
 import { getRunResumeTarget } from '@/src/engine/run/progress-run';
 import { useGameStore } from '@/src/state/gameStore';
+import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
 import {
   scaleFontSize,
@@ -26,12 +27,14 @@ import type { BootstrapSnapshot } from '@/src/types/save';
 export default function IndexScreen() {
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const snapshot = useGameStore((state) => state.bootstrapSnapshot);
-  const profile = useGameStore((state) => state.profile);
+  const bootstrapProfile = useGameStore((state) => state.profile);
   const activeRun = useGameStore((state) => state.activeRun);
   const recoveredFromBackup = useGameStore((state) => state.recoveredFromBackup);
   const error = useGameStore((state) => state.error);
   const initializeApp = useGameStore((state) => state.initializeApp);
   const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
+  const profile = useProfileStore((state) => state.profile) ?? bootstrapProfile;
+  const updateOnboarding = useProfileStore((state) => state.updateOnboarding);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
@@ -70,14 +73,20 @@ export default function IndexScreen() {
     router.push(resumeTarget.route as Href);
   };
 
-  const handleNewDive = () => {
-    beginNewRunSetup();
-    const hasSingleOpeningClass =
-      (profile?.unlockedClassIds.length ?? snapshot?.unlockedClasses ?? 0) <= 1;
+  const isFirstRunIntroVisible = Boolean(
+    profile &&
+      !activeRun &&
+      profile.stats.totalRuns === 0 &&
+      !profile.onboarding.narrativeIntroSeen
+  );
 
-    router.push(
-      (hasSingleOpeningClass ? '/companion-select' : '/class-select') as Href
-    );
+  const handleNewDive = async () => {
+    if (isFirstRunIntroVisible) {
+      await updateOnboarding({ narrativeIntroSeen: true });
+    }
+
+    beginNewRunSetup();
+    router.push('/class-select' as Href);
   };
 
   const handleHub = () => {
@@ -127,21 +136,22 @@ export default function IndexScreen() {
             </View>
 
             <Text style={styles.eyebrow}>BAD DECISIONS HOLDINGS PRESENTS</Text>
-            <Text style={styles.title}>Dungeon Dive:</Text>
-            <Text style={styles.titleAccent}>Bad Decisions</Text>
-            <Text style={styles.subtitle}>
-              Crown Meridian broke reality. You got the ticket.
-            </Text>
+                <Text style={styles.title}>Dungeon Dive:</Text>
+                <Text style={styles.titleAccent}>Bad Decisions</Text>
+                <Text style={styles.subtitle}>
+                  You are the employee still inside Meridian Spire when Crown Meridian&apos;s
+                  disaster plan turns the building into a live incident.
+                </Text>
 
-            <Text style={styles.bodyCopy}>
-              Descend through Meridian Spire, the procedural corporate
-              underworld left behind after Project Everrise welded every
-              department into one executive catastrophe.
-            </Text>
-          </View>
+                <Text style={styles.bodyCopy}>
+                  Your job is to drag the active ticket floor by floor toward the
+                  executives who caused it, keep yourself alive, and avoid becoming
+                  the scapegoat when the tower asks who broke first.
+                </Text>
+              </View>
 
-          <View style={styles.panel}>
-            <Text style={styles.panelTitle}>Employee Status</Text>
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Employee Status</Text>
 
             {isLoading ? (
               <View style={styles.loadingState}>
@@ -213,7 +223,7 @@ export default function IndexScreen() {
                     />
                   ) : null}
                   <GameButton
-                    label="Start New Dive"
+                    label={isFirstRunIntroVisible ? 'Start Your First Dive' : 'Start New Dive'}
                     onPress={handleNewDive}
                     variant={activeRun ? 'secondary' : 'primary'}
                   />
@@ -222,43 +232,83 @@ export default function IndexScreen() {
             )}
           </View>
 
-          <View style={styles.panel}>
-            <Text style={styles.panelTitle}>Operations</Text>
-            <View style={styles.menuGrid}>
-              <GameButton
-                label="Breakroom Hub"
-                onPress={handleHub}
-                variant="secondary"
-              />
-              <GameButton
-                label="Progression"
-                onPress={handleProgression}
-                variant="secondary"
-              />
-              <GameButton
-                label="Companion Bonds"
-                onPress={handleBonds}
-                variant="secondary"
-              />
-              <GameButton
-                label="Codex"
-                onPress={handleCodex}
-                variant="secondary"
-              />
-              <GameButton
-                label="Settings"
-                onPress={handleSettings}
-                variant="secondary"
-              />
-              {__DEV__ ? (
+          {isFirstRunIntroVisible ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Before Your First Dive</Text>
+              <View style={styles.introCard}>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>Who are you?</Text>
+                  <Text style={styles.introAnswer}>
+                    The employee left holding the ticket after leadership fused every
+                    department into one catastrophe.
+                  </Text>
+                </View>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>What is Meridian Spire?</Text>
+                  <Text style={styles.introAnswer}>
+                    A vertical corporate ruin where each floor is another department&apos;s
+                    bad decision turned into a hostile room.
+                  </Text>
+                </View>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>What are you trying to do?</Text>
+                  <Text style={styles.introAnswer}>
+                    Push the incident upward, survive each floor, and force the people
+                    responsible to finally face the fallout.
+                  </Text>
+                </View>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>Why companions?</Text>
+                  <Text style={styles.introAnswer}>
+                    They change your early turns, cover weaknesses, and help carry the
+                    run when the tower stops fighting fair.
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.runCardHint}>
+                The archive, upgrades, and side tools unlock naturally once you have
+                seen the first setup flow.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Operations</Text>
+              <View style={styles.menuGrid}>
                 <GameButton
-                  label="Smoke Lab"
-                  onPress={handleDevSmoke}
+                  label="Breakroom Hub"
+                  onPress={handleHub}
                   variant="secondary"
                 />
-              ) : null}
+                <GameButton
+                  label="Progression"
+                  onPress={handleProgression}
+                  variant="secondary"
+                />
+                <GameButton
+                  label="Companion Bonds"
+                  onPress={handleBonds}
+                  variant="secondary"
+                />
+                <GameButton
+                  label="Codex"
+                  onPress={handleCodex}
+                  variant="secondary"
+                />
+                <GameButton
+                  label="Settings"
+                  onPress={handleSettings}
+                  variant="secondary"
+                />
+                {__DEV__ ? (
+                  <GameButton
+                    label="Smoke Lab"
+                    onPress={handleDevSmoke}
+                    variant="secondary"
+                  />
+                ) : null}
+              </View>
             </View>
-          </View>
+          )}
 
           <View style={styles.footerCard}>
             <Text style={styles.footerTitle}>Compliance Notice</Text>
@@ -542,6 +592,31 @@ function createStyles(
     },
     menuGrid: {
       gap: spacing.sm + 2,
+    },
+    introCard: {
+      backgroundColor: colors.surfaceRaised,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      gap: spacing.md,
+    },
+    introRow: {
+      gap: spacing.xs,
+    },
+    introQuestion: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    introAnswer: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     footerCard: {
       backgroundColor: colors.surfaceRaised,

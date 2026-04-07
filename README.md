@@ -10,8 +10,8 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> class select when multiple classes are unlocked, otherwise companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
-- Opening setup: IT Support is the only default class, so fresh runs treat it as an assigned role until more classes are unlocked
+- Core loop: title -> class select -> companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
+- Opening setup: fresh profiles now get a short first-run title intro, then an assigned IT Support role briefing before companion selection
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
 - Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
@@ -20,7 +20,7 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 - Authored voice layer: early-floor lore beats, starting-trio chemistry, early event overlays, codex bios, reward build-lane cues, and defeat advice now use the April 4 narrative pack instead of lighter placeholder prose
 - Defeat recap: archived losses now surface a compact "what killed you / what to try next" summary before the broader stats
 - In-run reference access: Codex entry points now exist on run-map, battle, event, and reward, and the Codex can return directly to the active run screen
-- Combat readability: live battle status labels now use readable durations/summaries, and repeated crew chatter is rotated or hidden behind tactical detail instead of crowding the main turn view
+- Combat readability: live battle status labels now use readable durations/summaries, repeated crew chatter is rotated or hidden behind tactical detail, and turn resolution now returns focus to a compact "Last Exchange" summary above the action list
 - Resume clarity: title-screen resume labels now reflect the actual saved scene, such as reward, battle, event, or route selection, instead of only a generic dive label
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
@@ -118,6 +118,7 @@ Expected output:
 Important notes:
 
 - a locally built release artifact currently exists at `android/app/build/outputs/apk/release/app-release.apk`
+- the current dated outside-tester share copy is `release/dungeon-dive-bad-decisions-android-tester-2026-04-07.apk`
 - the Expo launcher now resolves the real workspace path before invoking Expo, so the current checked-out repo is the source you should rebuild from
 - before handing builds to testers or the store, rebuild the release APK from the final accepted source in the current repo checkout so the artifact is known current
 
@@ -172,10 +173,11 @@ Important folders:
 The game is in release-candidate hardening mode:
 
 - feature freeze is recommended
-- fresh-profile onboarding now skips fake class selection until more classes are unlocked
+- fresh-profile onboarding now starts with a one-time title intro and always routes through the assigned-role class briefing before companion selection
 - the opening roster now shows 3 companions so the first team pick is a real choice
 - the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
 - battle and reward screens now hide deeper mechanical detail behind toggles so the first read is shorter and more phone-friendly
+- battle now auto-returns focus to the result summary after each action so turn outcomes are visible before the next choice
 - event screens now lead with the real choice and tuck class/crew readouts behind an explicit toggle
 - setup screens now keep role and crew flavor available without forcing it ahead of the first actionable decision
 - archived defeat recaps now call out the enemy, final exchange, live statuses, and a suggested next-run adjustment
@@ -207,8 +209,10 @@ The game is in release-candidate hardening mode:
 - the local Android launcher now resolves the real workspace path first, so `npm run android` works from the current repo checkout without the earlier Expo root-resolution failure
 - the native-only `dev-smoke` route now surfaces local-only UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, and `Run It Back` usage
 - the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
+- the April 7 pass added a persistent first-run intro, clearer route-objective language, cleaner mandatory reward CTAs, plain-language defeat/status support, and finalized Play icon/feature-graphic treatment in the repo and app config
 - the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
 - the April 6 emulator pass confirmed title -> new run -> run-map -> battle -> reward -> cold relaunch resume -> reward claim -> end-run
+- the April 7 release-build emulator pass confirmed fresh-install title -> first-run setup -> run-map -> battle -> reward -> cold relaunch reward resume -> reward claim -> run-map -> abandon -> end-run
 - before tester or store distribution after future source changes, rebuild from the final accepted source in the current repo checkout and re-verify install behavior
 - the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, setup compression, settings preview, and `dev-smoke` telemetry surfaces before broader playtesting and upload
 
@@ -239,11 +243,11 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
-- `PROJECT_HANDOFF_2026-04-05.md`
-- `PROJECT_HANDOFF_2026-04-05.docx`
+- `PROJECT_HANDOFF_2026-04-07.md`
+- `PROJECT_HANDOFF_2026-04-07.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-07.docx`
 - `PROJECT_HANDOFF_2026-04-06.md`
 - `PROJECT_HANDOFF_2026-04-06.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-06.docx`
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
 - `PROJECT_HANDOFF_2026-04-04.md`

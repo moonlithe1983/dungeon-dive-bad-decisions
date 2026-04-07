@@ -33,6 +33,10 @@ export type ProfileStats = {
   totalBossesKilled: number;
 };
 
+export type ProfileOnboardingState = {
+  narrativeIntroSeen: boolean;
+};
+
 export type ProfileState = {
   profileId: string;
   schemaVersion: number;
@@ -43,6 +47,7 @@ export type ProfileState = {
   unlockedEventIds: string[];
   bondLevels: Record<string, number>;
   metaUpgradeLevels: MetaUpgradeLevels;
+  onboarding: ProfileOnboardingState;
   settings: ProfileSettingsState;
   stats: ProfileStats;
   createdAt: string;
@@ -67,6 +72,10 @@ export const DEFAULT_PROFILE_STATS: ProfileStats = {
   totalWins: 0,
   totalDeaths: 0,
   totalBossesKilled: 0,
+};
+
+export const DEFAULT_PROFILE_ONBOARDING: ProfileOnboardingState = {
+  narrativeIntroSeen: false,
 };
 
 export const DEFAULT_META_UPGRADE_LEVELS: MetaUpgradeLevels = {
@@ -94,6 +103,7 @@ export const DEFAULT_PROFILE_STATE: Omit<
     'security-skeleton': 1,
   },
   metaUpgradeLevels: DEFAULT_META_UPGRADE_LEVELS,
+  onboarding: DEFAULT_PROFILE_ONBOARDING,
   settings: DEFAULT_PROFILE_SETTINGS,
   stats: DEFAULT_PROFILE_STATS,
 };

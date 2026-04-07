@@ -152,6 +152,21 @@ export default function CompanionSelectScreen() {
 
           {ticketBrief ? (
             <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Role Snapshot</Text>
+              <View style={styles.selectionDetailCard}>
+                <Text style={styles.selectionDetailTitle}>
+                  {selectedClass?.name ?? selectedClassId}
+                </Text>
+                <Text style={styles.selectionDetailBody}>
+                  You are bringing two companions to support this role on the active
+                  ticket. First pick becomes lead. Second pick becomes reserve.
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
+          {ticketBrief ? (
+            <View style={styles.panel}>
               <Text style={styles.panelTitle}>Assigned Ticket</Text>
               <Text style={styles.panelBody}>
                 {ticketBrief.ticketId} - {ticketBrief.subject}
@@ -359,7 +374,7 @@ export default function CompanionSelectScreen() {
                     label={
                       hasMultipleClassChoices
                         ? 'Back to Class Select'
-                        : 'Review Assigned Role'
+                        : 'Back to Role Briefing'
                     }
                     onPress={() => {
                       router.push('/class-select' as Href);

@@ -30,6 +30,9 @@ type ProfileStoreState = {
   updateSettings: (
     nextSettings: Partial<ProfileState['settings']>
   ) => Promise<ProfileState>;
+  updateOnboarding: (
+    nextOnboarding: Partial<ProfileState['onboarding']>
+  ) => Promise<ProfileState>;
   applyEventChoice: (input: {
     eventId: string;
     reward: PendingRewardState;
@@ -154,6 +157,18 @@ export const useProfileStore = create<ProfileStoreState>((set) => ({
       settings: {
         ...profile.settings,
         ...nextSettings,
+      },
+    }));
+
+    set({ profile: nextProfile });
+    return nextProfile;
+  },
+  updateOnboarding: async (nextOnboarding) => {
+    const nextProfile = await updateProfileAsync((profile) => ({
+      ...profile,
+      onboarding: {
+        ...profile.onboarding,
+        ...nextOnboarding,
       },
     }));
 

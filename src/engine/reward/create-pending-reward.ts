@@ -144,7 +144,7 @@ function createRewardRoomOptions(
       optionId: 'expense-fraud',
       label: 'Expense Fraud Envelope',
       description:
-        'Pocket the clean scrap and leave before anyone asks why the drawer is lighter.',
+        'Pocket the clean chits and leave before anyone asks why the drawer is lighter.',
       metaCurrency: 12,
       runHealing: 3,
       itemId: null,

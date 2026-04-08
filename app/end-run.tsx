@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,10 +23,14 @@ import {
   getEndingAccentArtSources,
 } from '@/src/assets/supplemental-art-sources';
 import { GameButton } from '@/src/components/game-button';
+import { useRunHelpStartsCollapsed } from '@/src/hooks/use-run-help-starts-collapsed';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
 import { getCompanionDefinition } from '@/src/content/companions';
-import { createTicketBrief } from '@/src/content/company-lore';
+import {
+  createClassRecapDirective,
+  createTicketBrief,
+} from '@/src/content/company-lore';
 import { getItemDefinition } from '@/src/content/items';
 import {
   loadLatestRunHistoryEntryAsync,
@@ -63,11 +68,13 @@ export default function EndRunScreen() {
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const recordRunItBack = useUxTelemetryStore((state) => state.recordRunItBack);
   const [archivedRun, setArchivedRun] = useState<RunHistoryEntry | null>(null);
+  const [showFailureRead, setShowFailureRead] = useState(false);
   const [loadStatus, setLoadStatus] = useState<EndRunLoadStatus>('loading');
   const [loadError, setLoadError] = useState<string | null>(null);
   const recapCueRunIdRef = useRef<string | null>(null);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const helpStartsCollapsed = useRunHelpStartsCollapsed(archivedRun?.floorReached ?? 1);
   const requestedRunId = useMemo(
     () => pickSingleParam(runIdParam) ?? currentRunId,
     [currentRunId, runIdParam]
@@ -127,6 +134,10 @@ export default function EndRunScreen() {
     recapCueRunIdRef.current = archivedRun.runId;
     void playUiSfx('recap-sting', settings);
   }, [archivedRun, loadStatus, settings]);
+
+  useEffect(() => {
+    setShowFailureRead(!helpStartsCollapsed);
+  }, [helpStartsCollapsed, archivedRun?.runId]);
 
   const isFailedRun = archivedRun?.result === 'loss';
   const isAbandonedRun = archivedRun?.result === 'abandon';
@@ -263,7 +274,7 @@ export default function EndRunScreen() {
         subtitle: 'Cross-functional morale escalation',
         body:
           archivedRun.result === 'win'
-            ? 'This run pushed the archive into the throughput executive layer, so the recap now carries the matching archive surface instead of another plain checkpoint.'
+            ? 'This run pushed the archive into the throughput executive layer, so the recap now uses the matching executive record instead of another plain checkpoint.'
             : 'The archive now records the run inside the throughput executive layer, where alignment theater starts treating the incident like company myth.',
       };
     }
@@ -305,17 +316,24 @@ export default function EndRunScreen() {
       return 'The archive should explain the outcome before it asks for another run.';
     }
 
+    const classDirective = createClassRecapDirective(
+      archivedRun.classId,
+      archivedRun.result
+    );
+
     if (archivedRun.result === 'win') {
-      return 'The run worked. Keep the part of the build that actually closed fights and do not assume the next climb will be as kind.';
+      return `${classDirective} Keep the part of the build that actually closed fights and do not assume the next climb will be as kind.`;
     }
 
     if (archivedRun.result === 'abandon') {
-      return 'Even a retreat should leave a clear note about why you bailed and what has to change before the next climb.';
+      return `${classDirective} Even a retreat should leave a clear note about why you bailed and what has to change before the next climb.`;
     }
 
     return (
-      archivedRun.recap?.defeatSummary?.recommendation ??
-      'A loss should tell you what failed, explain any status effects in plain language, and point at the next experiment immediately.'
+      `${classDirective} ${
+        archivedRun.recap?.defeatSummary?.recommendation ??
+        'A loss should tell you what failed, explain any status effects in plain language, and point at the next experiment immediately.'
+      }`
     );
   }, [archivedRun]);
   const restartReadTitle = useMemo(() => {
@@ -366,7 +384,7 @@ export default function EndRunScreen() {
                 ? isAbandonedRun
                   ? 'Even a retreat leaves a paper trail.'
                   : isFailedRun
-                    ? 'A good postmortem should make the next run feel possible immediately.'
+                    ? 'Read the failure. Keep the lesson.'
                     : 'Victory is only useful if you know what made it work.'
                 : 'The archive is opening your latest result.'}
             </Text>
@@ -479,7 +497,7 @@ export default function EndRunScreen() {
                         {bossArchiveUpdate.subtitle}
                       </Text>
                       <Text style={styles.bossArchiveMeta}>
-                        Floor {archivedRun.floorReached} archive surface
+                        Floor {archivedRun.floorReached} record layer
                       </Text>
                     </View>
                   </View>
@@ -506,11 +524,13 @@ export default function EndRunScreen() {
                     ) : null}
                     <View style={styles.endingRecapPanelWrap}>
                       {endingAccent.recapPanelSource ? (
-                        <Image
-                          source={endingAccent.recapPanelSource}
-                          style={styles.endingRecapPanelArt}
-                          resizeMode="cover"
-                        />
+                        <View style={styles.endingRecapArtFrame}>
+                          <Image
+                            source={endingAccent.recapPanelSource}
+                            style={styles.endingRecapPanelArt}
+                            resizeMode="cover"
+                          />
+                        </View>
                       ) : null}
                       <View style={styles.endingRecapCopy}>
                         <Text style={styles.endingAccentEyebrow}>
@@ -523,7 +543,7 @@ export default function EndRunScreen() {
                           {endingAccentSummary}
                         </Text>
                         <Text style={styles.endingAccentMeta}>
-                          Floor {archivedRun.floorReached} archival posture
+                          Floor {archivedRun.floorReached} record
                         </Text>
                       </View>
                     </View>
@@ -542,53 +562,79 @@ export default function EndRunScreen() {
 
               {isFailedRun && archivedRun.recap?.defeatSummary ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>What Killed You</Text>
-                  <View style={styles.detailCard}>
-                    <DetailLine
-                      label="Encounter"
-                      value={archivedRun.recap.defeatSummary.nodeLabel}
-                    />
-                    <DetailLine
-                      label="Enemy"
-                      value={archivedRun.recap.defeatSummary.enemyName}
-                    />
-                    <DetailLine
-                      label="Intent"
-                      value={archivedRun.recap.defeatSummary.enemyIntent}
-                    />
-                  </View>
-                  <Text style={styles.summaryLead}>Final exchange</Text>
-                  <Text style={styles.panelBody}>{archivedRun.recap.defeatSummary.finalBlow}</Text>
-                  {archivedRun.recap.defeatSummary.heroStatusLabels.length > 0 ? (
+                  <Pressable
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowFailureRead((current) => !current);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Why the run ended"
+                    accessibilityHint={
+                      showFailureRead
+                        ? 'Double tap to collapse the defeat breakdown.'
+                        : 'Double tap to expand the defeat breakdown.'
+                    }
+                    accessibilityState={{ expanded: showFailureRead }}
+                  >
+                    <Text style={styles.panelTitle}>Why The Run Ended</Text>
+                    <Text style={styles.toggleLabel}>
+                      {showFailureRead ? 'Hide' : 'Show'}
+                    </Text>
+                  </Pressable>
+                  {showFailureRead ? (
                     <>
-                      <Text style={styles.summaryLead}>On you</Text>
-                      <Text style={styles.panelBody}>
-                        {archivedRun.recap.defeatSummary.heroStatusLabels.join(', ')}
-                      </Text>
-                      {archivedRun.recap.defeatSummary.heroStatusNotes?.length ? (
-                        <Text style={styles.panelBody}>
-                          Meaning: {archivedRun.recap.defeatSummary.heroStatusNotes.join(' ')}
-                        </Text>
+                      <View style={styles.detailCard}>
+                        <DetailLine
+                          label="Encounter"
+                          value={archivedRun.recap.defeatSummary.nodeLabel}
+                        />
+                        <DetailLine
+                          label="Enemy"
+                          value={archivedRun.recap.defeatSummary.enemyName}
+                        />
+                        <DetailLine
+                          label="Intent"
+                          value={archivedRun.recap.defeatSummary.enemyIntent}
+                        />
+                      </View>
+                      <Text style={styles.summaryLead}>Final exchange</Text>
+                      <Text style={styles.panelBody}>{archivedRun.recap.defeatSummary.finalBlow}</Text>
+                      {archivedRun.recap.defeatSummary.heroStatusLabels.length > 0 ? (
+                        <>
+                          <Text style={styles.summaryLead}>On you</Text>
+                          <Text style={styles.panelBody}>
+                            {archivedRun.recap.defeatSummary.heroStatusLabels.join(', ')}
+                          </Text>
+                          {archivedRun.recap.defeatSummary.heroStatusNotes?.length ? (
+                            <Text style={styles.panelBody}>
+                              Meaning: {archivedRun.recap.defeatSummary.heroStatusNotes.join(' ')}
+                            </Text>
+                          ) : null}
+                        </>
                       ) : null}
-                    </>
-                  ) : null}
-                  {archivedRun.recap.defeatSummary.enemyStatusLabels.length > 0 ? (
-                    <>
-                      <Text style={styles.summaryLead}>On them</Text>
-                      <Text style={styles.panelBody}>
-                        {archivedRun.recap.defeatSummary.enemyStatusLabels.join(', ')}
-                      </Text>
-                      {archivedRun.recap.defeatSummary.enemyStatusNotes?.length ? (
-                        <Text style={styles.panelBody}>
-                          Meaning: {archivedRun.recap.defeatSummary.enemyStatusNotes.join(' ')}
-                        </Text>
+                      {archivedRun.recap.defeatSummary.enemyStatusLabels.length > 0 ? (
+                        <>
+                          <Text style={styles.summaryLead}>On them</Text>
+                          <Text style={styles.panelBody}>
+                            {archivedRun.recap.defeatSummary.enemyStatusLabels.join(', ')}
+                          </Text>
+                          {archivedRun.recap.defeatSummary.enemyStatusNotes?.length ? (
+                            <Text style={styles.panelBody}>
+                              Meaning: {archivedRun.recap.defeatSummary.enemyStatusNotes.join(' ')}
+                            </Text>
+                          ) : null}
+                        </>
                       ) : null}
+                      <Text style={styles.summaryLead}>Next run idea</Text>
+                      <Text style={styles.panelBody}>
+                        {archivedRun.recap.defeatSummary.recommendation}
+                      </Text>
                     </>
-                  ) : null}
-                  <Text style={styles.summaryLead}>Next run idea</Text>
-                  <Text style={styles.panelBody}>
-                    {archivedRun.recap.defeatSummary.recommendation}
-                  </Text>
+                  ) : (
+                    <Text style={styles.panelBody}>
+                      The finishing hit, status read, and next-run lesson stay tucked here once you know the recap flow.
+                    </Text>
+                  )}
                 </View>
               ) : null}
 
@@ -788,7 +834,7 @@ function createStyles(
       gap: spacing.lg,
     },
     heroCard: {
-      backgroundColor: colors.surface,
+      backgroundColor: colors.background,
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 20,
@@ -916,6 +962,21 @@ function createStyles(
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
       textTransform: 'uppercase',
     },
+    toggleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: spacing.sm,
+      minHeight: 48,
+    },
+    toggleLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
     actionGroup: {
       gap: spacing.sm + 2,
     },
@@ -978,21 +1039,31 @@ function createStyles(
       alignSelf: 'center',
     },
     endingRecapPanelWrap: {
-      minHeight: 188,
-      justifyContent: 'flex-end',
+      gap: spacing.sm,
       paddingHorizontal: spacing.sm + 2,
       paddingBottom: spacing.sm + 2,
     },
+    endingRecapArtFrame: {
+      height: 118,
+      borderRadius: 12,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surfaceRaised,
+    },
     endingRecapPanelArt: {
-      ...StyleSheet.absoluteFillObject,
-      width: undefined,
-      height: undefined,
-      opacity: 0.92,
+      width: '100%',
+      height: '100%',
+      opacity: 0.78,
     },
     endingRecapCopy: {
       gap: spacing.xs,
       paddingHorizontal: spacing.sm,
       paddingVertical: spacing.sm + 2,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 14,
     },
     endingAccentEyebrow: {
       color: colors.accent,
@@ -1023,3 +1094,6 @@ function createStyles(
     },
   });
 }
+
+
+

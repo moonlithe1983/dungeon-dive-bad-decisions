@@ -3,6 +3,7 @@
   "project": "Dungeon Dive: Bad Decisions",
   "content_export": "final-content-bundle",
   "built_at_utc": "2026-04-04T19:29:34Z",
+  "verification_note": "Verification metadata in this bundle is superseded by ddbd_all_content_master_pack_index_verified_complete_2026-04-04.json, which corrects the earlier boss-section counting bug and should be treated as the authoritative verification layer.",
   "source_files": {
     "event_and_codex_pack": "ddbd_event_and_codex_pack_with_full_codex_and_archive_ui_2026-04-04.json",
     "supporting_voice_pack": "ddbd_supporting_voice_pack_with_bonds_bosses_enemies_minibosses_statuses_countermeasures_rewards_routes_and_endings_2026-04-04.json",

@@ -329,13 +329,168 @@ export function getCompanyDisasterSummary() {
 }
 
 export function createClassEncounterBrief(classId: string, nodeLabel: string) {
-  const narrative = getClassNarrative(classId);
+  if (classId === 'it-support') {
+    return `${nodeLabel} looks recoverable only if you break the right thing first. Keep the fix ugly, fast, and logged before leadership calls the outage your fault.`;
+  }
 
+  if (classId === 'customer-service-rep') {
+    return `${nodeLabel} already sounds like a room that wants panic more than answers. Slow the damage, keep the tone steady, and do not let the crisis hear you bleed.`;
+  }
+
+  if (classId === 'sales-rep') {
+    return `${nodeLabel} is a live close with body count attached. Push the leverage before the room decides you are the expendable line item.`;
+  }
+
+  if (classId === 'intern') {
+    return `${nodeLabel} is another terrible situation that somehow expects you to act supervised. Stay quick, learn the wrong lesson later, and survive the experiment now.`;
+  }
+
+  if (classId === 'paralegal') {
+    return `${nodeLabel} is full of weak records and stronger lies. Put the right pressure on the right clause before the floor rewrites the facts around your corpse.`;
+  }
+
+  const narrative = getClassNarrative(classId);
   return `${narrative.floorBrief} ${nodeLabel} is the next executive mess between you and keeping your job.`;
 }
 
 export function createClassCombatIntroLine(classId: string, enemyName: string) {
-  const narrative = getClassNarrative(classId);
+  if (classId === 'it-support') {
+    return `${enemyName} is not a monster. It is a failed escalation wearing permissions. Fix it fast and pray the logs stay admissible.`;
+  }
 
+  if (classId === 'customer-service-rep') {
+    return `${enemyName} wants a confession, not a conversation. Keep the room stable just long enough to make it regret speaking first.`;
+  }
+
+  if (classId === 'sales-rep') {
+    return `${enemyName} walks in like executive confidence made flesh. Fine. Sell it the idea that losing was always the premium option.`;
+  }
+
+  if (classId === 'intern') {
+    return `${enemyName} looks promoted beyond its training, which at least makes the fight feel familiar. Stay alive and call it experiential learning later.`;
+  }
+
+  if (classId === 'paralegal') {
+    return `${enemyName} is protected by policy, optics, and at least one lie. Good. That means it can still be broken on the record.`;
+  }
+
+  const narrative = getClassNarrative(classId);
   return `${narrative.combatBrief} ${enemyName} is what this floor sends when leadership would rather kill the fix than sign it.`;
+}
+
+export function createClassRouteBrief(classId: string, nodeLabel: string) {
+  if (classId === 'it-support') {
+    return `${nodeLabel} is the next ticket lane. Pick the path that looks recoverable, not clean. Nothing in this tower is clean anymore.`;
+  }
+
+  if (classId === 'customer-service-rep') {
+    return `${nodeLabel} is the next room asking for calm it does not deserve. Take the path where panic sounds slowest and pain arrives in sequence.`;
+  }
+
+  if (classId === 'sales-rep') {
+    return `${nodeLabel} is the next chance to turn fear into leverage. Take the route with the best upside before the quarter turns homicidal again.`;
+  }
+
+  if (classId === 'intern') {
+    return `${nodeLabel} looks survivable in a legally flexible way. Pick fast, stay lucky, and do not let the adults notice this is still your problem.`;
+  }
+
+  if (classId === 'paralegal') {
+    return `${nodeLabel} is where the record looks weakest and the liability fattest. Take the route that leaves evidence and the fewest clean excuses.`;
+  }
+
+  return `${nodeLabel} is the next stop. Pick the route that keeps the ticket moving and the tower from choosing for you.`;
+}
+
+export function createClassRewardBrief(
+  classId: string,
+  sourceKind: 'battle-victory' | 'reward-node'
+) {
+  const sourceLead =
+    sourceKind === 'battle-victory'
+      ? 'This payout came off a cleared escalation gate.'
+      : 'This side-room haul still belongs to the same ugly case file.';
+
+  if (classId === 'it-support') {
+    return `${sourceLead} Take the package that solves the next problem instead of creating a prettier outage.`;
+  }
+
+  if (classId === 'customer-service-rep') {
+    return `${sourceLead} Take the option that keeps the team upright long enough to sound composed again.`;
+  }
+
+  if (classId === 'sales-rep') {
+    return `${sourceLead} Take the package with real leverage, not the one leadership would call tasteful.`;
+  }
+
+  if (classId === 'intern') {
+    return `${sourceLead} Take the option most likely to keep you alive and accidentally overqualified.`;
+  }
+
+  if (classId === 'paralegal') {
+    return `${sourceLead} Take the sharp package, the defensible one, or ideally the one that is somehow both.`;
+  }
+
+  return `${sourceLead} Take what best keeps the escalation moving upward.`;
+}
+
+export function createClassRecapDirective(
+  classId: string,
+  result: 'win' | 'loss' | 'abandon'
+) {
+  if (classId === 'it-support') {
+    if (result === 'win') {
+      return 'Issue contained. Root cause remains executive. Keep the fix and distrust the environment.';
+    }
+    if (result === 'abandon') {
+      return 'Good retreat if it preserved a cleaner fix window. Re-enter with less optimism and better tooling.';
+    }
+    return 'That run died in remediation. Next time cut the future outage off before it grows a face.';
+  }
+
+  if (classId === 'customer-service-rep') {
+    if (result === 'win') {
+      return 'Still standing, still polite, still much worse for the tower than it expected.';
+    }
+    if (result === 'abandon') {
+      return 'Retreat only counts if it saves enough breath to control the next room on entry.';
+    }
+    return 'We held the line until the line turned feral. Next time choose the path where panic lands one piece at a time.';
+  }
+
+  if (classId === 'sales-rep') {
+    if (result === 'win') {
+      return 'Closed. Ugly close, but the tower still has to book it as a close.';
+    }
+    if (result === 'abandon') {
+      return 'Walking away is acceptable only if the next run opens with better leverage.';
+    }
+    return 'That was a forecast miss with blood in it. Next time stop treating pressure like free upside.';
+  }
+
+  if (classId === 'intern') {
+    if (result === 'win') {
+      return 'Still alive. Still underqualified. Still somehow the best employee left in the building.';
+    }
+    if (result === 'abandon') {
+      return 'A retreat is still useful if you learned which terrible idea almost worked.';
+    }
+    return 'You failed upward until there was no up left. Next time keep the useful mistake and dump the fatal one.';
+  }
+
+  if (classId === 'paralegal') {
+    if (result === 'win') {
+      return 'Record preserved. Damage named. Immunity weakened.';
+    }
+    if (result === 'abandon') {
+      return 'Retreat only matters if the next filing comes back sharper and harder to bury.';
+    }
+    return 'They buried this run under process and called it clean. Next time leave a worse record for them to hide.';
+  }
+
+  return result === 'win'
+    ? 'The run worked. Keep the part of the build that actually held.'
+    : result === 'abandon'
+      ? 'Retreat only helps if it sharpens the next attempt.'
+      : 'Take the lesson that failed cleanest and bring it back angrier.';
 }

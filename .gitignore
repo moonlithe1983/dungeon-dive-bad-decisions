@@ -55,6 +55,8 @@ app-example
 .codex-logs/
 .vscode/
 .tmp_app_needs_read/
+.codex-docx-temp/
+.codex-docx-temp-check/
 
 # local logs and smoke artifacts
 *.log

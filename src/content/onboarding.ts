@@ -109,10 +109,10 @@ export function getOnboardingHeroBody() {
 export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
   {
     id: 'intro',
-    eyebrow: 'Interactive FTUE',
+    eyebrow: 'Orientation Start',
     title: 'Enter the orientation sim',
     summary: 'This is a short guided version of the real loop.',
-    body: `You are not reading a giant lore wall anymore. This sim teaches the actual decisions that matter in a run: choose a route, survive a fight, claim a reward, resolve an event, and understand what progress survives after the smoke clears.`,
+    body: `This sim teaches the live run one decision at a time: pick a route, survive a fight, claim a reward, resolve an event, and see what carries forward after the smoke clears.`,
     instruction: 'Start the simulation.',
     kind: 'intro',
   },
@@ -121,7 +121,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
     eyebrow: 'Step 1',
     title: 'Pick the next room',
     summary: 'A floor starts with a visible route choice.',
-    body: 'You do not clear every room. You pick one active node, read the risk, and commit to the route that best fits your current HP and build.',
+    body: 'You do not clear every room. You read the threat, pick one active node, and accept that the wrong hallway can kill a good run faster than a bad swing.',
     instruction: 'Tap one route to see how route reading works.',
     kind: 'route',
     choices: [
@@ -131,7 +131,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
         description: 'Risk event. Fast progress, ugly fallout.',
         preview: 'Events trade certainty for upside. Good when you can afford volatility.',
         resolution:
-          'You opened the event lane. That teaches the first rule of floor flow: read the room type before you commit, because each node asks for a different kind of survival.',
+          'You opened the event lane. That teaches the first rule of floor flow: read the room type before you commit, because every node is asking what kind of mistake you can still afford.',
       },
       {
         id: 'reward-node',
@@ -139,7 +139,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
         description: 'Reward room. Lower pressure, smaller immediate danger.',
         preview: 'Reward nodes help stabilize weak starts and patch bad floors.',
         resolution:
-          'You opened the reward lane. That teaches the second rule of floor flow: not every smart play is aggression. Sometimes the right route is the one that keeps the run alive.',
+          'You opened the reward lane. That teaches the second rule of floor flow: not every smart play is aggression. Sometimes the right route is the one that keeps the run breathing.',
       },
     ],
   },
@@ -148,7 +148,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
     eyebrow: 'Step 2',
     title: 'Resolve a fight',
     summary: 'Combat is about pressure, timing, and enemy intent.',
-    body: 'Read what the enemy is threatening, then choose the action that changes the next exchange in your favor.',
+    body: 'Read what the enemy is threatening, then choose the action that makes the next exchange less unfair for you and much worse for them.',
     instruction: 'Pick one combat action.',
     kind: 'battle',
     choices: [
@@ -174,7 +174,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
         description: 'Trade safety for a faster finish.',
         preview: 'Best when ending the fight now prevents a worse follow-up.',
         resolution:
-          'You chose tempo. That teaches the other half of combat: many rooms get more unfair the longer they live, so fast lethal pressure can be the safest plan.',
+          'You chose tempo. That teaches the other half of combat: many rooms get more unfair the longer they stay alive, so fast pressure is often the safest kindness you can give yourself.',
       },
     ],
   },
@@ -183,7 +183,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
     eyebrow: 'Step 3',
     title: 'Choose one payout',
     summary: 'Rewards are build decisions, not just loot.',
-    body: 'Every reward should be understandable, distinct, and relevant to the current run state.',
+    body: 'Pick the reward that solves your biggest problem right now. Some payouts steady the run immediately; others make the next few rooms easier if you can afford the risk.',
     instruction: 'Pick the package you would actually take.',
     kind: 'reward',
     choices: [
@@ -193,7 +193,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
         description: '+3 HP now and a small chit payout.',
         preview: 'Good when stabilizing the current run matters more than long-term greed.',
         resolution:
-          'You prioritized survival. That is a valid build decision, and the UI should always make that trade obvious before you lock it in.',
+          'You prioritized survival. That is a real build decision, and the UI should always make the trade between breathing now and scaling later obvious before you lock it in.',
       },
       {
         id: 'paper-armor',
@@ -210,7 +210,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
     eyebrow: 'Step 4',
     title: 'Resolve an event',
     summary: 'Events are choices with consequences, not flavor-only cutaways.',
-    body: 'Read the preview, pick once, and accept the fallout. Good event UI tells you enough to choose without drowning you in text.',
+    body: 'Read the preview, pick once, and live with the fallout. Some choices are safer. Some pay more if you can absorb the mess.',
     instruction: 'Choose one event response.',
     kind: 'event',
     choices: [
@@ -228,7 +228,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
         description: 'Higher upside, higher fallout.',
         preview: 'Potential bigger reward if you can absorb the mess.',
         resolution:
-          'You chose the higher-variance path. That teaches why event previews matter: a player should understand the trade before the game asks for commitment.',
+          'You chose the higher-variance path. That teaches why event previews matter: the player should understand the danger before the game asks for commitment, not after the hallway starts laughing.',
       },
     ],
   },
@@ -237,7 +237,7 @@ export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
     eyebrow: 'Step 5',
     title: 'See what carries forward',
     summary: 'Runs end, but the profile keeps progress.',
-    body: 'When a run ends, the game should immediately show what you earned, what unlocked, and what your next meaningful goal is. Even failed runs should still move the account somewhere.',
+    body: 'When a run ends, you should be able to tell what you earned, what changed, and what to chase next. Even a failed climb should leave behind one useful lesson and one reason to queue another dive.',
     instruction: 'Finish orientation and continue.',
     kind: 'meta',
   },

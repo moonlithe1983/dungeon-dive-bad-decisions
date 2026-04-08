@@ -1,9 +1,10 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,6 +30,8 @@ import type { BootstrapSnapshot } from '@/src/types/save';
 
 const titleScreenArt = require('@/src/assets/store/Title Screen.png');
 
+const TITLE_SCREEN_ART_ASPECT_RATIO = 1632 / 2912;
+
 export default function IndexScreen() {
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const snapshot = useGameStore((state) => state.bootstrapSnapshot);
@@ -42,6 +45,7 @@ export default function IndexScreen() {
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const { colors, settings } = useAppTheme();
   const layout = useResponsiveLayout();
+  const [showFirstDivePrimer, setShowFirstDivePrimer] = useState(false);
   const styles = useMemo(
     () => createStyles(settings, colors, layout),
     [colors, layout, settings]
@@ -152,7 +156,7 @@ export default function IndexScreen() {
               <Image
                 source={titleScreenArt}
                 style={styles.heroArt}
-                resizeMode="cover"
+                resizeMode="contain"
               />
             </View>
 
@@ -267,43 +271,66 @@ export default function IndexScreen() {
 
           {isFirstRunIntroVisible ? (
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Before Your First Dive</Text>
-              <View style={styles.introCard}>
-                <View style={styles.introRow}>
-                  <Text style={styles.introQuestion}>Who are you?</Text>
-                  <Text style={styles.introAnswer}>
-                    The employee left holding the ticket after leadership fused every
-                    department into one catastrophe.
+              <Pressable
+                style={styles.toggleRow}
+                onPress={() => {
+                  setShowFirstDivePrimer((current) => !current);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Need the setup"
+                accessibilityHint={
+                  showFirstDivePrimer
+                    ? 'Double tap to collapse the world primer.'
+                    : 'Double tap to expand the world primer.'
+                }
+                accessibilityState={{ expanded: showFirstDivePrimer }}
+              >
+                <Text style={styles.panelTitle}>Need the setup?</Text>
+                <Text style={styles.toggleLabel}>
+                  {showFirstDivePrimer ? 'Hide' : 'Show'}
+                </Text>
+              </Pressable>
+              {showFirstDivePrimer ? (
+                <>
+                  <View style={styles.introCard}>
+                    <View style={styles.introRow}>
+                      <Text style={styles.introQuestion}>Who are you?</Text>
+                      <Text style={styles.introAnswer}>
+                        The employee left holding the ticket after leadership fused every
+                        department into one catastrophe.
+                      </Text>
+                    </View>
+                    <View style={styles.introRow}>
+                      <Text style={styles.introQuestion}>What is Meridian Spire?</Text>
+                      <Text style={styles.introAnswer}>
+                        A vertical corporate ruin where each floor is another department&apos;s
+                        bad decision turned into a hostile room.
+                      </Text>
+                    </View>
+                    <View style={styles.introRow}>
+                      <Text style={styles.introQuestion}>What are you trying to do?</Text>
+                      <Text style={styles.introAnswer}>
+                        Push the incident upward, survive each floor, and force the people
+                        responsible to finally face the fallout.
+                      </Text>
+                    </View>
+                    <View style={styles.introRow}>
+                      <Text style={styles.introQuestion}>Why companions?</Text>
+                      <Text style={styles.introAnswer}>
+                        They change your early turns, cover weaknesses, and help carry the
+                        run when the tower stops fighting fair.
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.runCardHint}>
+                    HR runs a short orientation sim before class assignment. The full packet is archived in the codex afterward.
                   </Text>
-                </View>
-                <View style={styles.introRow}>
-                  <Text style={styles.introQuestion}>What is Meridian Spire?</Text>
-                  <Text style={styles.introAnswer}>
-                    A vertical corporate ruin where each floor is another department&apos;s
-                    bad decision turned into a hostile room.
-                  </Text>
-                </View>
-                <View style={styles.introRow}>
-                  <Text style={styles.introQuestion}>What are you trying to do?</Text>
-                  <Text style={styles.introAnswer}>
-                    Push the incident upward, survive each floor, and force the people
-                    responsible to finally face the fallout.
-                  </Text>
-                </View>
-                <View style={styles.introRow}>
-                  <Text style={styles.introQuestion}>Why companions?</Text>
-                  <Text style={styles.introAnswer}>
-                    They change your early turns, cover weaknesses, and help carry the
-                    run when the tower stops fighting fair.
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.runCardHint}>
-                Before your first class assignment, HR now runs a short
-                interactive orientation sim that teaches route choice, combat
-                reading, rewards, events, and permanent systems. The full packet
-                is archived in the codex after that.
-              </Text>
+                </>
+              ) : (
+                <Text style={styles.runCardHint}>
+                  The short version: you are the one still holding the ticket when Meridian Spire goes hostile.
+                </Text>
+              )}
             </View>
           ) : (
             <View style={styles.panel}>
@@ -474,9 +501,12 @@ function createStyles(
       paddingVertical: 5,
     },
     heroArtFrame: {
-      minHeight: layout.heroArtFrameHeight,
+      width: '100%',
+      aspectRatio: TITLE_SCREEN_ART_ASPECT_RATIO,
+      maxHeight: layout.heroArtMaxHeight,
       borderRadius: 18,
-      overflow: 'hidden',
+      alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: colors.background,
       borderWidth: settings.highContrastEnabled ? 2 : 1,
       borderColor: colors.borderStrong,
@@ -484,8 +514,7 @@ function createStyles(
     },
     heroArt: {
       width: '100%',
-      height: layout.heroArtHeight,
-      transform: [{ translateY: layout.heroArtTranslateY }],
+      height: '100%',
     },
     badgeText: {
       color: colors.textMuted,
@@ -674,6 +703,21 @@ function createStyles(
     menuGrid: {
       gap: spacing.sm + 2,
     },
+    toggleRow: {
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
+      justifyContent: 'space-between',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
+      gap: spacing.sm,
+      minHeight: 48,
+    },
+    toggleLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
     introCard: {
       backgroundColor: colors.surfaceRaised,
       borderRadius: 16,
@@ -722,3 +766,4 @@ function createStyles(
     },
   });
 }
+

@@ -48,7 +48,7 @@ export default function ClassSelectScreen() {
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const selectedClassId = useRunStore((state) => state.selectedClassId);
   const setSelectedClassId = useRunStore((state) => state.setSelectedClassId);
-  const [showRoleDetails, setShowRoleDetails] = useState(true);
+  const [showRoleDetails, setShowRoleDetails] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -279,7 +279,7 @@ export default function ClassSelectScreen() {
                     {ticketBrief ? (
                       <>
                         <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Assigned Ticket: </Text>
+                          <Text style={styles.selectionActionLabel}>Current Ticket: </Text>
                           {ticketBrief.ticketId}
                         </Text>
                         <Text style={styles.selectionActionLine}>
@@ -334,29 +334,29 @@ export default function ClassSelectScreen() {
                           {ticketBrief.filedBy}
                         </Text>
                         <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Current Owner:</Text>{' '}
+                          <Text style={styles.selectionActionLabel}>Current Desk:</Text>{' '}
                           {ticketBrief.currentOwner}
                         </Text>
                         <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Why It Climbs:</Text>{' '}
+                          <Text style={styles.selectionActionLabel}>Why It Matters:</Text>{' '}
                           {ticketBrief.summary}
                         </Text>
                       </>
                     ) : null}
                     <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Leadership Broke:</Text>{' '}
+                      <Text style={styles.selectionActionLabel}>What Leadership Broke:</Text>{' '}
                       {selectedNarrative.leadershipFailure}
                     </Text>
                     <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Job On The Line:</Text>{' '}
+                      <Text style={styles.selectionActionLabel}>What It Costs You:</Text>{' '}
                       {selectedNarrative.stake}
                     </Text>
                     <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Approval Trap:</Text>{' '}
+                      <Text style={styles.selectionActionLabel}>What Slows You Down:</Text>{' '}
                       {selectedNarrative.approvalConstraint}
                     </Text>
                     <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Meta Boosts:</Text>{' '}
+                      <Text style={styles.selectionActionLabel}>Run Perks:</Text>{' '}
                       +{rewardCurrencyBonus} chits, +{rewardHealingBonus} healing per reward
                     </Text>
                     {metaUpgradeCatalog.slice(0, 2).map((offer) => (
@@ -659,3 +659,4 @@ function createStyles(
     },
   });
 }
+

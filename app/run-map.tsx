@@ -29,11 +29,15 @@ import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
 import { playUiHaptic } from '@/src/haptics/ui-haptics';
-import { getEarlyFloorBeat, getPartyScene } from '@/src/content/authored-voice';
+import {
+  getEarlyFloorBeat,
+  getRotatedPartyScene,
+} from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import {
   COMPANY_NAME,
   TOWER_NAME,
+  createClassRouteBrief,
   createTicketBrief,
   getClassNarrative,
 } from '@/src/content/company-lore';
@@ -50,6 +54,7 @@ import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
+import { useRunHelpStartsCollapsed } from '@/src/hooks/use-run-help-starts-collapsed';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -144,7 +149,8 @@ export default function RunMapScreen() {
   );
   const [isAbandonConfirming, setIsAbandonConfirming] = useState(false);
   const [showCrewNotes, setShowCrewNotes] = useState(false);
-  const [showBriefing, setShowBriefing] = useState(true);
+  const [showTicketSummary, setShowTicketSummary] = useState(false);
+  const [showBriefing, setShowBriefing] = useState(false);
   const { colors, settings } = useAppTheme();
   const layout = useResponsiveLayout();
   const styles = useMemo(
@@ -244,12 +250,19 @@ export default function RunMapScreen() {
     () => describeFloorObjective(selectedFloor ?? currentFloor, currentNode),
     [currentFloor, currentNode, selectedFloor]
   );
+  const helpStartsCollapsed = useRunHelpStartsCollapsed(
+    run?.floorIndex ?? selectedFloor?.floorNumber ?? currentFloor?.floorNumber ?? 1
+  );
   const routeScene = useMemo(() => {
     if (!run) {
       return null;
     }
 
-    return getPartyScene('first-route-choice', run.chosenCompanionIds);
+    return getRotatedPartyScene(
+      ['first-route-choice', 'first-route-choice-alt-1', 'first-route-choice-alt-2'],
+      `${run.runId}:${run.floorIndex}:route-read`,
+      run.chosenCompanionIds
+    );
   }, [run]);
   const currentNodeRoute = currentNode ? getRunNodeRoute(currentNode.kind) : null;
   const runMapSurfaceArtSource = useMemo(
@@ -317,6 +330,11 @@ export default function RunMapScreen() {
     }
   }, [run]);
 
+  useEffect(() => {
+    setShowBriefing(!helpStartsCollapsed);
+    setShowTicketSummary(!helpStartsCollapsed);
+  }, [helpStartsCollapsed, run?.runId]);
+
   const handleAbandon = async () => {
     const result = await abandonCurrentRun();
     setIsAbandonConfirming(false);
@@ -377,7 +395,10 @@ export default function RunMapScreen() {
             </Text>
             <Text style={styles.body}>
               {run
-                ? `${className ?? 'Your role'} and ${activeCompanionName ?? 'your crew'} are still inside ${COMPANY_NAME}. Choose the next stop, keep the route readable, and do not let the tower turn surprise into policy.`
+                ? `${className ?? 'Your role'} and ${activeCompanionName ?? 'your crew'} are still inside ${COMPANY_NAME}. ${createClassRouteBrief(
+                    run.heroClassId,
+                    currentNode?.label ?? selectedFloor?.label ?? 'the next room'
+                  )}`
                 : 'Every floor inside Meridian Spire wants a different kind of sacrifice.'}
             </Text>
           </View>
@@ -487,19 +508,41 @@ export default function RunMapScreen() {
 
               {ticketBrief ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Assigned Ticket</Text>
+                  <Pressable
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowTicketSummary((current) => !current);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Current ticket"
+                    accessibilityHint={
+                      showTicketSummary
+                        ? 'Double tap to collapse the ticket summary.'
+                        : 'Double tap to expand the ticket summary.'
+                    }
+                    accessibilityState={{ expanded: showTicketSummary }}
+                  >
+                    <Text style={styles.panelTitle}>Current Ticket</Text>
+                    <Text style={styles.toggleLabel}>
+                      {showTicketSummary ? 'Hide' : 'Show'}
+                    </Text>
+                  </Pressable>
                   <Text style={styles.panelBody}>
                     {ticketBrief.ticketId} - {ticketBrief.subject}
                   </Text>
-                  <View style={styles.detailCard}>
-                    <DetailLine label="Filed by" value={ticketBrief.filedBy} />
-                    <DetailLine
-                      label="Escalation track"
-                      value={ticketBrief.escalationTrack}
-                    />
-                    <DetailLine label="Current owner" value={ticketBrief.currentOwner} />
-                  </View>
-                  <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
+                  {showTicketSummary ? (
+                    <>
+                      <View style={styles.detailCard}>
+                        <DetailLine label="Opened by" value={ticketBrief.filedBy} />
+                        <DetailLine
+                          label="Escalation track"
+                          value={ticketBrief.escalationTrack}
+                        />
+                        <DetailLine label="Current desk" value={ticketBrief.currentOwner} />
+                      </View>
+                      <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
+                    </>
+                  ) : null}
                 </View>
               ) : null}
 
@@ -511,35 +554,12 @@ export default function RunMapScreen() {
               ) : null}
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Decision Support</Text>
+                <Text style={styles.panelTitle}>How This Floor Works</Text>
                 <Text style={styles.panelBody}>{floorObjective}</Text>
-                <Text style={styles.panelBody}>
-                  HP is your current health for this dive. Chits are the permanent
-                  currency you earn from payouts and spend between dives.
-                </Text>
-                <View style={styles.detailCard}>
-                  <DetailLine label="Lead" value={activeCompanionName ?? 'Unknown'} />
-                  <DetailLine label="Reserve" value={reserveCompanionName ?? 'Unknown'} />
-                  <DetailLine
-                    label="Gear"
-                    value={
-                      carriedItems.length > 0
-                        ? carriedItems.map((item) => item.name).join(', ')
-                        : 'No contraband equipped yet'
-                    }
-                  />
-                </View>
-                {companionSupportCards.length > 0 ? (
-                  <View style={styles.supportList}>
-                    {companionSupportCards.map((card) => (
-                      <View key={card.companionId} style={styles.supportCard}>
-                        <Text style={styles.supportTitle}>
-                          {card.companionName} ({card.role === 'active' ? 'Lead' : 'Reserve'})
-                        </Text>
-                        <Text style={styles.supportBody}>{card.summary}</Text>
-                      </View>
-                    ))}
-                  </View>
+                {!helpStartsCollapsed ? (
+                  <Text style={styles.panelBody}>
+                    HP is your current run health. Chits are the currency you keep after the dive.
+                  </Text>
                 ) : null}
               </View>
 
@@ -777,7 +797,7 @@ export default function RunMapScreen() {
                       setShowCrewNotes((current) => !current);
                     }}
                   accessibilityRole="button"
-                  accessibilityLabel="Crew Notes"
+                  accessibilityLabel="Fine print"
                   accessibilityHint={
                     showCrewNotes
                       ? 'Double tap to collapse the crew notes.'
@@ -785,7 +805,7 @@ export default function RunMapScreen() {
                   }
                   accessibilityState={{ expanded: showCrewNotes }}
                 >
-                  <Text style={styles.panelTitle}>Crew Notes</Text>
+                  <Text style={styles.panelTitle}>Fine Print</Text>
                   <Text style={styles.toggleLabel}>
                     {showCrewNotes ? 'Hide' : 'Show'}
                   </Text>
@@ -847,7 +867,7 @@ export default function RunMapScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Extra crew detail lives here once you want the fine print. The decision support panel above keeps the must-know notes closer to the route choice.
+Class details, crew support, and gear stay parked here unless you want the fine print.
                   </Text>
                 )}
               </View>
@@ -1364,3 +1384,9 @@ function createStyles(
     },
   });
 }
+
+
+
+
+
+

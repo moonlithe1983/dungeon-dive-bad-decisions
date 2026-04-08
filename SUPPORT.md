@@ -42,6 +42,7 @@ If you report a problem, include:
 - the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
 - battle now supports a remappable action order, controller-style hint badges, and a new dodge action that adds a more defensive tempo choice to the turn loop
 - the native-dev `Smoke Lab` route now includes a vendor-neutral remote analytics validation surface, but that path is still dev-only and is not part of the public release build by default
-- the April 7 local release APK remains the last rebuilt tester artifact; the April 8 repo pass focused on code, docs, and GitHub readiness rather than generating a new tester build
+- the April 8 local release APK is now the current rebuilt tester artifact and should be the default smoke-testing build until source changes again
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
 - the `Smoke Lab` route is native-dev only and now surfaces local UX telemetry plus optional remote analytics validation for manual QA; it is not part of the public release build or support burden
+

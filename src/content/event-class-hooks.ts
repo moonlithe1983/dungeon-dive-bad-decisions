@@ -468,14 +468,13 @@ function getEventClassFlavor(eventId: string) {
 export function createEventClassMoment(eventId: string, classId: string) {
   const className = getClassDefinition(classId)?.name ?? classId;
   const flavor = getEventClassFlavor(eventId);
-  const narrative = getClassNarrative(classId);
 
   if (classId === 'it-support') {
     return {
       classId,
       className,
       headline: 'Systems Read',
-      line: `${flavor.subject} is broken process in costume. If I can ${flavor.exploit}, keep the fix inside approved change language, and move before ${flavor.risk}, ${COMPANY_NAME} might stay online long enough for me to keep my badge.`,
+      line: `${flavor.subject} is broken process in costume. ${flavor.exploit} before ${flavor.risk}, keep the wording change-safe, and maybe ${COMPANY_NAME} stays online long enough to blame somebody else.`,
     };
   }
 
@@ -484,7 +483,7 @@ export function createEventClassMoment(eventId: string, classId: string) {
       classId,
       className,
       headline: 'Frontline Read',
-      line: `I can keep the room stable long enough to ${flavor.exploit}, but only if ${flavor.risk} does not land all at once and leadership still believes the save sounds brand-safe.`,
+      line: `Keep the room stable long enough to ${flavor.exploit}. If ${flavor.risk} lands all at once, leadership will call the blood loss a tone issue.`,
     };
   }
 
@@ -493,7 +492,7 @@ export function createEventClassMoment(eventId: string, classId: string) {
       classId,
       className,
       headline: 'Closer Read',
-      line: `There is leverage buried inside ${flavor.subject}. Push at the right moment, make it smell executive-approved, and you can ${flavor.exploit} before ${flavor.risk} kills the quarter and your commission with it.`,
+      line: `There is leverage buried inside ${flavor.subject}. Push fast, make it smell approved, and ${flavor.exploit} before ${flavor.risk} tanks the quarter and calls it ethics.`,
     };
   }
 
@@ -502,7 +501,7 @@ export function createEventClassMoment(eventId: string, classId: string) {
       classId,
       className,
       headline: 'Improvised Read',
-      line: `I do not fully understand ${flavor.subject}, which honestly means I might ${flavor.exploit} before ${flavor.risk} and accidentally save the company in a way leadership can still pretend was supervised.`,
+      line: `I do not fully understand ${flavor.subject}, which is honestly the best reason to move first. ${flavor.exploit} before ${flavor.risk} and call it supervised initiative later.`,
     };
   }
 
@@ -511,10 +510,11 @@ export function createEventClassMoment(eventId: string, classId: string) {
       classId,
       className,
       headline: 'Case Read',
-      line: `The room already left openings. I can ${flavor.exploit}, keep the record admissible, and pin the damage there before ${flavor.risk} rewrites the facts for the people who caused it.`,
+      line: `The room already left openings. ${flavor.exploit}, keep the record admissible, and pin the damage there before ${flavor.risk} rewrites the facts for the people who caused it.`,
     };
   }
 
+  const narrative = getClassNarrative(classId);
   return {
     classId,
     className,

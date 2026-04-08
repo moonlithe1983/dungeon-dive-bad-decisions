@@ -4,15 +4,15 @@
     "slug": "dungeon-dive-bad-decisions",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/store/png/icon/ddbd_play_icon_default_512x512.png",
+    "icon": "./src/assets/store/ddbd logo.png",
     "scheme": "dungeondivebaddecisions",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#220006",
-        "foregroundImage": "./src/assets/store/png/icon/ddbd_play_icon_default_512x512.png",
-        "monochromeImage": "./src/assets/store/png/icon/ddbd_play_icon_mono_512x512.png"
+        "foregroundImage": "./src/assets/store/ddbd logo.png",
+        "monochromeImage": "./src/assets/store/ddbd logo.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -20,14 +20,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./src/assets/store/png/icon/ddbd_play_icon_default_512x512.png"
+      "favicon": "./src/assets/store/ddbd logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./src/assets/store/png/icon/ddbd_play_icon_default_512x512.png",
+          "image": "./src/assets/store/ddbd logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#120104",
@@ -45,3 +45,4 @@
     }
   }
 }
+

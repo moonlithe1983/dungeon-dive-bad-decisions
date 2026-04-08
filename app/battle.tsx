@@ -17,7 +17,6 @@ import { trackAnalyticsEvent } from '@/src/analytics/client';
 import {
   getBiomeAmbientArtSource,
   getEncounterArtSources,
-  getEncounterVisualAlignmentLabel,
 } from '@/src/assets/supplemental-art-sources';
 import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getPartyScene } from '@/src/content/authored-voice';
@@ -40,6 +39,7 @@ import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
+import { useRunHelpStartsCollapsed } from '@/src/hooks/use-run-help-starts-collapsed';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -79,10 +79,12 @@ export default function BattleScreen() {
   const isPerformingCombatAction = useRunStore(
     (state) => state.isPerformingCombatAction
   );
+  const [showBattleRead, setShowBattleRead] = useState(false);
+  const [showTicketRead, setShowTicketRead] = useState(false);
   const [showTactics, setShowTactics] = useState(false);
   const [showFullLog, setShowFullLog] = useState(false);
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const resultSummaryOffsetRef = useRef(0);
+  const combatOverviewOffsetRef = useRef(0);
   const previousLogCountRef = useRef<number | null>(null);
   const bossWarningCueRef = useRef<string | null>(null);
   const battleStartedEventRef = useRef<string | null>(null);
@@ -234,22 +236,17 @@ export default function BattleScreen() {
     () => getBiomeAmbientArtSource(run?.floorIndex, settings),
     [run?.floorIndex, settings]
   );
-  const encounterAlignmentLabel = useMemo(
-    () =>
-      combatState ? getEncounterVisualAlignmentLabel(combatState.enemy.enemyId) : null,
-    [combatState]
-  );
+  const helpStartsCollapsed = useRunHelpStartsCollapsed(run?.floorIndex ?? 1);
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'battle' && currentNode.kind !== 'boss'
       ? getRunNodeRoute(currentNode.kind)
       : null;
-  const visibleLog = useMemo(() => {
-    if (!combatState) {
+  const earlierLogEntries = useMemo(() => {
+    if (!combatState || !showFullLog) {
       return [];
     }
 
-    const entries = combatState.log.slice().reverse();
-    return showFullLog ? entries : entries.slice(0, 4);
+    return combatState.log.slice(0, -1).reverse();
   }, [combatState, showFullLog]);
   const latestLogEntry = useMemo(() => {
     if (!combatState || combatState.log.length === 0) {
@@ -272,8 +269,8 @@ export default function BattleScreen() {
 
     const lowHealth = combatState.heroHp * 2 <= combatState.heroMaxHp;
     const sceneOptions = lowHealth
-      ? ['low-health', 'low-health-alt-1', 'low-health-alt-2']
-      : ['battle-intro', 'battle-intro-alt-1', 'battle-intro-alt-2'];
+      ? ['low-health', 'low-health-alt-1', 'low-health-alt-2', 'low-health-alt-3']
+      : ['battle-intro', 'battle-intro-alt-1', 'battle-intro-alt-2', 'battle-intro-alt-3'];
     const key = `${run.runId}:${currentNode.id}:${combatState.enemy.enemyId}:${lowHealth ? 'low' : 'normal'}`;
 
     return sceneOptions[hashString(key) % sceneOptions.length] ?? sceneOptions[0];
@@ -307,7 +304,7 @@ export default function BattleScreen() {
       nextLogCount > previousLogCountRef.current
     ) {
       scrollViewRef.current?.scrollTo({
-        y: Math.max(0, resultSummaryOffsetRef.current - 12),
+        y: Math.max(0, combatOverviewOffsetRef.current - 12),
         animated: true,
       });
     }
@@ -359,6 +356,11 @@ export default function BattleScreen() {
       });
     }
   }, [combatState, currentNode, run]);
+
+  useEffect(() => {
+    setShowBattleRead(!helpStartsCollapsed);
+    setShowTicketRead(!helpStartsCollapsed);
+  }, [helpStartsCollapsed, run?.runId, currentNode?.id]);
 
   const handleAction = async (actionId: CombatActionId) => {
     if (run && currentNode && combatState) {
@@ -476,77 +478,136 @@ export default function BattleScreen() {
             <>
               {ticketBrief ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Active Ticket</Text>
-                  <View style={styles.detailCard}>
-                    <Text style={styles.detailCardTitle}>
-                      {ticketBrief.ticketId} - {ticketBrief.subject}
+                  <Pressable
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowTicketRead((current) => !current);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Current ticket"
+                    accessibilityHint={
+                      showTicketRead
+                        ? 'Double tap to collapse the ticket summary.'
+                        : 'Double tap to expand the ticket summary.'
+                    }
+                    accessibilityState={{ expanded: showTicketRead }}
+                  >
+                    <Text style={styles.panelTitle}>Current Ticket</Text>
+                    <Text style={styles.toggleLabel}>
+                      {showTicketRead ? 'Hide' : 'Show'}
                     </Text>
-                    <Text style={styles.detailCardBody}>
-                      Escalation track: {ticketBrief.escalationTrack}
-                    </Text>
-                    <Text style={styles.detailCardBody}>
-                      Current owner: {ticketBrief.currentOwner}
-                    </Text>
-                    <Text style={styles.detailCardBody}>{ticketBrief.summary}</Text>
-                  </View>
+                  </Pressable>
+                  <Text style={styles.panelBody}>
+                    {ticketBrief.ticketId} - {ticketBrief.subject}
+                  </Text>
+                  {showTicketRead ? (
+                    <View style={styles.detailCard}>
+                      <Text style={styles.detailCardTitle}>
+                        {ticketBrief.ticketId} - {ticketBrief.subject}
+                      </Text>
+                      <Text style={styles.detailCardBody}>
+                        Escalation track: {ticketBrief.escalationTrack}
+                      </Text>
+                      <Text style={styles.detailCardBody}>
+                        Current desk: {ticketBrief.currentOwner}
+                      </Text>
+                      <Text style={styles.detailCardBody}>{ticketBrief.summary}</Text>
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
 
               {encounterArtSources?.headerSource || encounterArtSources?.introSource ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Encounter Surface</Text>
-                  <Text style={styles.panelBody}>
-                    {combatState.enemy.tier === 'boss'
-                      ? 'This executive layer gets a dedicated boss surface before the first exchange.'
-                      : combatState.enemy.tier === 'miniboss'
-                        ? 'This room uses the aligned miniboss surface so elite fights read differently at a glance.'
-                        : 'Standard encounters now open with aligned enemy header and intro art for faster threat recognition.'}
-                  </Text>
-                  <View style={styles.encounterArtCard}>
-                    {battleAmbientArtSource ? (
-                      <Image
-                        source={battleAmbientArtSource}
-                        style={styles.encounterAmbientArt}
-                        resizeMode="cover"
-                      />
-                    ) : null}
-                    {encounterArtSources.headerSource ? (
-                      <Image
-                        source={encounterArtSources.headerSource}
-                        style={styles.encounterHeaderArt}
-                        resizeMode="contain"
-                      />
-                    ) : null}
-                    {encounterArtSources.introSource ? (
-                      <View style={styles.encounterIntroFrame}>
-                        <Image
-                          source={encounterArtSources.introSource}
-                          style={styles.encounterIntroArt}
-                          resizeMode="contain"
-                        />
-                      </View>
-                    ) : null}
-                    <View style={styles.encounterCopy}>
-                      <Text style={styles.encounterName}>{combatState.enemy.name}</Text>
-                      <Text style={styles.encounterMeta}>
-                        {combatState.enemy.tier === 'boss'
-                          ? 'Boss escalation gate'
-                          : combatState.enemy.tier === 'miniboss'
-                            ? 'Elite escalation'
-                            : 'Standard encounter'}
-                      </Text>
-                      {encounterAlignmentLabel ? (
-                        <Text style={styles.encounterMeta}>
-                          {encounterAlignmentLabel}
+                  <Pressable
+                    style={styles.toggleRow}
+                    onPress={() => {
+                      setShowBattleRead((current) => !current);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Threat Read"
+                    accessibilityHint={
+                      showBattleRead
+                        ? 'Double tap to collapse the threat read.'
+                        : 'Double tap to expand the threat read.'
+                    }
+                    accessibilityState={{ expanded: showBattleRead }}
+                  >
+                    <Text style={styles.panelTitle}>Threat Read</Text>
+                    <Text style={styles.toggleLabel}>
+                      {showBattleRead ? 'Hide' : 'Show'}
+                    </Text>
+                  </Pressable>
+                  {showBattleRead ? (
+                    <>
+                      {!helpStartsCollapsed ? (
+                        <Text style={styles.panelBody}>
+                          {combatState.enemy.tier === 'boss'
+                            ? 'Boss preview. Read the threat before the first trade.'
+                            : combatState.enemy.tier === 'miniboss'
+                              ? 'Elite preview. This room hits harder than a normal stop.'
+                              : 'Quick room read before the first trade.'}
                         </Text>
                       ) : null}
-                      <Text style={styles.encounterBody}>{combatState.enemy.intent}</Text>
-                    </View>
-                  </View>
+                      <View style={styles.encounterArtCard}>
+                        {battleAmbientArtSource ? (
+                          <Image
+                            source={battleAmbientArtSource}
+                            style={styles.encounterAmbientArt}
+                            resizeMode="cover"
+                          />
+                        ) : null}
+                        {encounterArtSources.headerSource ? (
+                          <Image
+                            source={encounterArtSources.headerSource}
+                            style={styles.encounterHeaderArt}
+                            resizeMode="contain"
+                          />
+                        ) : null}
+                        {encounterArtSources.introSource ? (
+                          <View style={styles.encounterIntroFrame}>
+                            <Image
+                              source={encounterArtSources.introSource}
+                              style={styles.encounterIntroArt}
+                              resizeMode="contain"
+                            />
+                          </View>
+                        ) : null}
+                        <View style={styles.encounterCopy}>
+                          <Text style={styles.encounterName}>{combatState.enemy.name}</Text>
+                          <Text style={styles.encounterMeta}>
+                            {combatState.enemy.tier === 'boss'
+                              ? 'Boss threat'
+                              : combatState.enemy.tier === 'miniboss'
+                                ? 'Elite threat'
+                                : 'Room threat'}
+                          </Text>
+                          <Text style={styles.encounterBody}>{combatState.enemy.intent}</Text>
+                        </View>
+                      </View>
+                      {!helpStartsCollapsed ? (
+                        <View style={styles.detailCard}>
+                          <Text style={styles.detailCardTitle}>Turn Read</Text>
+                          <Text style={styles.detailCardBody}>
+                            HP is your remaining health. Statuses are ongoing effects that keep changing the fight after a button press.
+                          </Text>
+                        </View>
+                      ) : null}
+                    </>
+                  ) : (
+                    <Text style={styles.panelBody}>
+                      Threat art, room cues, and quick combat reminders stay tucked here after the opening floor.
+                    </Text>
+                  )}
                 </View>
               ) : null}
 
-              <View style={styles.panel}>
+              <View
+                style={styles.panel}
+                onLayout={(event) => {
+                  combatOverviewOffsetRef.current = event.nativeEvent.layout.y;
+                }}
+              >
                 <Text style={styles.panelTitle}>{currentNode.label}</Text>
                 <Text style={styles.panelBody}>{currentNode.description}</Text>
                 <View style={styles.statGrid}>
@@ -605,23 +666,12 @@ export default function BattleScreen() {
                 ) : null}
               </View>
 
-              <View
-                style={styles.panel}
-                onLayout={(event) => {
-                  resultSummaryOffsetRef.current = event.nativeEvent.layout.y;
-                }}
-              >
-                <Text style={styles.panelTitle}>Last Exchange</Text>
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Latest Exchange</Text>
                 <Text style={styles.resultLead}>{latestLogEntry}</Text>
-                {previousLogEntry ? (
+                {previousLogEntry && !helpStartsCollapsed ? (
                   <Text style={styles.panelBody}>Just before that: {previousLogEntry}</Text>
                 ) : null}
-                <View style={styles.detailCard}>
-                  <Text style={styles.detailCardTitle}>Read This Before Your Next Action</Text>
-                  <Text style={styles.detailCardBody}>
-                    HP is your remaining health. Statuses are ongoing effects that keep changing the fight after a button press.
-                  </Text>
-                </View>
               </View>
 
               <View style={styles.panel}>
@@ -631,28 +681,36 @@ export default function BattleScreen() {
                     setShowFullLog((current) => !current);
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Combat Log"
+                  accessibilityLabel="Earlier beats"
                   accessibilityHint={
                     showFullLog
-                      ? 'Double tap to collapse the combat log.'
-                      : 'Double tap to expand the combat log.'
+                      ? 'Double tap to collapse the earlier battle beats.'
+                      : 'Double tap to expand the earlier battle beats.'
                   }
                   accessibilityState={{ expanded: showFullLog }}
                 >
-                  <Text style={styles.panelTitle}>Combat Log</Text>
+                  <Text style={styles.panelTitle}>Earlier Beats</Text>
                   <Text style={styles.toggleLabel}>
-                    {showFullLog ? 'Show Less' : 'Show More'}
+                    {showFullLog ? 'Hide' : 'Show'}
                   </Text>
                 </Pressable>
-                <Text style={styles.panelBody}>
-                  The latest beats come first so you can tell what just happened.
-                </Text>
+                {showFullLog ? (
+                  <Text style={styles.panelBody}>Open this if you need the lead-up before the latest exchange.</Text>
+                ) : (
+                  <Text style={styles.panelBody}>Open this if you need the earlier chain.</Text>
+                )}
                 <View style={styles.logList}>
-                  {visibleLog.map((entry, index) => (
-                    <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
-                      {entry}
-                    </Text>
-                  ))}
+                  {showFullLog ? (
+                    earlierLogEntries.length > 0 ? (
+                      earlierLogEntries.map((entry, index) => (
+                        <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
+                          {entry}
+                        </Text>
+                      ))
+                    ) : (
+                      <Text style={styles.logEntry}>No earlier turns yet.</Text>
+                    )
+                  ) : null}
                 </View>
                 <GameButton
                   label="Retreat to Map"
@@ -1319,3 +1377,5 @@ function createStyles(
     },
   });
 }
+
+

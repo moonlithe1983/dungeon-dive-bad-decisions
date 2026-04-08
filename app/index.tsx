@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo } from 'react';
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,7 +12,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import { getRunResumeTarget } from '@/src/engine/run/progress-run';
+import { getNextGoalSummary } from '@/src/progression/next-goal';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
@@ -24,6 +27,8 @@ import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
 import type { BootstrapSnapshot } from '@/src/types/save';
 
+const titleScreenArt = require('@/src/assets/store/Title Screen.png');
+
 export default function IndexScreen() {
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const snapshot = useGameStore((state) => state.bootstrapSnapshot);
@@ -34,10 +39,13 @@ export default function IndexScreen() {
   const initializeApp = useGameStore((state) => state.initializeApp);
   const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
   const profile = useProfileStore((state) => state.profile) ?? bootstrapProfile;
-  const updateOnboarding = useProfileStore((state) => state.updateOnboarding);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -60,6 +68,10 @@ export default function IndexScreen() {
 
     return `Resume ${resumeTarget?.buttonLabel ?? 'Dive'} - Floor ${activeRun.floorIndex}`;
   }, [activeRun, resumeTarget]);
+  const nextGoal = useMemo(
+    () => getNextGoalSummary({ profile, activeRun }),
+    [activeRun, profile]
+  );
 
   const handleRetry = async () => {
     await refreshBootstrap();
@@ -82,7 +94,8 @@ export default function IndexScreen() {
 
   const handleNewDive = async () => {
     if (isFirstRunIntroVisible) {
-      await updateOnboarding({ narrativeIntroSeen: true });
+      router.push('/onboarding?mode=first-run&returnTo=%2F' as Href);
+      return;
     }
 
     beginNewRunSetup();
@@ -135,23 +148,31 @@ export default function IndexScreen() {
               </View>
             </View>
 
+            <View style={styles.heroArtFrame} accessible={false}>
+              <Image
+                source={titleScreenArt}
+                style={styles.heroArt}
+                resizeMode="cover"
+              />
+            </View>
+
             <Text style={styles.eyebrow}>BAD DECISIONS HOLDINGS PRESENTS</Text>
-                <Text style={styles.title}>Dungeon Dive:</Text>
-                <Text style={styles.titleAccent}>Bad Decisions</Text>
-                <Text style={styles.subtitle}>
-                  You are the employee still inside Meridian Spire when Crown Meridian&apos;s
-                  disaster plan turns the building into a live incident.
-                </Text>
+            <Text style={styles.title}>Dungeon Dive:</Text>
+            <Text style={styles.titleAccent}>Bad Decisions</Text>
+            <Text style={styles.subtitle}>
+              You are the employee still inside Meridian Spire when Crown Meridian&apos;s
+              disaster plan turns the building into a live incident.
+            </Text>
 
-                <Text style={styles.bodyCopy}>
-                  Your job is to drag the active ticket floor by floor toward the
-                  executives who caused it, keep yourself alive, and avoid becoming
-                  the scapegoat when the tower asks who broke first.
-                </Text>
-              </View>
+            <Text style={styles.bodyCopy}>
+              Your job is to drag the active ticket floor by floor toward the
+              executives who caused it, keep yourself alive, and avoid becoming
+              the scapegoat when the tower asks who broke first.
+            </Text>
+          </View>
 
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Employee Status</Text>
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>Employee Status</Text>
 
             {isLoading ? (
               <View style={styles.loadingState}>
@@ -223,9 +244,21 @@ export default function IndexScreen() {
                     />
                   ) : null}
                   <GameButton
-                    label={isFirstRunIntroVisible ? 'Start Your First Dive' : 'Start New Dive'}
+                    label={isFirstRunIntroVisible ? 'Begin HR Onboarding' : 'Start New Dive'}
                     onPress={handleNewDive}
                     variant={activeRun ? 'secondary' : 'primary'}
+                  />
+                </View>
+                <View style={styles.nextGoalCard}>
+                  <Text style={styles.nextGoalEyebrow}>{nextGoal.eyebrow}</Text>
+                  <Text style={styles.nextGoalTitle}>{nextGoal.title}</Text>
+                  <Text style={styles.nextGoalBody}>{nextGoal.body}</Text>
+                  <GameButton
+                    label={nextGoal.ctaLabel}
+                    onPress={() => {
+                      router.push(nextGoal.href);
+                    }}
+                    variant="secondary"
                   />
                 </View>
               </>
@@ -266,8 +299,10 @@ export default function IndexScreen() {
                 </View>
               </View>
               <Text style={styles.runCardHint}>
-                The archive, upgrades, and side tools unlock naturally once you have
-                seen the first setup flow.
+                Before your first class assignment, HR now runs a short
+                interactive orientation sim that teaches route choice, combat
+                reading, rewards, events, and permanent systems. The full packet
+                is archived in the codex after that.
               </Text>
             </View>
           ) : (
@@ -395,7 +430,8 @@ function StatCard({
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -407,7 +443,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -433,6 +472,20 @@ function createStyles(
       borderRadius: 999,
       paddingHorizontal: 10,
       paddingVertical: 5,
+    },
+    heroArtFrame: {
+      minHeight: layout.heroArtFrameHeight,
+      borderRadius: 18,
+      overflow: 'hidden',
+      backgroundColor: colors.background,
+      borderWidth: settings.highContrastEnabled ? 2 : 1,
+      borderColor: colors.borderStrong,
+      marginBottom: spacing.sm,
+    },
+    heroArt: {
+      width: '100%',
+      height: layout.heroArtHeight,
+      transform: [{ translateY: layout.heroArtTranslateY }],
     },
     badgeText: {
       color: colors.textMuted,
@@ -512,7 +565,7 @@ function createStyles(
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     statGrid: {
-      flexDirection: 'row',
+      flexDirection: layout.stackStatCards ? 'column' : 'row',
       gap: spacing.sm + 2,
     },
     statCard: {
@@ -589,6 +642,34 @@ function createStyles(
     },
     primaryActions: {
       gap: spacing.sm + 2,
+    },
+    nextGoalCard: {
+      backgroundColor: colors.surfaceRaised,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      gap: spacing.xs + 2,
+    },
+    nextGoalEyebrow: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    nextGoalTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    nextGoalBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     menuGrid: {
       gap: spacing.sm + 2,

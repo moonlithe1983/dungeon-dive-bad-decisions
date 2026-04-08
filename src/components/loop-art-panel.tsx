@@ -19,6 +19,7 @@ type LoopArtPanelProps = {
   title: string;
   body?: string;
   source: ImageSourcePropType;
+  ambientSource?: ImageSourcePropType | null;
   backgroundSource?: ImageSourcePropType;
   frameVariant?: 'wide' | 'portrait';
 };
@@ -27,6 +28,7 @@ export function LoopArtPanel({
   title,
   body,
   source,
+  ambientSource,
   backgroundSource,
   frameVariant = 'wide',
 }: LoopArtPanelProps) {
@@ -40,6 +42,13 @@ export function LoopArtPanel({
         style={[styles.artFrame, isPortrait ? styles.artFramePortrait : null]}
         accessible={false}
       >
+        {ambientSource ? (
+          <Image
+            source={ambientSource}
+            style={styles.ambientArt}
+            resizeMode="cover"
+          />
+        ) : null}
         {backgroundSource ? (
           <Image
             source={backgroundSource}
@@ -105,6 +114,12 @@ function createStyles(
     backgroundArt: {
       ...StyleSheet.absoluteFillObject,
       opacity: 0.18,
+      width: undefined,
+      height: undefined,
+    },
+    ambientArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.26,
       width: undefined,
       height: undefined,
     },

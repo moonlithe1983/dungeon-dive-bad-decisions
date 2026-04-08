@@ -5,6 +5,7 @@ import {
   performCombatAction as performCombatActionInEngine,
 } from '@/src/engine/battle/combat-engine';
 import { applyEventChoice } from '@/src/engine/event/event-engine';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import {
   createPendingReward,
@@ -313,6 +314,11 @@ export const useRunStore = create<RunStoreState>((set, get) => ({
 
       await saveBackupRunAsync(savedRun);
       useUxTelemetryStore.getState().registerRunStart(savedRun.runId, savedRun.createdAt);
+      void trackAnalyticsEvent('run_started', {
+        runId: savedRun.runId,
+        classId: resolvedClassId,
+        companionIds: selectedCompanionIds,
+      });
       await refreshBootstrapState();
 
       set({

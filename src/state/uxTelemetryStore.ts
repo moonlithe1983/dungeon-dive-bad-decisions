@@ -21,6 +21,9 @@ type UxTelemetryState = {
   runItBackCount: number;
   crewSceneViews: number;
   repeatedCrewSceneCount: number;
+  settingsChanges: number;
+  accessibilitySettingChanges: number;
+  settingsChangesByKey: Record<string, number>;
   floorOneCommitSamplesMs: number[];
   runs: Record<string, RunUxTelemetry>;
   registerRunStart: (runId: string, createdAt?: string | null) => void;
@@ -37,6 +40,10 @@ type UxTelemetryState = {
     runId: string;
     encounterId: string;
     sceneId: string;
+  }) => void;
+  recordSettingsChange: (input: {
+    key: string;
+    accessibility: boolean;
   }) => void;
   recordRunItBack: () => void;
   resetSession: () => void;
@@ -75,6 +82,9 @@ export const useUxTelemetryStore = create<UxTelemetryState>((set) => ({
   runItBackCount: 0,
   crewSceneViews: 0,
   repeatedCrewSceneCount: 0,
+  settingsChanges: 0,
+  accessibilitySettingChanges: 0,
+  settingsChangesByKey: {},
   floorOneCommitSamplesMs: [],
   runs: {},
   registerRunStart: (runId, createdAt) => {
@@ -167,6 +177,17 @@ export const useUxTelemetryStore = create<UxTelemetryState>((set) => ({
       };
     });
   },
+  recordSettingsChange: ({ key, accessibility }) => {
+    set((state) => ({
+      settingsChanges: state.settingsChanges + 1,
+      accessibilitySettingChanges:
+        state.accessibilitySettingChanges + (accessibility ? 1 : 0),
+      settingsChangesByKey: {
+        ...state.settingsChangesByKey,
+        [key]: (state.settingsChangesByKey[key] ?? 0) + 1,
+      },
+    }));
+  },
   recordRunItBack: () => {
     set((state) => ({
       runItBackCount: state.runItBackCount + 1,
@@ -181,6 +202,9 @@ export const useUxTelemetryStore = create<UxTelemetryState>((set) => ({
       runItBackCount: 0,
       crewSceneViews: 0,
       repeatedCrewSceneCount: 0,
+      settingsChanges: 0,
+      accessibilitySettingChanges: 0,
+      settingsChangesByKey: {},
       floorOneCommitSamplesMs: [],
       runs: {},
     });

@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: April 7, 2026
+Last updated: April 8, 2026
 
 ## Current Scope
 
@@ -26,11 +26,15 @@ This local data currently includes:
 - archive history
 - saved settings flags for accessibility, readability, and comfort preferences
 - authored codex/event/lore progress that is unlocked locally through play remains part of that on-device profile/archive data
-- in development builds only, the native `dev-smoke` route can show local in-memory UX telemetry counters for manual QA; those counters are not required for normal play, are not part of the public gameplay loop, and are not intentionally transmitted, synced, or attached to a player identity
+- in development builds only, the native `dev-smoke` route can show local in-memory UX telemetry counters for manual QA
+- in development builds only, `dev-smoke` can also validate a vendor-neutral remote analytics endpoint if a developer explicitly configures one with build-time public environment values
+- those dev-only validation paths are not required for normal play, are not part of the public gameplay loop by default, and are not attached to a player account or identity in the current offline release model
 
 ## Data The App Does Not Intentionally Send To Moonlithe
 
 In the current offline build, gameplay data is not intentionally transmitted to Moonlithe-operated servers during normal play.
+
+The current source does include a development-only remote analytics validation path for QA, but it is inert unless a developer explicitly configures a test endpoint.
 
 The current app does not require a player email, payment profile, location sharing, cloud account, or third-party login to use the core game loop.
 

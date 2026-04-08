@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -17,7 +17,11 @@ import {
   getRewardPackageArtSource,
   getRouteNodeArtSource,
 } from '@/src/assets/loop-art-sources';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
+import { playUiSfx } from '@/src/audio/ui-sfx';
+import { getBiomeAmbientArtSource } from '@/src/assets/supplemental-art-sources';
 import { GameButton } from '@/src/components/game-button';
+import { playUiHaptic } from '@/src/haptics/ui-haptics';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import {
   getPartyScene,
@@ -28,6 +32,7 @@ import { getItemDefinition } from '@/src/content/items';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -51,8 +56,13 @@ export default function RewardScreen() {
   );
   const isClaimingReward = useRunStore((state) => state.isClaimingReward);
   const [showDetails, setShowDetails] = useState(false);
+  const rewardRevealCueRef = useRef<string | null>(null);
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   useEffect(() => {
     if (!run || run.pendingReward) {
@@ -124,6 +134,10 @@ export default function RewardScreen() {
     () => getLoopSurfaceArtSource('reward', settings),
     [settings]
   );
+  const rewardAmbientArtSource = useMemo(
+    () => getBiomeAmbientArtSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
   const selectedRewardArtSource = useMemo(
     () =>
       getRewardPackageArtSource(selectedRewardOption?.optionId, settings) ??
@@ -134,18 +148,64 @@ export default function RewardScreen() {
     ? 'Selected Package'
     : 'Current Payout';
 
-  const handleSelectOption = async (optionId: string) => {
-    if (
-      !pendingReward?.options?.length ||
-      pendingReward.selectedOptionId === optionId
-    ) {
+  useEffect(() => {
+    if (!run || !pendingReward) {
       return;
     }
 
+    const cueKey = `${run.runId}:${pendingReward.rewardId}`;
+
+    if (rewardRevealCueRef.current === cueKey) {
+      return;
+    }
+
+    rewardRevealCueRef.current = cueKey;
+    void playUiSfx('reward-reveal', settings);
+    void trackAnalyticsEvent('upgrade_presented', {
+      runId: run.runId,
+      rewardId: pendingReward.rewardId,
+      optionIds: pendingReward.options?.map((option) => option.optionId) ?? [],
+      sourceKind: pendingReward.sourceKind,
+    });
+  }, [pendingReward, run, settings]);
+
+  const handleSelectOption = async (optionId: string) => {
+    if (!pendingReward?.options?.length) {
+      return;
+    }
+
+    if (pendingReward.selectedOptionId === optionId) {
+      void playUiHaptic('error', settings);
+      void playUiSfx('invalid-tap', settings);
+      return;
+    }
+
+    void playUiHaptic('select', settings);
+    void trackAnalyticsEvent('reward_option_selected', {
+      runId: run?.runId ?? null,
+      rewardId: pendingReward.rewardId,
+      optionId,
+    });
     await selectPendingRewardOption(optionId);
   };
 
   const handleClaim = async () => {
+    if (pendingReward) {
+      void trackAnalyticsEvent('reward_claimed', {
+        runId: run?.runId ?? null,
+        rewardId: pendingReward.rewardId,
+        optionId: pendingReward.selectedOptionId,
+        sourceKind: pendingReward.sourceKind,
+      });
+      void trackAnalyticsEvent('upgrade_chosen', {
+        runId: run?.runId ?? null,
+        rewardId: pendingReward.rewardId,
+        optionId: pendingReward.selectedOptionId,
+      });
+    }
+
+    void playUiHaptic('success', settings);
+    void playUiSfx('reward-claim', settings);
     const result = await claimPendingReward();
 
     if (result.nextRoute === '/end-run') {
@@ -274,6 +334,7 @@ export default function RewardScreen() {
                         ? selectedRewardOption.description
                         : 'Pick a package below to preview it here.'
                     }
+                    ambientSource={rewardAmbientArtSource}
                     source={selectedRewardArtSource}
                     backgroundSource={rewardSurfaceArtSource}
                     frameVariant="portrait"
@@ -298,7 +359,16 @@ export default function RewardScreen() {
                           }}
                           disabled={isClaimingReward || isSelectingRewardOption}
                           accessibilityRole="button"
-                          accessibilityState={{ selected: isSelected }}
+                          accessibilityState={{
+                            selected: isSelected,
+                            disabled: isClaimingReward || isSelectingRewardOption,
+                          }}
+                          accessibilityLabel={`${option.label}. ${option.description}. Chits plus ${option.metaCurrency}. HP plus ${option.runHealing}.${optionItem ? ` Item: ${optionItem.name}.` : ''}`}
+                          accessibilityHint={
+                            isSelected
+                              ? 'Already selected. Use the claim action below to continue.'
+                              : 'Double tap to select this package.'
+                          }
                         >
                           <View style={styles.optionHeader}>
                             <View style={styles.optionHeaderContent}>
@@ -348,6 +418,13 @@ export default function RewardScreen() {
                     setShowDetails((current) => !current);
                   }}
                   accessibilityRole="button"
+                  accessibilityLabel="Reward Details"
+                  accessibilityHint={
+                    showDetails
+                      ? 'Double tap to collapse reward details.'
+                      : 'Double tap to expand reward details.'
+                  }
+                  accessibilityState={{ expanded: showDetails }}
                 >
                   <Text style={styles.panelTitle}>Reward Details</Text>
                   <Text style={styles.toggleLabel}>{showDetails ? 'Hide' : 'Show'}</Text>
@@ -426,7 +503,11 @@ export default function RewardScreen() {
 
 function LoadingPanel({ label }: { label: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -440,7 +521,11 @@ function LoadingPanel({ label }: { label: string }) {
 
 function ErrorPanel({ message }: { message: string | null }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -474,7 +559,11 @@ function InfoPanel({
   secondaryHref?: string;
 }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -503,7 +592,11 @@ function InfoPanel({
 
 function RewardStatCard({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.statCard}>
@@ -527,7 +620,11 @@ function RewardStatCard({ label, value }: { label: string; value: string }) {
 
 function RewardOptionPill({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.optionPill}>
@@ -539,7 +636,11 @@ function RewardOptionPill({ label, value }: { label: string; value: string }) {
 
 function DetailLine({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <Text style={styles.detailLine}>
@@ -551,7 +652,8 @@ function DetailLine({ label, value }: { label: string; value: string }) {
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -563,7 +665,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -632,7 +737,7 @@ function createStyles(
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     statGrid: {
-      flexDirection: 'row',
+      flexDirection: layout.stackStatCards ? 'column' : 'row',
       gap: spacing.sm + 2,
     },
     statCard: {
@@ -715,9 +820,9 @@ function createStyles(
       backgroundColor: colors.surfaceRaised,
     },
     optionHeader: {
-      flexDirection: 'row',
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
       gap: spacing.sm,
     },
     optionHeaderContent: {
@@ -799,9 +904,9 @@ function createStyles(
       lineHeight: scaleLineHeight(18, settings),
     },
     toggleRow: {
-      flexDirection: 'row',
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
       gap: spacing.sm,
       minHeight: 48,
     },

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { GameButton } from '@/src/components/game-button';
 import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
 import { getCompanionDefinition } from '@/src/content/companions';
@@ -21,6 +22,7 @@ import {
   getMetaUpgradeRewardHealingBonus,
 } from '@/src/engine/meta/meta-upgrade-engine';
 import { loadRunHistoryAsync } from '@/src/save/runRepo';
+import { getNextGoalSummary } from '@/src/progression/next-goal';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import {
@@ -54,6 +56,10 @@ export default function ProgressionScreen() {
   const resolvedProfile = profile ?? bootstrapProfile;
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+
+  useEffect(() => {
+    void trackAnalyticsEvent('meta_screen_viewed', { screen: 'progression' });
+  }, []);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle') {
@@ -150,6 +156,10 @@ export default function ProgressionScreen() {
   const historyBodyCopy = latestArchivedRun
     ? 'Run history is gathered here, with archived recaps, final loadouts, and lifetime totals from every finished climb.'
     : 'Finished dives will collect here as they are completed, along with their recaps and lifetime totals.';
+  const nextGoal = useMemo(
+    () => getNextGoalSummary({ profile: resolvedProfile, activeRun: null }),
+    [resolvedProfile]
+  );
 
   const handleRefresh = async () => {
     setLoadStatus('loading');
@@ -359,6 +369,25 @@ export default function ProgressionScreen() {
                     No older archived runs yet.
                   </Text>
                 )}
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Next Goal</Text>
+                <Text style={styles.panelBody}>
+                  Permanent progression works better when the archive points clearly at the next meaningful unlock or milestone.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine label="Focus" value={nextGoal.title} />
+                  <DetailLine label="Why now" value={nextGoal.body} />
+                </View>
+                <View style={styles.actionGroup}>
+                  <GameButton
+                    label={nextGoal.ctaLabel}
+                    onPress={() => {
+                      router.push(nextGoal.href);
+                    }}
+                  />
+                </View>
               </View>
 
               <View style={styles.panel}>

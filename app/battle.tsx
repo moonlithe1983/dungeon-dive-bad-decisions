@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,8 +13,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
+import {
+  getBiomeAmbientArtSource,
+  getEncounterArtSources,
+  getEncounterVisualAlignmentLabel,
+} from '@/src/assets/supplemental-art-sources';
+import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getPartyScene } from '@/src/content/authored-voice';
 import { getCombatActionDefinitions } from '@/src/engine/battle/combat-engine';
+import { getCombatControllerHint } from '@/src/input/combat-input';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { getRunNodeRoute } from '@/src/engine/run/progress-run';
@@ -30,6 +39,7 @@ import { getStatusDefinition } from '@/src/content/statuses';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -74,8 +84,14 @@ export default function BattleScreen() {
   const scrollViewRef = useRef<ScrollView | null>(null);
   const resultSummaryOffsetRef = useRef(0);
   const previousLogCountRef = useRef<number | null>(null);
+  const bossWarningCueRef = useRef<string | null>(null);
+  const battleStartedEventRef = useRef<string | null>(null);
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   useEffect(() => {
     if (!run || !currentNode) {
@@ -182,12 +198,21 @@ export default function BattleScreen() {
   const actions = useMemo(
     () =>
       run
-        ? getCombatActionDefinitions(run).map((action) => ({
-            ...action,
-            ...splitActionDescription(action.description),
-          }))
+        ? getCombatActionDefinitions(run)
+            .sort(
+              (left, right) =>
+                settings.combatActionOrder.indexOf(left.id) -
+                settings.combatActionOrder.indexOf(right.id)
+            )
+            .map((action) => ({
+              ...action,
+              ...splitActionDescription(action.description),
+              inputHint: settings.controllerHintsEnabled
+                ? getCombatControllerHint(action.id, settings.combatActionOrder)
+                : null,
+            }))
         : [],
-    [run]
+    [run, settings.combatActionOrder, settings.controllerHintsEnabled]
   );
   const ticketBrief = useMemo(() => {
     if (!run || !currentNode) {
@@ -201,6 +226,19 @@ export default function BattleScreen() {
       currentNodeLabel: currentNode.label,
     });
   }, [currentNode, run]);
+  const encounterArtSources = useMemo(
+    () => getEncounterArtSources(combatState?.enemy.enemyId, settings),
+    [combatState?.enemy.enemyId, settings]
+  );
+  const battleAmbientArtSource = useMemo(
+    () => getBiomeAmbientArtSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
+  const encounterAlignmentLabel = useMemo(
+    () =>
+      combatState ? getEncounterVisualAlignmentLabel(combatState.enemy.enemyId) : null,
+    [combatState]
+  );
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'battle' && currentNode.kind !== 'boss'
       ? getRunNodeRoute(currentNode.kind)
@@ -277,14 +315,99 @@ export default function BattleScreen() {
     previousLogCountRef.current = nextLogCount;
   }, [combatState?.log.length]);
 
+  useEffect(() => {
+    if (!run || !currentNode || currentNode.kind !== 'boss' || !combatState) {
+      return;
+    }
+
+    const cueKey = `${run.runId}:${currentNode.id}:${combatState.enemy.enemyId}`;
+
+    if (bossWarningCueRef.current === cueKey) {
+      return;
+    }
+
+    bossWarningCueRef.current = cueKey;
+    void playUiSfx('boss-warning', settings);
+  }, [combatState, currentNode, run, settings]);
+
+  useEffect(() => {
+    if (!run || !currentNode || !combatState) {
+      return;
+    }
+
+    const eventKey = `${run.runId}:${currentNode.id}:${combatState.enemy.enemyId}`;
+
+    if (battleStartedEventRef.current === eventKey) {
+      return;
+    }
+
+    battleStartedEventRef.current = eventKey;
+    void trackAnalyticsEvent('battle_started', {
+      runId: run.runId,
+      nodeId: currentNode.id,
+      enemyId: combatState.enemy.enemyId,
+      tier: combatState.enemy.tier,
+      floorIndex: run.floorIndex,
+    });
+
+    if (combatState.enemy.tier === 'boss') {
+      void trackAnalyticsEvent('boss_reached', {
+        runId: run.runId,
+        nodeId: currentNode.id,
+        enemyId: combatState.enemy.enemyId,
+        floorIndex: run.floorIndex,
+      });
+    }
+  }, [combatState, currentNode, run]);
+
   const handleAction = async (actionId: CombatActionId) => {
+    if (run && currentNode && combatState) {
+      void trackAnalyticsEvent('battle_action_selected', {
+        runId: run.runId,
+        nodeId: currentNode.id,
+        enemyId: combatState.enemy.enemyId,
+        actionId,
+      });
+    }
+
     const result = await performCombatAction(actionId);
 
     if (result.nextRoute === '/end-run') {
+      if (run && currentNode && combatState) {
+        void trackAnalyticsEvent('death_recorded', {
+          runId: run.runId,
+          nodeId: currentNode.id,
+          enemyId: combatState.enemy.enemyId,
+          floorIndex: run.floorIndex,
+        });
+        void trackAnalyticsEvent('run_ended', {
+          runId: run.runId,
+          result: 'loss',
+          floorIndex: result.run.floorIndex,
+        });
+      }
       router.replace(
         `/end-run?runId=${encodeURIComponent(result.run.runId)}` as Href
       );
       return;
+    }
+
+    if (result.nextRoute === '/reward' && run && currentNode && combatState) {
+      if (combatState.enemy.tier === 'boss') {
+        void trackAnalyticsEvent('boss_defeated', {
+          runId: run.runId,
+          nodeId: currentNode.id,
+          enemyId: combatState.enemy.enemyId,
+          floorIndex: run.floorIndex,
+        });
+      }
+      void trackAnalyticsEvent('room_exited', {
+        runId: run.runId,
+        nodeId: currentNode.id,
+        kind: currentNode.kind,
+        floorIndex: run.floorIndex,
+        outcome: 'victory',
+      });
     }
 
     if (result.nextRoute !== '/battle') {
@@ -365,6 +488,60 @@ export default function BattleScreen() {
                       Current owner: {ticketBrief.currentOwner}
                     </Text>
                     <Text style={styles.detailCardBody}>{ticketBrief.summary}</Text>
+                  </View>
+                </View>
+              ) : null}
+
+              {encounterArtSources?.headerSource || encounterArtSources?.introSource ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Encounter Surface</Text>
+                  <Text style={styles.panelBody}>
+                    {combatState.enemy.tier === 'boss'
+                      ? 'This executive layer gets a dedicated boss surface before the first exchange.'
+                      : combatState.enemy.tier === 'miniboss'
+                        ? 'This room uses the aligned miniboss surface so elite fights read differently at a glance.'
+                        : 'Standard encounters now open with aligned enemy header and intro art for faster threat recognition.'}
+                  </Text>
+                  <View style={styles.encounterArtCard}>
+                    {battleAmbientArtSource ? (
+                      <Image
+                        source={battleAmbientArtSource}
+                        style={styles.encounterAmbientArt}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    {encounterArtSources.headerSource ? (
+                      <Image
+                        source={encounterArtSources.headerSource}
+                        style={styles.encounterHeaderArt}
+                        resizeMode="contain"
+                      />
+                    ) : null}
+                    {encounterArtSources.introSource ? (
+                      <View style={styles.encounterIntroFrame}>
+                        <Image
+                          source={encounterArtSources.introSource}
+                          style={styles.encounterIntroArt}
+                          resizeMode="contain"
+                        />
+                      </View>
+                    ) : null}
+                    <View style={styles.encounterCopy}>
+                      <Text style={styles.encounterName}>{combatState.enemy.name}</Text>
+                      <Text style={styles.encounterMeta}>
+                        {combatState.enemy.tier === 'boss'
+                          ? 'Boss escalation gate'
+                          : combatState.enemy.tier === 'miniboss'
+                            ? 'Elite escalation'
+                            : 'Standard encounter'}
+                      </Text>
+                      {encounterAlignmentLabel ? (
+                        <Text style={styles.encounterMeta}>
+                          {encounterAlignmentLabel}
+                        </Text>
+                      ) : null}
+                      <Text style={styles.encounterBody}>{combatState.enemy.intent}</Text>
+                    </View>
                   </View>
                 </View>
               ) : null}
@@ -454,6 +631,13 @@ export default function BattleScreen() {
                     setShowFullLog((current) => !current);
                   }}
                   accessibilityRole="button"
+                  accessibilityLabel="Combat Log"
+                  accessibilityHint={
+                    showFullLog
+                      ? 'Double tap to collapse the combat log.'
+                      : 'Double tap to expand the combat log.'
+                  }
+                  accessibilityState={{ expanded: showFullLog }}
                 >
                   <Text style={styles.panelTitle}>Combat Log</Text>
                   <Text style={styles.toggleLabel}>
@@ -502,6 +686,13 @@ export default function BattleScreen() {
                           void handleAction(action.id);
                         }}
                         disabled={isPerformingCombatAction}
+                        inputHint={action.inputHint}
+                        inputHintPosition={
+                          settings.dominantHand === 'left' ? 'left' : 'right'
+                        }
+                        accessibilityHint={`${
+                          action.core
+                        }${action.inputHint ? ` Bound to ${action.inputHint}.` : ''}`}
                       />
                       <Text style={styles.actionDescription}>{action.core}</Text>
                       {action.modifiers ? (
@@ -519,6 +710,13 @@ export default function BattleScreen() {
                     setShowTactics((current) => !current);
                   }}
                   accessibilityRole="button"
+                  accessibilityLabel="Tactical Details"
+                  accessibilityHint={
+                    showTactics
+                      ? 'Double tap to collapse tactical details.'
+                      : 'Double tap to expand tactical details.'
+                  }
+                  accessibilityState={{ expanded: showTactics }}
                 >
                   <Text style={styles.panelTitle}>Tactical Details</Text>
                   <Text style={styles.toggleLabel}>
@@ -614,7 +812,11 @@ export default function BattleScreen() {
 
 function LoadingPanel({ label }: { label: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -628,7 +830,11 @@ function LoadingPanel({ label }: { label: string }) {
 
 function ErrorPanel({ message }: { message: string | null }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -662,7 +868,11 @@ function InfoPanel({
   secondaryHref?: string;
 }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -691,7 +901,11 @@ function InfoPanel({
 
 function CombatStatCard({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.statCard}>
@@ -715,7 +929,11 @@ function CombatStatCard({ label, value }: { label: string; value: string }) {
 
 function InfoTag({ label }: { label: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.infoTag}>
@@ -732,7 +950,11 @@ function CardList({
   cards: { id: string; title: string; summary: string }[];
 }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.cardList}>
@@ -749,7 +971,8 @@ function CardList({
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -761,7 +984,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -830,8 +1056,67 @@ function createStyles(
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     statGrid: {
-      flexDirection: 'row',
+      flexDirection: layout.stackStatCards ? 'column' : 'row',
       gap: spacing.sm + 2,
+    },
+    encounterArtCard: {
+      borderRadius: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+      gap: spacing.sm,
+      padding: spacing.sm + 2,
+    },
+    encounterAmbientArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.22,
+      width: undefined,
+      height: undefined,
+    },
+    encounterHeaderArt: {
+      width: '100%',
+      height: 74,
+      alignSelf: 'center',
+    },
+    encounterIntroFrame: {
+      borderRadius: 14,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      overflow: 'hidden',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: 112,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.sm,
+    },
+    encounterIntroArt: {
+      width: '100%',
+      height: 96,
+    },
+    encounterCopy: {
+      gap: spacing.xs + 2,
+      paddingHorizontal: spacing.xs,
+      paddingBottom: spacing.xs,
+    },
+    encounterName: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(21, settings),
+    },
+    encounterMeta: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
+    },
+    encounterBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     statCard: {
       flex: 1,
@@ -969,9 +1254,9 @@ function createStyles(
       paddingHorizontal: 2,
     },
     toggleRow: {
-      flexDirection: 'row',
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
       gap: spacing.sm,
       minHeight: 48,
     },

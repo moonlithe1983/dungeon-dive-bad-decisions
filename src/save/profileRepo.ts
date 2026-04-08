@@ -5,6 +5,10 @@ import {
 } from '@/src/content/companions';
 import { itemDefinitions } from '@/src/content/items';
 import { normalizeMetaUpgradeLevels } from '@/src/engine/meta/meta-upgrade-engine';
+import {
+  normalizeCombatActionOrder,
+  type DominantHand,
+} from '@/src/input/combat-input';
 import { getDatabaseAsync } from '@/src/save/db';
 import { LATEST_SCHEMA_VERSION } from '@/src/save/migrations';
 import {
@@ -69,6 +73,18 @@ function isProfileSettingsState(
     typeof value === 'object' &&
     typeof candidate.sfxEnabled === 'boolean' &&
     typeof candidate.musicEnabled === 'boolean' &&
+    (typeof candidate.hapticsEnabled === 'boolean' ||
+      typeof candidate.hapticsEnabled === 'undefined') &&
+    (typeof candidate.masterVolume === 'number' ||
+      typeof candidate.masterVolume === 'undefined') &&
+    (typeof candidate.sfxVolume === 'number' ||
+      typeof candidate.sfxVolume === 'undefined') &&
+    (typeof candidate.musicVolume === 'number' ||
+      typeof candidate.musicVolume === 'undefined') &&
+    (typeof candidate.voiceVolume === 'number' ||
+      typeof candidate.voiceVolume === 'undefined') &&
+    (typeof candidate.ambientVolume === 'number' ||
+      typeof candidate.ambientVolume === 'undefined') &&
     typeof candidate.profanityFilterEnabled === 'boolean' &&
     typeof candidate.themePreset === 'string' &&
     typeof candidate.textSize === 'string' &&
@@ -76,7 +92,14 @@ function isProfileSettingsState(
     typeof candidate.reducedMotionEnabled === 'boolean' &&
     typeof candidate.colorAssistEnabled === 'boolean' &&
     typeof candidate.dyslexiaAssistEnabled === 'boolean' &&
-    typeof candidate.screenReaderHintsEnabled === 'boolean'
+    typeof candidate.screenReaderHintsEnabled === 'boolean' &&
+    (candidate.dominantHand === 'left' ||
+      candidate.dominantHand === 'right' ||
+      typeof candidate.dominantHand === 'undefined') &&
+    (typeof candidate.controllerHintsEnabled === 'boolean' ||
+      typeof candidate.controllerHintsEnabled === 'undefined') &&
+    (Array.isArray(candidate.combatActionOrder) ||
+      typeof candidate.combatActionOrder === 'undefined')
   );
 }
 
@@ -150,6 +173,11 @@ function normalizeBondLevels(value: Record<string, number>) {
 function normalizeSettings(
   settings: ProfileSettingsState
 ): ProfileSettingsState {
+  const clampVolume = (value: number | undefined, fallback: number) => {
+    const resolvedValue = typeof value === 'number' ? value : fallback;
+
+    return Math.max(0, Math.min(100, Math.round(resolvedValue)));
+  };
   const themePreset: ThemePresetId =
     settings.themePreset === 'amber-terminal' ||
     settings.themePreset === 'night-shift' ||
@@ -160,10 +188,31 @@ function normalizeSettings(
     settings.textSize === 'large' || settings.textSize === 'largest'
       ? settings.textSize
       : 'default';
+  const dominantHand: DominantHand =
+    settings.dominantHand === 'left' ? 'left' : 'right';
 
   return {
     sfxEnabled: settings.sfxEnabled,
     musicEnabled: settings.musicEnabled,
+    hapticsEnabled:
+      settings.hapticsEnabled ?? DEFAULT_PROFILE_SETTINGS.hapticsEnabled,
+    masterVolume: clampVolume(
+      settings.masterVolume,
+      DEFAULT_PROFILE_SETTINGS.masterVolume
+    ),
+    sfxVolume: clampVolume(settings.sfxVolume, DEFAULT_PROFILE_SETTINGS.sfxVolume),
+    musicVolume: clampVolume(
+      settings.musicVolume,
+      DEFAULT_PROFILE_SETTINGS.musicVolume
+    ),
+    voiceVolume: clampVolume(
+      settings.voiceVolume,
+      DEFAULT_PROFILE_SETTINGS.voiceVolume
+    ),
+    ambientVolume: clampVolume(
+      settings.ambientVolume,
+      DEFAULT_PROFILE_SETTINGS.ambientVolume
+    ),
     profanityFilterEnabled: settings.profanityFilterEnabled,
     themePreset,
     textSize,
@@ -172,6 +221,11 @@ function normalizeSettings(
     colorAssistEnabled: settings.colorAssistEnabled,
     dyslexiaAssistEnabled: settings.dyslexiaAssistEnabled,
     screenReaderHintsEnabled: settings.screenReaderHintsEnabled,
+    dominantHand,
+    controllerHintsEnabled:
+      settings.controllerHintsEnabled ??
+      DEFAULT_PROFILE_SETTINGS.controllerHintsEnabled,
+    combatActionOrder: normalizeCombatActionOrder(settings.combatActionOrder),
   };
 }
 

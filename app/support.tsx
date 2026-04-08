@@ -35,7 +35,8 @@ const sections = [
     body: [
       'Dungeon Dive: Bad Decisions is being prepared as an offline single-player Android release.',
       'Accessibility settings now include a live preview so readability, contrast, and motion changes are visibly testable before a run starts.',
-      'The Smoke Lab route is native-dev only and its local-only telemetry is not part of the public release build.',
+      'Fresh profiles now enter a short interactive orientation sim before the assigned-role class briefing and crew setup.',
+      'The Smoke Lab route is native-dev only and its telemetry / remote analytics validation tools are not part of the public release build.',
     ],
   },
 ];

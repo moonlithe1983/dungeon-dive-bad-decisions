@@ -5,19 +5,37 @@ import React, { useEffect } from 'react';
 import { Text, type TextProps } from 'react-native';
 import 'react-native-reanimated';
 
+import { trackAnalyticsEvent } from '@/src/analytics/client';
+import { installRemoteAnalyticsAdapter } from '@/src/analytics/http-adapter';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
+import { useSystemAccessibilityStore } from '@/src/state/systemAccessibilityStore';
 import { useAppTheme } from '@/src/theme/app-theme';
 import { createGameNavigationTheme } from '@/src/theme/navigation';
 
 export default function RootLayout() {
   const initializeApp = useGameStore((state) => state.initializeApp);
+  const initializeSystemAccessibility = useSystemAccessibilityStore(
+    (state) => state.initialize
+  );
   const profileSettings = useProfileStore((state) => state.profile?.settings);
   const { colors, metrics, settings } = useAppTheme();
 
   useEffect(() => {
     void initializeApp();
   }, [initializeApp]);
+
+  useEffect(() => {
+    installRemoteAnalyticsAdapter();
+  }, []);
+
+  useEffect(() => {
+    void trackAnalyticsEvent('app_opened', {});
+  }, []);
+
+  useEffect(() => {
+    void initializeSystemAccessibility();
+  }, [initializeSystemAccessibility]);
 
   useEffect(() => {
     const TextWithDefaults = Text as typeof Text & {
@@ -49,6 +67,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" />
+        <Stack.Screen name="onboarding" />
         <Stack.Screen name="class-select" />
         <Stack.Screen name="companion-select" />
         <Stack.Screen name="run-map" />

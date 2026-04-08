@@ -28,6 +28,7 @@ const sections = [
       'The game stores gameplay-related information locally on your device, including profile progression, unlocked content, active run state, backup recovery data, archive history, and settings.',
       'This local data exists so the app can resume dives, preserve unlocks, and show progression history without needing a remote account.',
       'In development builds only, the Smoke Lab route can show local in-memory UX telemetry counters for manual QA, and those counters are not part of the public gameplay loop.',
+      'In development builds only, the Smoke Lab route can also validate a manually configured remote analytics endpoint, but that path is not active in normal public play by default.',
     ],
   },
   {

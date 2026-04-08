@@ -30,6 +30,11 @@ const classActionKits: Record<string, ClassActionKit> = {
         label: 'Stabilize Systems',
         summary: 'Recovers HP, clears one hero status, and improves under status pressure.',
       },
+      {
+        id: 'dodge',
+        label: 'Reroute Traffic',
+        summary: 'Trades most of your offense for timing, setup damage, and heavy retaliation reduction.',
+      },
     ],
   },
   'customer-service-rep': {
@@ -49,6 +54,11 @@ const classActionKits: Record<string, ClassActionKit> = {
         id: 'stabilize',
         label: 'Call Recovery',
         summary: "Big sustain that improves further against CC'd targets.",
+      },
+      {
+        id: 'dodge',
+        label: 'De-escalate Caller',
+        summary: "Sidesteps the next hit and gets even safer against CC'd targets.",
       },
     ],
   },
@@ -70,6 +80,11 @@ const classActionKits: Record<string, ClassActionKit> = {
         label: 'Reset The Pitch',
         summary: 'Buys breathing room and still chips Escalated targets.',
       },
+      {
+        id: 'dodge',
+        label: 'Side-Step Objection',
+        summary: 'A tempo dodge that punishes already Escalated targets instead of eating the full counter.',
+      },
     ],
   },
   intern: {
@@ -90,6 +105,11 @@ const classActionKits: Record<string, ClassActionKit> = {
         label: 'Steal Breakroom Coffee',
         summary: 'Stabilizes harder when things get dire and pushes Burnout onto the enemy.',
       },
+      {
+        id: 'dodge',
+        label: 'Trip Over Success',
+        summary: 'A frantic near-miss that clips the enemy anyway and buys a little accidental recovery.',
+      },
     ],
   },
   paralegal: {
@@ -109,6 +129,11 @@ const classActionKits: Record<string, ClassActionKit> = {
         id: 'stabilize',
         label: 'File Injunction',
         summary: 'Recovers HP while locking the enemy On Hold.',
+      },
+      {
+        id: 'dodge',
+        label: 'Procedural Sidestep',
+        summary: 'Cuts retaliation sharply and hits harder when the target is already compromised.',
       },
     ],
   },

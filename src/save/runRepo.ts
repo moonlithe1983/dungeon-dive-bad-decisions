@@ -24,6 +24,7 @@ import type {
   CombatState,
   CombatStatusState,
 } from '@/src/types/combat';
+import { isCombatActionId } from '@/src/types/combat';
 import type { ActiveRunSummary } from '@/src/types/save';
 import type {
   ArchivedRunDefeatSummary,
@@ -234,10 +235,7 @@ function isCombatState(value: unknown): value is CombatState {
     typeof candidate.rollCursor === 'number' &&
     Array.isArray(candidate.log) &&
     candidate.log.every((item) => typeof item === 'string') &&
-    (candidate.lastActionId == null ||
-      candidate.lastActionId === 'patch' ||
-      candidate.lastActionId === 'escalate' ||
-      candidate.lastActionId === 'stabilize') &&
+    (candidate.lastActionId == null || isCombatActionId(candidate.lastActionId)) &&
     Boolean(candidate.enemy) &&
     typeof candidate.enemy === 'object' &&
     typeof candidate.enemy.enemyId === 'string' &&

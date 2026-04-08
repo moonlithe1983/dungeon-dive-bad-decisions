@@ -1,3 +1,6 @@
+import type { CombatActionId } from '@/src/types/combat';
+import type { DominantHand } from '@/src/input/combat-input';
+
 export type MetaUpgradeId =
   | 'incident-insurance'
   | 'expense-padding'
@@ -16,6 +19,12 @@ export type TextSizeSetting = 'default' | 'large' | 'largest';
 export type ProfileSettingsState = {
   sfxEnabled: boolean;
   musicEnabled: boolean;
+  hapticsEnabled: boolean;
+  masterVolume: number;
+  sfxVolume: number;
+  musicVolume: number;
+  voiceVolume: number;
+  ambientVolume: number;
   profanityFilterEnabled: boolean;
   themePreset: ThemePresetId;
   textSize: TextSizeSetting;
@@ -24,6 +33,9 @@ export type ProfileSettingsState = {
   colorAssistEnabled: boolean;
   dyslexiaAssistEnabled: boolean;
   screenReaderHintsEnabled: boolean;
+  dominantHand: DominantHand;
+  controllerHintsEnabled: boolean;
+  combatActionOrder: CombatActionId[];
 };
 
 export type ProfileStats = {
@@ -57,6 +69,12 @@ export type ProfileState = {
 export const DEFAULT_PROFILE_SETTINGS: ProfileSettingsState = {
   sfxEnabled: true,
   musicEnabled: true,
+  hapticsEnabled: true,
+  masterVolume: 100,
+  sfxVolume: 85,
+  musicVolume: 70,
+  voiceVolume: 85,
+  ambientVolume: 65,
   profanityFilterEnabled: false,
   themePreset: 'corporate-hell',
   textSize: 'default',
@@ -65,6 +83,9 @@ export const DEFAULT_PROFILE_SETTINGS: ProfileSettingsState = {
   colorAssistEnabled: false,
   dyslexiaAssistEnabled: false,
   screenReaderHintsEnabled: true,
+  dominantHand: 'right',
+  controllerHintsEnabled: true,
+  combatActionOrder: ['patch', 'escalate', 'stabilize', 'dodge'],
 };
 
 export const DEFAULT_PROFILE_STATS: ProfileStats = {

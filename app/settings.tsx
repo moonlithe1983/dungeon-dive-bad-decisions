@@ -1,8 +1,9 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,8 +12,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { setUiSfxEnabledAsync } from '@/src/audio/ui-sfx';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { GameButton } from '@/src/components/game-button';
+import { playUiHaptic } from '@/src/haptics/ui-haptics';
+import {
+  getCombatActionDisplayLabel,
+  moveCombatAction,
+} from '@/src/input/combat-input';
+import { resetAllSaveDataAsync } from '@/src/save/reset';
+import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
+import { useRunStore } from '@/src/state/runStore';
+import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
   getThemePresetDefinitions,
   getThemePresetName,
@@ -21,6 +33,7 @@ import {
   useAppTheme,
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
+import type { CombatActionId } from '@/src/types/combat';
 import type { ProfileSettingsState, TextSizeSetting } from '@/src/types/profile';
 
 const textSizeOptions: { id: TextSizeSetting; label: string; description: string }[] = [
@@ -48,10 +61,77 @@ type ToggleRowProps = {
   onPress: () => void;
 };
 
+type AudioVolumeKey =
+  | 'masterVolume'
+  | 'sfxVolume'
+  | 'musicVolume'
+  | 'voiceVolume'
+  | 'ambientVolume';
+
+const audioChannelRows: {
+  key: AudioVolumeKey;
+  label: string;
+  description: string;
+  liveNow: boolean;
+}[] = [
+  {
+    key: 'masterVolume',
+    label: 'Master',
+    description: 'Overall mix level for the full audio stack.',
+    liveNow: true,
+  },
+  {
+    key: 'sfxVolume',
+    label: 'Sound Effects',
+    description: 'Route, reward, event, boss-warning, and recap cues.',
+    liveNow: true,
+  },
+  {
+    key: 'musicVolume',
+    label: 'Music',
+    description: 'Profile-ready channel for future score layers.',
+    liveNow: false,
+  },
+  {
+    key: 'voiceVolume',
+    label: 'Voice',
+    description: 'Profile-ready channel for future spoken lines or voiced narration.',
+    liveNow: false,
+  },
+  {
+    key: 'ambientVolume',
+    label: 'Ambient',
+    description: 'Profile-ready channel for future environmental and tower-bed layers.',
+    liveNow: false,
+  },
+];
+
+const nonAccessibilitySettingKeys = new Set<keyof ProfileSettingsState>([
+  'themePreset',
+  'profanityFilterEnabled',
+]);
+
+const audioSettingKeys = new Set<keyof ProfileSettingsState>([
+  'sfxEnabled',
+  'musicEnabled',
+  'hapticsEnabled',
+  'masterVolume',
+  'sfxVolume',
+  'musicVolume',
+  'voiceVolume',
+  'ambientVolume',
+]);
+
 export default function SettingsScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const updateSettings = useProfileStore((state) => state.updateSettings);
+  const refreshBootstrap = useGameStore((state) => state.refreshBootstrap);
+  const recordSettingsChange = useUxTelemetryStore(
+    (state) => state.recordSettingsChange
+  );
+  const clearCurrentRunState = useRunStore((state) => state.clearCurrentRunState);
+  const [isResettingSaves, setIsResettingSaves] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -61,10 +141,130 @@ export default function SettingsScreen() {
     }
   }, [profile, refreshProfile]);
 
+  useEffect(() => {
+    void trackAnalyticsEvent('meta_screen_viewed', { screen: 'settings' });
+  }, []);
+
   const isLoading = !profile;
 
   const applySettings = async (nextSettings: Partial<ProfileSettingsState>) => {
+    const entries = Object.entries(nextSettings).filter(
+      ([, value]) => value !== undefined
+    ) as [keyof ProfileSettingsState, ProfileSettingsState[keyof ProfileSettingsState]][];
+
+    for (const [key, value] of entries) {
+      if (settings[key] === value) {
+        continue;
+      }
+
+      const accessibility = !nonAccessibilitySettingKeys.has(key);
+      recordSettingsChange({
+        key,
+        accessibility,
+      });
+      void trackAnalyticsEvent('settings_changed', { key, value });
+
+      if (accessibility) {
+        void trackAnalyticsEvent('accessibility_setting_changed', { key, value });
+      }
+
+      if (audioSettingKeys.has(key)) {
+        void trackAnalyticsEvent('audio_setting_changed', { key, value });
+      }
+    }
+
+    void playUiHaptic('select', settings);
     await updateSettings(nextSettings);
+
+    if (typeof nextSettings.sfxEnabled === 'boolean') {
+      await setUiSfxEnabledAsync(nextSettings.sfxEnabled);
+    }
+  };
+
+  const adjustAudioSetting = (key: AudioVolumeKey, delta: number) => {
+    const nextValue = Math.max(0, Math.min(100, settings[key] + delta));
+
+    if (nextValue === settings[key]) {
+      return;
+    }
+
+    void applySettings({
+      [key]: nextValue,
+    } as Partial<ProfileSettingsState>);
+  };
+
+  const moveActionOrder = (
+    actionId: CombatActionId,
+    delta: -1 | 1
+  ) => {
+    const nextOrder = moveCombatAction(settings.combatActionOrder, actionId, delta);
+
+    if (nextOrder.join('|') === settings.combatActionOrder.join('|')) {
+      return;
+    }
+
+    void applySettings({
+      combatActionOrder: nextOrder,
+    });
+  };
+
+  const confirmDeleteAllSaveStates = async () => {
+    if (isResettingSaves) {
+      return;
+    }
+
+    setIsResettingSaves(true);
+
+    try {
+      await resetAllSaveDataAsync();
+      clearCurrentRunState();
+      await refreshBootstrap();
+      Alert.alert(
+        'Save states deleted',
+        'Active runs, backup runs, archive history, unlocked codex progress, and profile stats were reset.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/' as Href);
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'The save wipe did not finish cleanly.';
+
+      Alert.alert('Delete failed', message);
+    } finally {
+      setIsResettingSaves(false);
+    }
+  };
+
+  const handleDeleteAllSaveStates = () => {
+    if (isResettingSaves) {
+      return;
+    }
+
+    Alert.alert(
+      'Delete all save states?',
+      'This permanently removes the active run, emergency backup, archived run history, profile progression, and codex unlocks. This cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete Everything',
+          style: 'destructive',
+          onPress: () => {
+            void confirmDeleteAllSaveStates();
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -249,6 +449,165 @@ export default function SettingsScreen() {
               </View>
 
               <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Audio & Haptics</Text>
+                <Text style={styles.panelBody}>
+                  Sound and haptic cues reinforce route, reward, event, boss, and recap states, but the UI still stays readable without either channel. The live build actively uses master and SFX levels now; music, voice, and ambient channels are profile-ready for future layers.
+                </Text>
+                <View style={styles.toggleList}>
+                  <ToggleRow
+                    label="Sound Effects"
+                    description="Plays the short UI cue set for route picks, event confirms, reward moments, boss warnings, and defeat recap opens."
+                    value={settings.sfxEnabled}
+                    onPress={() => {
+                      void applySettings({
+                        sfxEnabled: !settings.sfxEnabled,
+                      });
+                    }}
+                  />
+                  <ToggleRow
+                    label="Haptics"
+                    description="Adds touch feedback to core button confirmations and important selection beats without making vibration mandatory."
+                    value={settings.hapticsEnabled}
+                    onPress={() => {
+                      void applySettings({
+                        hapticsEnabled: !settings.hapticsEnabled,
+                      });
+                    }}
+                  />
+                </View>
+                <View style={styles.audioLevelsList}>
+                  {audioChannelRows.map((channel) => (
+                    <AudioLevelRow
+                      key={channel.key}
+                      label={channel.label}
+                      description={channel.description}
+                      value={settings[channel.key]}
+                      liveNow={channel.liveNow}
+                      onDecrease={() => {
+                        adjustAudioSetting(channel.key, -10);
+                      }}
+                      onIncrease={() => {
+                        adjustAudioSetting(channel.key, 10);
+                      }}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.panelHint}>
+                  Critical cues remain non-spatial, so the live SFX set stays readable in mono playback too.
+                </Text>
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Controls & Input</Text>
+                <Text style={styles.panelBody}>
+                  Battle actions now use a profile-backed slot layout. Reorder them here, pick the dominant-hand bias for hint placement, and keep controller-style face-button cues visible even before full hardware controller support lands.
+                </Text>
+                <View style={styles.optionGrid}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Right-hand combat layout"
+                    accessibilityState={{ selected: settings.dominantHand === 'right' }}
+                    style={[
+                      styles.optionCard,
+                      settings.dominantHand === 'right'
+                        ? styles.optionCardSelected
+                        : null,
+                    ]}
+                    onPress={() => {
+                      void applySettings({ dominantHand: 'right' });
+                    }}
+                  >
+                    <Text style={styles.optionTitle}>Right-Hand Bias</Text>
+                    <Text style={styles.optionBody}>
+                      Places controller/input hint badges on the right side of combat actions.
+                    </Text>
+                    <Text style={styles.optionFooter}>
+                      {settings.dominantHand === 'right'
+                        ? 'Selected hand bias'
+                        : 'Tap to prefer right-side hints'}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Left-hand combat layout"
+                    accessibilityState={{ selected: settings.dominantHand === 'left' }}
+                    style={[
+                      styles.optionCard,
+                      settings.dominantHand === 'left'
+                        ? styles.optionCardSelected
+                        : null,
+                    ]}
+                    onPress={() => {
+                      void applySettings({ dominantHand: 'left' });
+                    }}
+                  >
+                    <Text style={styles.optionTitle}>Left-Hand Bias</Text>
+                    <Text style={styles.optionBody}>
+                      Moves hint badges left so primary action guidance sits nearer the left thumb.
+                    </Text>
+                    <Text style={styles.optionFooter}>
+                      {settings.dominantHand === 'left'
+                        ? 'Selected hand bias'
+                        : 'Tap to prefer left-side hints'}
+                    </Text>
+                  </Pressable>
+                </View>
+                <View style={styles.toggleList}>
+                  <ToggleRow
+                    label="Controller-Style Hints"
+                    description="Shows A/X/Y/B bindings on combat actions using the current action slot order. This is controller-ready guidance, even though full hardware controller input is still future work."
+                    value={settings.controllerHintsEnabled}
+                    onPress={() => {
+                      void applySettings({
+                        controllerHintsEnabled: !settings.controllerHintsEnabled,
+                      });
+                    }}
+                  />
+                </View>
+                <View style={styles.actionOrderList}>
+                  {settings.combatActionOrder.map((actionId, index) => (
+                    <View key={actionId} style={styles.actionOrderRow}>
+                      <View style={styles.actionOrderCopy}>
+                        <Text style={styles.toggleTitle}>
+                          Slot {index + 1}: {getCombatActionDisplayLabel(actionId)}
+                        </Text>
+                        <Text style={styles.toggleBody}>
+                          This slot becomes the {index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : 'fourth'} combat action in battle and receives the matching controller-style hint.
+                        </Text>
+                      </View>
+                      <View style={styles.audioStepper}>
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Move ${getCombatActionDisplayLabel(actionId)} earlier`}
+                          accessibilityHint={`Double tap to move ${getCombatActionDisplayLabel(actionId).toLowerCase()} up in the combat action order.`}
+                          onPress={() => {
+                            moveActionOrder(actionId, -1);
+                          }}
+                          style={styles.audioStepButton}
+                        >
+                          <Text style={styles.audioStepButtonText}>↑</Text>
+                        </Pressable>
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={`Move ${getCombatActionDisplayLabel(actionId)} later`}
+                          accessibilityHint={`Double tap to move ${getCombatActionDisplayLabel(actionId).toLowerCase()} down in the combat action order.`}
+                          onPress={() => {
+                            moveActionOrder(actionId, 1);
+                          }}
+                          style={styles.audioStepButton}
+                        >
+                          <Text style={styles.audioStepButtonText}>↓</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+                <Text style={styles.panelHint}>
+                  The battle screen reads this order directly now, so remapping changes the live combat stack immediately.
+                </Text>
+              </View>
+
+              <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Live Preview</Text>
                 <Text style={styles.panelBody}>
                   This sample reflects your current settings right now, so each toggle has a visible result before the next run.
@@ -289,6 +648,34 @@ export default function SettingsScreen() {
                   />
                   <DetailLine label="Text Size" value={settings.textSize} />
                   <DetailLine
+                    label="Sound Effects"
+                    value={settings.sfxEnabled ? 'Enabled' : 'Disabled'}
+                  />
+                  <DetailLine
+                    label="Master Volume"
+                    value={`${settings.masterVolume}%`}
+                  />
+                  <DetailLine
+                    label="SFX Volume"
+                    value={`${settings.sfxVolume}%`}
+                  />
+                  <DetailLine
+                    label="Music Volume"
+                    value={`${settings.musicVolume}%`}
+                  />
+                  <DetailLine
+                    label="Voice Volume"
+                    value={`${settings.voiceVolume}%`}
+                  />
+                  <DetailLine
+                    label="Ambient Volume"
+                    value={`${settings.ambientVolume}%`}
+                  />
+                  <DetailLine
+                    label="Haptics"
+                    value={settings.hapticsEnabled ? 'Enabled' : 'Disabled'}
+                  />
+                  <DetailLine
                     label="High Contrast"
                     value={settings.highContrastEnabled ? 'Enabled' : 'Disabled'}
                   />
@@ -306,12 +693,45 @@ export default function SettingsScreen() {
                       settings.screenReaderHintsEnabled ? 'Enabled' : 'Disabled'
                     }
                   />
+                  <DetailLine
+                    label="Dominant Hand"
+                    value={settings.dominantHand === 'left' ? 'Left' : 'Right'}
+                  />
+                  <DetailLine
+                    label="Controller Hints"
+                    value={settings.controllerHintsEnabled ? 'Enabled' : 'Disabled'}
+                  />
+                  <DetailLine
+                    label="Combat Layout"
+                    value={settings.combatActionOrder
+                      .map(getCombatActionDisplayLabel)
+                      .join(' -> ')}
+                  />
                 </View>
               </View>
 
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Actions</Text>
                 <View style={styles.actionGroup}>
+                  <GameButton
+                    label="Replay Interactive Tutorial"
+                    onPress={() => {
+                      router.push(
+                        '/onboarding?mode=tutorial&returnTo=%2Fsettings' as Href
+                      );
+                    }}
+                    variant="secondary"
+                  />
+                  <GameButton
+                    label={
+                      isResettingSaves
+                        ? 'Deleting Save States...'
+                        : 'Delete All Save States'
+                    }
+                    onPress={handleDeleteAllSaveStates}
+                    variant="secondary"
+                    disabled={isResettingSaves}
+                  />
                   <GameButton
                     label="Employee Portal"
                     onPress={() => {
@@ -344,6 +764,55 @@ export default function SettingsScreen() {
           <Text style={styles.togglePillText}>{value ? 'On' : 'Off'}</Text>
         </View>
       </Pressable>
+    );
+  }
+
+  function AudioLevelRow({
+    label,
+    description,
+    value,
+    liveNow,
+    onDecrease,
+    onIncrease,
+  }: {
+    label: string;
+    description: string;
+    value: number;
+    liveNow: boolean;
+    onDecrease: () => void;
+    onIncrease: () => void;
+  }) {
+    return (
+      <View style={styles.audioRow}>
+        <View style={styles.audioCopy}>
+          <View style={styles.audioHeadingRow}>
+            <Text style={styles.toggleTitle}>{label}</Text>
+            <Text style={styles.audioStatus}>{liveNow ? 'Live now' : 'Profile-ready'}</Text>
+          </View>
+          <Text style={styles.toggleBody}>{description}</Text>
+        </View>
+        <View style={styles.audioStepper}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Lower ${label} volume`}
+            accessibilityHint={`Double tap to reduce ${label.toLowerCase()} volume by 10 percent.`}
+            onPress={onDecrease}
+            style={styles.audioStepButton}
+          >
+            <Text style={styles.audioStepButtonText}>-</Text>
+          </Pressable>
+          <Text style={styles.audioValue}>{value}%</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Raise ${label} volume`}
+            accessibilityHint={`Double tap to raise ${label.toLowerCase()} volume by 10 percent.`}
+            onPress={onIncrease}
+            style={styles.audioStepButton}
+          >
+            <Text style={styles.audioStepButtonText}>+</Text>
+          </Pressable>
+        </View>
+      </View>
     );
   }
 }
@@ -428,6 +897,11 @@ function createStyles(settings: ProfileSettingsState, colors: ReturnType<typeof 
       lineHeight: scaleLineHeight(21, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
+    panelHint: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      lineHeight: scaleLineHeight(18, settings),
+    },
     loadingState: {
       paddingVertical: spacing.lg,
       alignItems: 'center',
@@ -481,6 +955,12 @@ function createStyles(settings: ProfileSettingsState, colors: ReturnType<typeof 
     toggleList: {
       gap: spacing.sm,
     },
+    audioLevelsList: {
+      gap: spacing.sm,
+    },
+    actionOrderList: {
+      gap: spacing.sm,
+    },
     toggleRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -498,6 +978,75 @@ function createStyles(settings: ProfileSettingsState, colors: ReturnType<typeof 
     toggleCopy: {
       flex: 1,
       gap: spacing.xs,
+    },
+    audioRow: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: spacing.lg,
+      gap: spacing.sm,
+    },
+    actionOrderRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.md,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: spacing.lg,
+    },
+    actionOrderCopy: {
+      flex: 1,
+      gap: spacing.xs,
+    },
+    audioCopy: {
+      gap: spacing.xs,
+    },
+    audioHeadingRow: {
+      flexDirection: settings.textSize === 'largest' ? 'column' : 'row',
+      justifyContent: 'space-between',
+      alignItems: settings.textSize === 'largest' ? 'flex-start' : 'center',
+      gap: spacing.xs,
+    },
+    audioStatus: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    audioStepper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+    },
+    audioStepButton: {
+      width: 40,
+      minHeight: 40,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      backgroundColor: colors.surfaceRaised,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    audioStepButtonText: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '900',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    audioValue: {
+      minWidth: 64,
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+      textAlign: 'center',
     },
     toggleTitle: {
       color: colors.textPrimary,

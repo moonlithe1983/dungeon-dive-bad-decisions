@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +12,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import {
+  getBondPairArchiveArtSources,
+  getCompanionHeaderArtSource,
+} from '@/src/assets/supplemental-art-sources';
+import { bondPairArchiveDefinitions } from '@/src/content/bond-pair-archives';
 import {
   bondSceneDefinitions,
   getBondScenesForCompanion,
@@ -260,6 +266,38 @@ export default function BondsScreen() {
       .sort((left, right) => right.scene.milestoneLevel - left.scene.milestoneLevel)
       .slice(0, 3);
   }, [resolvedProfile]);
+  const pairArchiveCards = useMemo(() => {
+    return bondPairArchiveDefinitions.map((archive) => {
+      const [leftCompanionId, rightCompanionId] = archive.companionIds;
+      const leftUnlocked =
+        resolvedProfile?.unlockedCompanionIds.includes(leftCompanionId) ?? false;
+      const rightUnlocked =
+        resolvedProfile?.unlockedCompanionIds.includes(rightCompanionId) ?? false;
+      const isUnlocked = leftUnlocked && rightUnlocked;
+      const leftName =
+        companionDefinitions.find((item) => item.id === leftCompanionId)?.name ??
+        leftCompanionId;
+      const rightName =
+        companionDefinitions.find((item) => item.id === rightCompanionId)?.name ??
+        rightCompanionId;
+      const leftBondLevel = Math.max(
+        1,
+        resolvedProfile?.bondLevels[leftCompanionId] ?? 0
+      );
+      const rightBondLevel = Math.max(
+        1,
+        resolvedProfile?.bondLevels[rightCompanionId] ?? 0
+      );
+
+      return {
+        ...archive,
+        isUnlocked,
+        pairLabel: `${leftName} + ${rightName}`,
+        bondTotal: leftBondLevel + rightBondLevel,
+        art: getBondPairArchiveArtSources(archive.id, settings),
+      };
+    });
+  }, [resolvedProfile, settings]);
 
   const companionCards = useMemo(
     () =>
@@ -453,6 +491,77 @@ export default function BondsScreen() {
               </View>
 
               <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Pair Archive</Text>
+                <Text style={styles.panelBody}>
+                  These aligned archive entries give the current launch roster a
+                  real home for the pair-scene art pack without overwriting the
+                  existing solo milestone scenes.
+                </Text>
+                <View style={styles.pairArchiveList}>
+                  {pairArchiveCards.map((archive) => (
+                    <View
+                      key={archive.id}
+                      style={[
+                        styles.pairArchiveCard,
+                        !archive.isUnlocked ? styles.pairArchiveCardLocked : null,
+                      ]}
+                    >
+                      <View style={styles.pairArchiveArtFrame}>
+                        {archive.art.panelSource ? (
+                          <Image
+                            source={archive.art.panelSource}
+                            style={styles.pairArchivePanelArt}
+                            resizeMode="cover"
+                          />
+                        ) : null}
+                        {archive.art.headerSource ? (
+                          <Image
+                            source={archive.art.headerSource}
+                            style={styles.pairArchiveHeaderArt}
+                            resizeMode="contain"
+                          />
+                        ) : null}
+                      </View>
+                      <Text style={styles.pairArchiveTitle}>{archive.title}</Text>
+                      <Text style={styles.pairArchivePair}>{archive.pairLabel}</Text>
+                      <Text style={styles.pairArchiveSummary}>
+                        {archive.summary}
+                      </Text>
+                      <Text style={styles.pairArchiveNote}>
+                        {archive.archiveNote}
+                      </Text>
+                      <View style={styles.detailCard}>
+                        <DetailLine
+                          label="Archive Status"
+                          value={
+                            archive.isUnlocked
+                              ? 'Live pair archive entry'
+                              : 'Both companions must be on the current roster'
+                          }
+                        />
+                        <DetailLine
+                          label="Pair Bond Total"
+                          value={String(archive.bondTotal)}
+                        />
+                      </View>
+                      {archive.isUnlocked ? (
+                        <View style={styles.sceneList}>
+                          {archive.sceneLines.map((sceneLine, index) => (
+                            <Text
+                              key={`${archive.id}-${index}`}
+                              style={styles.sceneLine}
+                            >
+                              {sceneLine}
+                            </Text>
+                          ))}
+                        </View>
+                      ) : null}
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Current Dive Pairing</Text>
                 <Text style={styles.panelBody}>
                   Active-run companion context is surfaced here so the bond
@@ -507,15 +616,29 @@ export default function BondsScreen() {
                       nextReservePerk,
                       unlockedScenes,
                       lockedScenes,
-                    }) => (
-                      <View
-                        key={companion.id}
-                        style={[
-                          styles.companionCard,
-                          !unlocked ? styles.companionCardLocked : null,
-                          isActive ? styles.companionCardActive : null,
-                        ]}
-                      >
+                    }) => {
+                      const companionHeaderArtSource = unlocked
+                        ? getCompanionHeaderArtSource(companion.id, settings)
+                        : null;
+
+                      return (
+                        <View
+                          key={companion.id}
+                          style={[
+                            styles.companionCard,
+                            !unlocked ? styles.companionCardLocked : null,
+                            isActive ? styles.companionCardActive : null,
+                          ]}
+                        >
+                          {companionHeaderArtSource ? (
+                            <View style={styles.companionArtFrame}>
+                              <Image
+                                source={companionHeaderArtSource}
+                                style={styles.companionArt}
+                                resizeMode="contain"
+                              />
+                            </View>
+                          ) : null}
                         <View style={styles.companionHeader}>
                           <View style={styles.companionHeading}>
                             <Text style={styles.companionName}>
@@ -624,7 +747,8 @@ export default function BondsScreen() {
                           </View>
                         ) : null}
                       </View>
-                    )
+                      );
+                    }
                   )}
                 </View>
               </View>
@@ -912,6 +1036,68 @@ function createStyles(
     rosterList: {
       gap: spacing.md,
     },
+    pairArchiveList: {
+      gap: spacing.md,
+    },
+    pairArchiveCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: 14,
+      gap: spacing.sm,
+      overflow: 'hidden',
+    },
+    pairArchiveCardLocked: {
+      opacity: 0.72,
+    },
+    pairArchiveArtFrame: {
+      minHeight: 120,
+      borderRadius: 14,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      overflow: 'hidden',
+      paddingHorizontal: spacing.xs,
+      paddingVertical: spacing.xs,
+      justifyContent: 'center',
+    },
+    pairArchivePanelArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.28,
+      width: undefined,
+      height: undefined,
+    },
+    pairArchiveHeaderArt: {
+      width: '100%',
+      height: 74,
+      alignSelf: 'center',
+      marginTop: spacing.xs,
+    },
+    pairArchiveTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    pairArchivePair: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
+    },
+    pairArchiveSummary: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    pairArchiveNote: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      lineHeight: scaleLineHeight(18, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
     companionCard: {
       backgroundColor: colors.surface,
       borderWidth: 1,
@@ -925,6 +1111,22 @@ function createStyles(
     },
     companionCardActive: {
       borderColor: colors.accent,
+    },
+    companionArtFrame: {
+      minHeight: 88,
+      borderRadius: 14,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
+      paddingHorizontal: spacing.xs,
+      paddingVertical: spacing.xs,
+    },
+    companionArt: {
+      width: '100%',
+      height: 72,
     },
     companionHeader: {
       flexDirection: 'row',

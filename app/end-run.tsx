@@ -1,8 +1,9 @@
 import { router, type Href, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +15,12 @@ import {
   getArchivedResultArtSource,
   getLoopSurfaceArtSource,
 } from '@/src/assets/loop-art-sources';
+import { playUiSfx } from '@/src/audio/ui-sfx';
+import {
+  getBiomeAmbientArtSource,
+  getBossArchiveArtSource,
+  getEndingAccentArtSources,
+} from '@/src/assets/supplemental-art-sources';
 import { GameButton } from '@/src/components/game-button';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
@@ -58,6 +65,7 @@ export default function EndRunScreen() {
   const [archivedRun, setArchivedRun] = useState<RunHistoryEntry | null>(null);
   const [loadStatus, setLoadStatus] = useState<EndRunLoadStatus>('loading');
   const [loadError, setLoadError] = useState<string | null>(null);
+  const recapCueRunIdRef = useRef<string | null>(null);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
   const requestedRunId = useMemo(
@@ -102,6 +110,23 @@ export default function EndRunScreen() {
       isCancelled = true;
     };
   }, [requestedRunId]);
+
+  useEffect(() => {
+    if (
+      loadStatus !== 'ready' ||
+      !archivedRun ||
+      archivedRun.result !== 'loss'
+    ) {
+      return;
+    }
+
+    if (recapCueRunIdRef.current === archivedRun.runId) {
+      return;
+    }
+
+    recapCueRunIdRef.current = archivedRun.runId;
+    void playUiSfx('recap-sting', settings);
+  }, [archivedRun, loadStatus, settings]);
 
   const isFailedRun = archivedRun?.result === 'loss';
   const isAbandonedRun = archivedRun?.result === 'abandon';
@@ -193,10 +218,88 @@ export default function EndRunScreen() {
     () => getLoopSurfaceArtSource('end-run', settings),
     [settings]
   );
+  const endRunAmbientArtSource = useMemo(
+    () => getBiomeAmbientArtSource(archivedRun?.floorReached, settings),
+    [archivedRun?.floorReached, settings]
+  );
   const archivedResultArtSource = useMemo(
     () => getArchivedResultArtSource(archivedRun?.result ?? 'loss', settings),
     [archivedRun?.result, settings]
   );
+  const bossArchiveArtSource = useMemo(
+    () => getBossArchiveArtSource(archivedRun?.floorReached, settings),
+    [archivedRun?.floorReached, settings]
+  );
+  const endingAccent = useMemo(
+    () =>
+      getEndingAccentArtSources(
+        archivedRun?.result,
+        archivedRun?.floorReached,
+        settings
+      ),
+    [archivedRun?.floorReached, archivedRun?.result, settings]
+  );
+  const bossArchiveUpdate = useMemo(() => {
+    const floorReached = archivedRun?.floorReached;
+
+    if (!floorReached || floorReached < 4) {
+      return null;
+    }
+
+    if (floorReached >= 10) {
+      return {
+        title: 'Board Archive Update',
+        subtitle: 'Executive containment breach',
+        body:
+          archivedRun.result === 'win'
+            ? 'The archive now closes with the board-level panel because this run forced the executive layer fully into the open.'
+            : 'The archive now escalates this recap into the board layer, where the report stops pretending the disaster belonged to anyone lower in the org chart.',
+      };
+    }
+
+    if (floorReached >= 7) {
+      return {
+        title: 'Throughput Archive Update',
+        subtitle: 'Cross-functional morale escalation',
+        body:
+          archivedRun.result === 'win'
+            ? 'This run pushed the archive into the throughput executive layer, so the recap now carries the matching archive surface instead of another plain checkpoint.'
+            : 'The archive now records the run inside the throughput executive layer, where alignment theater starts treating the incident like company myth.',
+      };
+    }
+
+    return {
+      title: 'Onboarding Archive Update',
+      subtitle: 'Formal compliance escalation',
+      body:
+        archivedRun.result === 'win'
+          ? 'The archive reached the onboarding and compliance layer, so the post-run record now gets the first boss archive panel instead of a plain text escalation note.'
+          : 'The archive now tags this run as having breached the onboarding and compliance layer, where the incident stops being local and starts becoming policy.',
+    };
+  }, [archivedRun]);
+  const endingAccentSummary = useMemo(() => {
+    if (!archivedRun || !endingAccent) {
+      return null;
+    }
+
+    if (archivedRun.result === 'win' && archivedRun.floorReached >= 10) {
+      return 'The archive no longer treats this as a contained incident. The run breached the executive layer, forced the cover story open, and logged the company itself as the harm source.';
+    }
+
+    if (archivedRun.result === 'win') {
+      return 'You closed the run before the tower closed around you. The blast radius stays narrower than a full exposure ending, but the archive now admits authority helped carry the wound.';
+    }
+
+    if (archivedRun.result === 'abandon') {
+      return 'You got out alive, and the archive treats that survival as unfinished testimony. The truth is deferred instead of erased, which is still more honest than a clean company lie.';
+    }
+
+    if (archivedRun.floorReached >= 8) {
+      return 'You climbed high enough for the confession to start forming, then lost the clean chain that would have finished it. The archive keeps the damage visible even though the story broke on the way out.';
+    }
+
+    return 'The run ended before the tower had to admit much, so the incident still wears a badge and a containment stamp. The leak remains real, even when the record tries to keep it local.';
+  }, [archivedRun, endingAccent]);
   const restartReadBody = useMemo(() => {
     if (!archivedRun) {
       return 'The archive should explain the outcome before it asks for another run.';
@@ -354,9 +457,84 @@ export default function EndRunScreen() {
                 </View>
               ) : null}
 
+              {bossArchiveArtSource && bossArchiveUpdate ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>{bossArchiveUpdate.title}</Text>
+                  <Text style={styles.panelBody}>{bossArchiveUpdate.body}</Text>
+                  <View style={styles.bossArchiveCard}>
+                    {endRunAmbientArtSource ? (
+                      <Image
+                        source={endRunAmbientArtSource}
+                        style={styles.bossArchiveAmbientArt}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    <Image
+                      source={bossArchiveArtSource}
+                      style={styles.bossArchiveArt}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.bossArchiveCopy}>
+                      <Text style={styles.bossArchiveSubtitle}>
+                        {bossArchiveUpdate.subtitle}
+                      </Text>
+                      <Text style={styles.bossArchiveMeta}>
+                        Floor {archivedRun.floorReached} archive surface
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ) : null}
+
+              {endingAccent && endingAccentSummary ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>{endingAccent.archiveHeader}</Text>
+                  <View style={styles.endingAccentCard}>
+                    {endRunAmbientArtSource ? (
+                      <Image
+                        source={endRunAmbientArtSource}
+                        style={styles.endingAccentAmbientArt}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    {endingAccent.headerSource ? (
+                      <Image
+                        source={endingAccent.headerSource}
+                        style={styles.endingHeaderArt}
+                        resizeMode="contain"
+                      />
+                    ) : null}
+                    <View style={styles.endingRecapPanelWrap}>
+                      {endingAccent.recapPanelSource ? (
+                        <Image
+                          source={endingAccent.recapPanelSource}
+                          style={styles.endingRecapPanelArt}
+                          resizeMode="cover"
+                        />
+                      ) : null}
+                      <View style={styles.endingRecapCopy}>
+                        <Text style={styles.endingAccentEyebrow}>
+                          {endingAccent.title}
+                        </Text>
+                        <Text style={styles.endingAccentTitle}>
+                          {endingAccent.recapTitle}
+                        </Text>
+                        <Text style={styles.endingAccentBody}>
+                          {endingAccentSummary}
+                        </Text>
+                        <Text style={styles.endingAccentMeta}>
+                          Floor {archivedRun.floorReached} archival posture
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              ) : null}
+
               <LoopArtPanel
                 title={restartReadTitle}
                 body={restartReadBody}
+                ambientSource={endRunAmbientArtSource}
                 source={archivedResultArtSource}
                 backgroundSource={endRunSurfaceArtSource}
                 frameVariant="portrait"
@@ -740,6 +918,108 @@ function createStyles(
     },
     actionGroup: {
       gap: spacing.sm + 2,
+    },
+    bossArchiveCard: {
+      borderRadius: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+      gap: spacing.sm,
+      paddingBottom: spacing.sm + 2,
+    },
+    bossArchiveAmbientArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.18,
+      width: undefined,
+      height: undefined,
+    },
+    bossArchiveArt: {
+      width: '100%',
+      height: 150,
+      alignSelf: 'center',
+    },
+    bossArchiveCopy: {
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm + 2,
+    },
+    bossArchiveSubtitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    bossArchiveMeta: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    endingAccentCard: {
+      borderRadius: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+      gap: spacing.sm,
+      paddingBottom: spacing.sm + 2,
+    },
+    endingAccentAmbientArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.18,
+      width: undefined,
+      height: undefined,
+    },
+    endingHeaderArt: {
+      width: '100%',
+      height: 96,
+      marginTop: spacing.xs,
+      alignSelf: 'center',
+    },
+    endingRecapPanelWrap: {
+      minHeight: 188,
+      justifyContent: 'flex-end',
+      paddingHorizontal: spacing.sm + 2,
+      paddingBottom: spacing.sm + 2,
+    },
+    endingRecapPanelArt: {
+      ...StyleSheet.absoluteFillObject,
+      width: undefined,
+      height: undefined,
+      opacity: 0.92,
+    },
+    endingRecapCopy: {
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.sm + 2,
+    },
+    endingAccentEyebrow: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(17, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    endingAccentTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    endingAccentBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    endingAccentMeta: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
   });
 }

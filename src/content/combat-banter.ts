@@ -119,6 +119,18 @@ function getFormerExecutiveAssistantActionLine(
     return `Loud works. Make ${context.enemy.name} answer it.`;
   }
 
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `Good. Make ${context.enemy.name} miss the room and it loses the whole exchange.`;
+    }
+
+    if (tier === 'trusted') {
+      return `Perfect. Steal the timing, then punish the opening.`;
+    }
+
+    return `Nice slip. Keep ${context.enemy.name} guessing.`;
+  }
+
   if (tier === 'devoted') {
     return `Breathe. You're ${getHeroConditionLabel(
       context.heroHp,
@@ -191,6 +203,18 @@ function getFacilitiesGoblinActionLine(
     }
 
     return `That shook the wiring. Keep leaning on it.`;
+  }
+
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `There it is. Let ${context.enemy.name} hit empty air and the whole frame starts wobbling.`;
+    }
+
+    if (tier === 'trusted') {
+      return `Good slip. The structure hates a missed load.`;
+    }
+
+    return `Clean dodge. That made the room worse for it.`;
   }
 
   if (tier === 'devoted') {
@@ -267,6 +291,18 @@ function getSecuritySkeletonActionLine(
     return `Force acknowledged. Maintain control.`;
   }
 
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `Confirmed. The strike window broke. Continue evasive control.`;
+    }
+
+    if (tier === 'trusted') {
+      return `Effective. ${context.enemy.name} is losing the line.`;
+    }
+
+    return `Good avoidance. Maintain spacing.`;
+  }
+
   if (tier === 'devoted') {
     return `Recover. You are ${getHeroConditionLabel(
       context.heroHp,
@@ -339,6 +375,18 @@ function getPossessedCopierActionLine(
     }
 
     return `The back tray slams once like applause.`;
+  }
+
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `The copier flashes: "IMPACT AVOIDED. COUNTERFILED."`;
+    }
+
+    if (tier === 'trusted') {
+      return `A page lands: "GOOD. MAKE IT MISS AGAIN."`;
+    }
+
+    return `The copier makes an approving near-jam noise.`;
   }
 
   if (tier === 'devoted') {
@@ -415,6 +463,18 @@ function getDisillusionedTempActionLine(
     return `Sure. Make it everybody's problem.`;
   }
 
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `Nice. Make ${context.enemy.name} swing at nothing and it looks almost embarrassed.`;
+    }
+
+    if (tier === 'trusted') {
+      return `Good dodge. That's the kind of competence this place hates.`;
+    }
+
+    return `Clean miss. I respect it, reluctantly.`;
+  }
+
   if (tier === 'devoted') {
     return `Take the reset. You're ${getHeroConditionLabel(
       context.heroHp,
@@ -487,6 +547,18 @@ function getFallbackActionLine(
     }
 
     return `Loud, but effective.`;
+  }
+
+  if (context.actionId === 'dodge') {
+    if (tier === 'devoted') {
+      return `Good. Make ${context.enemy.name} waste the hit and keep the edge.`;
+    }
+
+    if (tier === 'trusted') {
+      return `Nice dodge. Take the free angle.`;
+    }
+
+    return `Good slip.`;
   }
 
   if (tier === 'devoted') {

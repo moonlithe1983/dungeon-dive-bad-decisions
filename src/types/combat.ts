@@ -1,6 +1,17 @@
 export type CombatPhase = 'setup' | 'player-turn' | 'victory' | 'defeat';
 
-export type CombatActionId = 'patch' | 'escalate' | 'stabilize';
+export const combatActionIds = [
+  'patch',
+  'escalate',
+  'stabilize',
+  'dodge',
+] as const;
+
+export type CombatActionId = (typeof combatActionIds)[number];
+
+export function isCombatActionId(value: string): value is CombatActionId {
+  return combatActionIds.includes(value as CombatActionId);
+}
 
 export type CombatStatusId =
   | 'burnout'

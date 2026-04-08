@@ -1,10 +1,19 @@
 import type { Href } from 'expo-router';
 
-import { getClassDefinition } from '@/src/content/classes';
+import { bondSceneDefinitions } from '@/src/content/bond-scenes';
+import {
+  classDefinitions,
+  getClassDefinition,
+} from '@/src/content/classes';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { buildMetaUpgradeCatalog } from '@/src/engine/meta/meta-upgrade-engine';
 import { buildRequisitionCatalog } from '@/src/engine/meta/requisition-engine';
 import { getRunResumeTarget } from '@/src/engine/run/progress-run';
+import {
+  endingStateDefinitions,
+  getClassTruthRouteSummary,
+  getNextQuarterlyTier,
+} from '@/src/engine/retention/retention-engine';
 import type { ProfileState } from '@/src/types/profile';
 import type { RunState } from '@/src/types/run';
 
@@ -44,59 +53,18 @@ export function getNextGoalSummary(input: {
     };
   }
 
-  const requisitionCatalog = buildRequisitionCatalog(profile);
-  const nextClassOffer = requisitionCatalog.classes
-    .filter((offer) => !offer.owned)
-    .sort((left, right) => left.cost - right.cost)[0];
-  const nextCompanionOffer = requisitionCatalog.companions
-    .filter((offer) => !offer.owned)
-    .sort((left, right) => left.cost - right.cost)[0];
-  const nextUpgradeOffer = buildMetaUpgradeCatalog(profile)
-    .filter((offer) => !offer.exhausted)
-    .sort(
-      (left, right) =>
-        (left.nextCost ?? Number.MAX_SAFE_INTEGER) -
-        (right.nextCost ?? Number.MAX_SAFE_INTEGER)
-    )[0];
-
-  if (nextClassOffer) {
-    const className = getClassDefinition(nextClassOffer.id)?.name ?? nextClassOffer.title;
+  if (profile.retention.probation.status === 'active') {
+    const runsRemaining = Math.max(
+      0,
+      profile.retention.probation.deadlineRunCount - profile.stats.totalRuns
+    );
 
     return {
-      eyebrow: 'ROSTER GOAL',
-      title: `Unlock ${className}`,
-      body: nextClassOffer.affordable
-        ? `${className} is ready to requisition right now. Unlocking it adds a new run archetype immediately.`
-        : `Save ${nextClassOffer.shortage} more chit${nextClassOffer.shortage === 1 ? '' : 's'} to unlock ${className} and widen run variety.`,
-      ctaLabel: 'Open Breakroom Hub',
-      href: '/hub' as Href,
-    };
-  }
-
-  if (nextCompanionOffer) {
-    const companionName =
-      getCompanionDefinition(nextCompanionOffer.id)?.name ?? nextCompanionOffer.title;
-
-    return {
-      eyebrow: 'CREW GOAL',
-      title: `Recruit ${companionName}`,
-      body: nextCompanionOffer.affordable
-        ? `${companionName} can be hired now. A new companion changes both early-run support and long-term bond progression.`
-        : `Save ${nextCompanionOffer.shortage} more chit${nextCompanionOffer.shortage === 1 ? '' : 's'} to add ${companionName} to the live roster.`,
-      ctaLabel: 'Open Breakroom Hub',
-      href: '/hub' as Href,
-    };
-  }
-
-  if (nextUpgradeOffer && nextUpgradeOffer.nextCost != null) {
-    return {
-      eyebrow: 'OPERATIONS GOAL',
-      title: `Improve ${nextUpgradeOffer.title}`,
-      body: nextUpgradeOffer.affordable
-        ? `${nextUpgradeOffer.title} is ready to upgrade now and will strengthen every future climb.`
-        : `Save ${nextUpgradeOffer.shortage} more chit${nextUpgradeOffer.shortage === 1 ? '' : 's'} to buy the next permanent operations upgrade.`,
-      ctaLabel: 'Review Progression',
-      href: '/progression' as Href,
+      eyebrow: 'PROBATION CONTRACT',
+      title: `Clear the review in ${runsRemaining} run${runsRemaining === 1 ? '' : 's'}`,
+      body: `Optional pressure is live. Win before the contract window closes to earn ${profile.retention.probation.rewardCurrency} bonus chits and avoid the temporary quarterly score hit.`,
+      ctaLabel: 'Start New Dive',
+      href: '/' as Href,
     };
   }
 
@@ -110,10 +78,123 @@ export function getNextGoalSummary(input: {
     };
   }
 
+  const missingEndingStates = endingStateDefinitions.filter(
+    (ending) => !profile.retention.truth.discoveredEndingIds.includes(ending.id)
+  );
+
+  if (missingEndingStates.length > 0) {
+    return {
+      eyebrow: 'TRUTH LADDER',
+      title: `Log ${missingEndingStates[0]?.label ?? 'the next ending state'}`,
+      body: `You have logged ${profile.retention.truth.discoveredEndingIds.length}/${endingStateDefinitions.length} ending states so far. Fill the archive with every version of the truth before you start locking in class-specific total wins.`,
+      ctaLabel: 'Open Progression',
+      href: '/progression' as Href,
+    };
+  }
+
+  const nextFullExposureClass = classDefinitions.find(
+    (classDefinition) =>
+      !profile.retention.truth.fullExposureClassIds.includes(classDefinition.id)
+  );
+
+  if (nextFullExposureClass) {
+    const truthRoute = getClassTruthRouteSummary(nextFullExposureClass.id);
+
+    return {
+      eyebrow: 'CLASS CASE FILE',
+      title: `Earn Full Exposure with ${nextFullExposureClass.name}`,
+      body: `${nextFullExposureClass.name} is your next best lens for ${truthRoute.label.toLowerCase()}. Clearing that route gives the class a distinct reason to exist beyond another attack button.`,
+      ctaLabel: 'Review Classes',
+      href: '/class-select' as Href,
+    };
+  }
+
+  const requisitionCatalog = buildRequisitionCatalog(profile);
+  const nextClassOffer = requisitionCatalog.classes
+    .filter((offer) => !offer.owned)
+    .sort((left, right) => left.cost - right.cost)[0];
+  const nextCompanionOffer = requisitionCatalog.companions
+    .filter((offer) => !offer.owned)
+    .sort((left, right) => left.cost - right.cost)[0];
+
+  if (nextClassOffer) {
+    const className = getClassDefinition(nextClassOffer.id)?.name ?? nextClassOffer.title;
+
+    return {
+      eyebrow: 'ROSTER LADDER',
+      title: `Unlock ${className}`,
+      body: nextClassOffer.affordable
+        ? `${className} is ready to requisition right now. The roster ladder is working when every win opens another department immediately.`
+        : `Save ${nextClassOffer.shortage} more chit${nextClassOffer.shortage === 1 ? '' : 's'} to unlock ${className} and keep the post-win roster loop moving.`,
+      ctaLabel: 'Open Breakroom Hub',
+      href: '/hub' as Href,
+    };
+  }
+
+  if (nextCompanionOffer) {
+    const companionName =
+      getCompanionDefinition(nextCompanionOffer.id)?.name ?? nextCompanionOffer.title;
+
+    return {
+      eyebrow: 'ROSTER LADDER',
+      title: `Recruit ${companionName}`,
+      body: nextCompanionOffer.affordable
+        ? `${companionName} can be hired now. Keep using wins to turn the live roster over instead of replaying the same safe pair forever.`
+        : `Save ${nextCompanionOffer.shortage} more chit${nextCompanionOffer.shortage === 1 ? '' : 's'} to add ${companionName} to the live roster.`,
+      ctaLabel: 'Open Breakroom Hub',
+      href: '/hub' as Href,
+    };
+  }
+
+  if (
+    profile.retention.relationship.unlockedBondSceneIds.length < bondSceneDefinitions.length ||
+    profile.retention.relationship.synergyPairIds.length < 3
+  ) {
+    return {
+      eyebrow: 'RELATIONSHIP LADDER',
+      title: 'Push bonds and crew chemistry',
+      body: `You have logged ${profile.retention.relationship.unlockedBondSceneIds.length}/${bondSceneDefinitions.length} bond scenes and ${profile.retention.relationship.synergyPairIds.length} archived pairings. Rotate companions until the tower feels different with each crew.`,
+      ctaLabel: 'Open Bonds',
+      href: '/bonds' as Href,
+    };
+  }
+
+  const nextQuarterTier = getNextQuarterlyTier(profile);
+
+  if (nextQuarterTier) {
+    return {
+      eyebrow: 'QUARTERLY LADDER',
+      title: `Reach ${nextQuarterTier.label}`,
+      body: `Current quarter score is ${profile.retention.quarterly.score}. Push to ${nextQuarterTier.threshold} before inactivity decay eats the lead back down.`,
+      ctaLabel: 'Open Progression',
+      href: '/progression' as Href,
+    };
+  }
+
+  const nextUpgradeOffer = buildMetaUpgradeCatalog(profile)
+    .filter((offer) => !offer.exhausted)
+    .sort(
+      (left, right) =>
+        (left.nextCost ?? Number.MAX_SAFE_INTEGER) -
+        (right.nextCost ?? Number.MAX_SAFE_INTEGER)
+    )[0];
+
+  if (nextUpgradeOffer && nextUpgradeOffer.nextCost != null) {
+    return {
+      eyebrow: 'OPERATIONS GOAL',
+      title: `Improve ${nextUpgradeOffer.title}`,
+      body: nextUpgradeOffer.affordable
+        ? `${nextUpgradeOffer.title} is ready to upgrade now and will strengthen every future climb.`
+        : `Save ${nextUpgradeOffer.shortage} more chit${nextUpgradeOffer.shortage === 1 ? '' : 's'} to buy the next permanent operations upgrade.`,
+      ctaLabel: 'Review Progression',
+      href: '/progression' as Href,
+    };
+  }
+
   return {
-    eyebrow: 'LONG GAME',
-    title: 'Deepen the archive',
-    body: 'The core loops are live. Push for cleaner runs, richer bond scenes, and stronger archive coverage by reviewing progression and climbing again.',
+    eyebrow: 'POST-WIN LADDERS',
+    title: 'Pick your next case file',
+    body: 'Truth ladder: earn Full Exposure with every class. Relationship ladder: finish the bond scene deck and archive more crew pairings. Quarterly ladder: keep your score alive before the quarter cools off.',
     ctaLabel: 'Open Progression',
     href: '/progression' as Href,
   };

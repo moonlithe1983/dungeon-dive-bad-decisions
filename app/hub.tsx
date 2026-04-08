@@ -34,6 +34,7 @@ import {
 } from '@/src/engine/run/progress-run';
 import { loadLatestRunHistoryEntryAsync } from '@/src/save/runRepo';
 import { getNextGoalSummary } from '@/src/progression/next-goal';
+import { formatQuarterIdLabel, getQuarterlyChallengeSnapshot } from '@/src/engine/retention/retention-engine';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import {
@@ -96,6 +97,8 @@ async function loadHubData(input: {
 export default function HubScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
+  const activateProbationContract = useProfileStore((state) => state.activateProbationContract);
+  const cancelProbationContract = useProfileStore((state) => state.cancelProbationContract);
   const purchaseClassUnlock = useProfileStore((state) => state.purchaseClassUnlock);
   const purchaseCompanionUnlock = useProfileStore(
     (state) => state.purchaseCompanionUnlock
@@ -316,7 +319,16 @@ export default function HubScreen() {
     () => getNextGoalSummary({ profile: resolvedProfile, activeRun }),
     [activeRun, resolvedProfile]
   );
-
+  const quarterlySnapshot = resolvedProfile
+    ? getQuarterlyChallengeSnapshot(resolvedProfile.retention)
+    : null;
+  const probationStatus = resolvedProfile?.retention.probation.status ?? 'inactive';
+  const probationRunsRemaining = resolvedProfile
+    ? Math.max(
+        0,
+        resolvedProfile.retention.probation.deadlineRunCount - resolvedProfile.stats.totalRuns
+      )
+    : 0;
   const handlePurchase = async (offer: RequisitionOffer) => {
     setActiveRequisitionId(`${offer.kind}:${offer.id}`);
     setLastTransactionKind('requisition');
@@ -478,6 +490,48 @@ export default function HubScreen() {
                 </View>
               </View>
 
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Retention Pressure</Text>
+                <Text style={styles.panelBody}>
+                  The hub now keeps the quarterly ladder and optional probation pressure visible so a player always knows what the next run is buying.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine
+                    label="Quarter"
+                    value={quarterlySnapshot ? formatQuarterIdLabel(quarterlySnapshot.quarterId) : 'Unavailable'}
+                  />
+                  <DetailLine
+                    label="Quarter Score"
+                    value={quarterlySnapshot ? `${quarterlySnapshot.score} current / ${quarterlySnapshot.bestScore} best` : 'Unavailable'}
+                  />
+                  <DetailLine
+                    label="Next Tier"
+                    value={quarterlySnapshot?.nextTier ? `${quarterlySnapshot.nextTier.label} at ${quarterlySnapshot.nextTier.threshold}` : 'Quarter ladder capped for now'}
+                  />
+                  <DetailLine
+                    label="Probation"
+                    value={probationStatus === 'active' ? `Active, ${probationRunsRemaining} run${probationRunsRemaining === 1 ? '' : 's'} remaining` : 'Inactive'}
+                  />
+                </View>
+                <View style={styles.actionGroup}>
+                  {probationStatus === 'active' ? (
+                    <GameButton
+                      label="Cancel Probation Contract"
+                      onPress={() => {
+                        void cancelProbationContract();
+                      }}
+                      variant="secondary"
+                    />
+                  ) : (
+                    <GameButton
+                      label="Start Probation Contract"
+                      onPress={() => {
+                        void activateProbationContract();
+                      }}
+                    />
+                  )}
+                </View>
+              </View>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Active Dive Desk</Text>
                 <Text style={styles.panelBody}>

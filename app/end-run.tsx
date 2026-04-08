@@ -36,6 +36,13 @@ import {
   loadLatestRunHistoryEntryAsync,
   loadRunHistoryEntryByRunIdAsync,
 } from '@/src/save/runRepo';
+import {
+  formatQuarterIdLabel,
+  formatSynergyPairLabel,
+  getEndingStateDefinition,
+  getQuarterlyTierDefinition,
+  getRosterUnlockReadyLabel,
+} from '@/src/engine/retention/retention-engine';
 import { useRunStore } from '@/src/state/runStore';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
 import {
@@ -199,6 +206,18 @@ export default function EndRunScreen() {
   const archivedAtLabel = useMemo(
     () => formatSaveTimestampLabel(archivedRun?.updatedAt),
     [archivedRun?.updatedAt]
+  );
+  const retentionSummary = archivedRun?.recap?.retention ?? null;
+  const unlockedQuarterTierLabels = useMemo(
+    () =>
+      retentionSummary?.quarterlyUnlockedTierIds.map(
+        (tierId) => getQuarterlyTierDefinition(tierId).label
+      ) ?? [],
+    [retentionSummary]
+  );
+  const rosterUnlockReadyLabel = useMemo(
+    () => (retentionSummary ? getRosterUnlockReadyLabel(retentionSummary) : null),
+    [retentionSummary]
   );
   const buildSummary = useMemo(() => {
     if (!archivedRun?.recap) {
@@ -711,6 +730,89 @@ export default function EndRunScreen() {
                 </View>
               ) : null}
 
+              {retentionSummary ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Retention Update</Text>
+                  <Text style={styles.panelBody}>
+                    {archivedRun.result === 'win'
+                      ? 'A win should unlock the next reason to keep playing. This run advanced the long-term ladders below instead of ending the conversation.'
+                      : 'Even a failed or abandoned run should move at least one long-term ladder forward. This recap shows what stayed with you.'}
+                  </Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine
+                      label="Ending Logged"
+                      value={getEndingStateDefinition(retentionSummary.endingId).label}
+                    />
+                    <DetailLine
+                      label="Bonus Chits"
+                      value={`+${retentionSummary.totalBonusCurrency}`}
+                    />
+                    <DetailLine
+                      label="Quarter"
+                      value={`${formatQuarterIdLabel(retentionSummary.quarterlyQuarterId)}: +${retentionSummary.quarterlyPointsAwarded} points`}
+                    />
+                    <DetailLine
+                      label="Quarter Score"
+                      value={String(retentionSummary.quarterlyScoreAfterRun)}
+                    />
+                    <DetailLine
+                      label="Roster Ladder"
+                      value={retentionSummary.rosterBonusCurrency > 0 ? `+${retentionSummary.rosterBonusCurrency} chits${rosterUnlockReadyLabel ? `, ${rosterUnlockReadyLabel} now within reach` : ''}` : 'No roster subsidy this run'}
+                    />
+                    <DetailLine
+                      label="Momentum Bonus"
+                      value={retentionSummary.momentumQualified ? `Qualified in ${retentionSummary.momentumRunsUsed}/${retentionSummary.momentumTargetRuns} runs for +${retentionSummary.momentumBonusCurrency}` : 'No quick-clear bonus this run'}
+                    />
+                    <DetailLine
+                      label="Probation"
+                      value={retentionSummary.probationOutcome === 'success' ? `Cleared for +${retentionSummary.probationRewardCurrency}` : retentionSummary.probationOutcome === 'failed' ? `Review failed, -${retentionSummary.probationPenaltyApplied} quarterly score` : retentionSummary.probationOutcome === 'active' ? `${retentionSummary.probationRunsRemaining} run${retentionSummary.probationRunsRemaining === 1 ? '' : 's'} left on contract` : 'No active contract'}
+                    />
+                  </View>
+                  {retentionSummary.relationshipArchiveCoverageAdded.length > 0 ? (
+                    <>
+                      <Text style={styles.sectionLabel}>Archive Coverage Added</Text>
+                      <View style={styles.detailCard}>
+                        {retentionSummary.relationshipArchiveCoverageAdded.map((companionId) => (
+                          <DetailLine
+                            key={`coverage-${companionId}`}
+                            label={getCompanionDefinition(companionId)?.name ?? companionId}
+                            value="Archived in a finished run"
+                          />
+                        ))}
+                      </View>
+                    </>
+                  ) : null}
+                  {retentionSummary.relationshipSynergyPairIds.length > 0 ? (
+                    <>
+                      <Text style={styles.sectionLabel}>New Crew Synergies</Text>
+                      <View style={styles.detailCard}>
+                        {retentionSummary.relationshipSynergyPairIds.map((pairId) => (
+                          <DetailLine
+                            key={`pair-${pairId}`}
+                            label={formatSynergyPairLabel(pairId)}
+                            value="New archived pairing"
+                          />
+                        ))}
+                      </View>
+                    </>
+                  ) : null}
+                  {unlockedQuarterTierLabels.length > 0 ? (
+                    <>
+                      <Text style={styles.sectionLabel}>Quarterly Tier Unlocks</Text>
+                      <View style={styles.detailCard}>
+                        {unlockedQuarterTierLabels.map((tierLabel) => (
+                          <DetailLine
+                            key={`tier-${tierLabel}`}
+                            label={tierLabel}
+                            value="Tier reward unlocked"
+                          />
+                        ))}
+                      </View>
+                    </>
+                  ) : null}
+                </View>
+              ) : null}
+
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Next Run</Text>
                 <Text style={styles.panelBody}>
@@ -1094,6 +1196,3 @@ function createStyles(
     },
   });
 }
-
-
-

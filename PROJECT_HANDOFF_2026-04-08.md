@@ -2,7 +2,7 @@
 ## GitHub Readiness / Release-Hardening Addendum
 
 Version date: April 8, 2026  
-Last refreshed: April 8, 2026 after the interactive-FTUE expansion, audio-accessibility expansion, input-remapping/controller-readiness pass, dodge-action combat pass, remote-analytics validation scaffold, and documentation alignment sweep.
+Last refreshed: April 8, 2026 after the interactive-FTUE expansion, audio-accessibility expansion, input-remapping/controller-readiness pass, dodge-action combat pass, remote-analytics validation scaffold, retention-system implementation pass, Android tester-build pass, and documentation alignment sweep.
 
 Purpose: use this addendum as the current source of truth for the repo state after the April 8 GitHub-readiness pass. Keep `PROJECT_HANDOFF_2026-03-24.md` as the broad product/system handoff, `PROJECT_HANDOFF_2026-04-04.md` as the authored-voice snapshot, `PROJECT_HANDOFF_2026-04-07.md` as the prior tester-build/readability layer, and this April 8 addendum as the latest repo-readiness / controls / analytics-validation layer.
 
@@ -32,7 +32,7 @@ Purpose: use this addendum as the current source of truth for the repo state aft
 - Documentation was brought back into line with the current app:
   - `README.md` now points at the April 8 handoff/app-needs artifacts
   - `SUPPORT.md`, `PRIVACY_POLICY.md`, `app/support.tsx`, and `app/privacy.tsx` now describe the dev-only analytics validation path honestly
-  - `docs/design-spec-audit.md` now reflects the improved but still partial state of remapping, dodge-combat progress, and remote analytics validation
+  - `docs/design-spec-audit.md` and `docs/launch-postlaunch-retention-plan.md` now reflect the improved but still partial state of retention, launch proof, and premium-gate readiness
 
 ## 2. What is accurate about the app right now
 
@@ -46,6 +46,11 @@ Purpose: use this addendum as the current source of truth for the repo state aft
   - battle / reward / event
   - end-run archive recap
   - progression / hub / codex / bonds
+- Post-first-win motivation is now implemented in runtime, not just planned:
+  - Truth ladder tracks discovered ending states and per-class ull-exposure clears
+  - Roster ladder tracks win subsidies, bonus chits, and the next affordable unlock
+  - Relationship ladder tracks bond scenes, archived pairings, and companion archive coverage
+  - quarterly challenge score, optional probation contracts, and quick-clear momentum bonuses persist in profile state and show up in recap, hub, and progression surfaces
 - The app is still offline-first in public gameplay terms:
   - no account requirement
   - no cloud sync
@@ -82,7 +87,17 @@ Automated validation rerun on the current tree:
 Notes:
 
 - The April 8 repo/code/docs readiness sweep was followed by a fresh Android tester-build generation pass from the same source tree.
-- The current verified local tester-build snapshot is now the April 8 release APK and tester-share copy, with title -> onboarding -> class briefing -> companion select -> run-map -> battle -> reward -> resume -> event -> end-run sanity-covered on Android.
+- The current verified local tester-build snapshot is the April 8 release APK and tester-share copy.
+- The latest Android sanity pass verified:
+  - title
+  - `Start New Dive`
+  - class setup
+  - companion setup
+  - `Start Dive`
+  - floor 1 route selection
+  - live battle entry and combat input
+  - cold relaunch back to title with `Resume Dive - Floor 1`
+- End-run and broader archive conversion logic remain covered by `npm run smoke:sim`; a full physical-device release-build end-run pass is still part of the pre-upload checklist.
 
 ## 4. Current release artifact status
 
@@ -90,15 +105,13 @@ Notes:
   - `android/app/build/outputs/apk/release/app-release.apk`
 - The latest dated tester-share copy already in the repo workspace is:
   - `release/dungeon-dive-bad-decisions-android-tester-2026-04-08.apk`
-- A fresh local release APK already exists at:
-  - `android/app/build/outputs/apk/release/app-release.apk`
-- The current dated outside-tester share copy already exists at:
-  - `release/dungeon-dive-bad-decisions-android-tester-2026-04-08.apk`
 - Rebuild again only if source changes after this April 8 snapshot.
 
 ## 5. What remains before upload
 
 The highest-value remaining work is still human validation, final release packaging, and choosing which "partial" systems stay partial for first release:
+
+Premium release gate: do not ship at `US$3.99` until pacing, post-first-win stickiness, and long-tail retention meet the targets in `docs/launch-postlaunch-retention-plan.md`. If that bar is not met, revisit a free route with optional paid upgrades, future games, or extras instead of shipping weak premium value.
 
 1. Share the already-built April 8 tester APK for the next outside smoke wave unless a new source change lands first.
 2. If source changes again, rebuild a fresh Android release APK before the next tester wave.
@@ -112,11 +125,14 @@ The highest-value remaining work is still human validation, final release packag
    - reward / event
    - cold relaunch resume
    - end-run
-4. Decide whether hardware controller input remains explicitly post-launch or becomes a release blocker.
-5. Decide whether the remote analytics adapter remains dev-only for first release or gets connected to a real production backend before launch.
-6. Finalize the public support inbox and any hosted support/privacy URLs needed for Play submission.
-7. Finalize Google Play listing copy, screenshots, feature graphic, and Data safety answers.
-8. Fix only blocker bugs or compliance issues found there.
+4. Run guided first-session tests with outside players and confirm they can install, finish the opening loop, and explain why they would play again without coaching.
+5. Validate the premium decision honestly: only keep the `US$3.99` launch if outside testing says the first session and replay hook justify it; otherwise revisit a free route with optional paid upgrades, future games, or extras.
+6. Decide whether hardware controller input remains explicitly post-launch or becomes a release blocker.
+7. Decide whether the remote analytics adapter remains dev-only for first release or gets connected to a real production backend before launch.
+8. Finalize the public support inbox and any hosted support/privacy URLs needed for Play submission.
+9. Finalize Google Play listing copy, screenshots, feature graphic, and Data safety answers, and confirm they match the real shipped loop.
+10. Lock the launch measurement/support plan: crash visibility, analytics stance, bug-report intake, and release-build provenance should all be explicit before upload.
+11. Fix only blocker bugs or compliance issues found there.
 
 ## 6. Repo guidance after this pass
 
@@ -141,6 +157,8 @@ Current canonical docs:
 - `PROJECT_HANDOFF_2026-04-08.md`
 - `PROJECT_HANDOFF_2026-04-08.docx`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-08.docx`
+- `docs/launch-postlaunch-retention-plan.md`
+- `Build_a_Viable_Expo_App.md`
 - `README.md`
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
@@ -158,5 +176,3 @@ Canonical local repo root:
 
 - `C:\ddbd`
 - use `C:\ddbd` in docs, references, and handoff notes
-
-

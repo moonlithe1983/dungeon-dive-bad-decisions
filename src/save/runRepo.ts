@@ -12,6 +12,7 @@ import {
   normalizeMetaUpgradeLevels,
 } from '@/src/engine/meta/meta-upgrade-engine';
 import { syncPendingRewardSelection } from '@/src/engine/reward/create-pending-reward';
+import { applyArchivedRunRetention } from '@/src/engine/retention/retention-engine';
 import { normalizeRunHeroState } from '@/src/engine/run/run-hero';
 import {
   createEmptyRunProgressStats,
@@ -132,6 +133,7 @@ type PersistedArchivedRunRecap = {
   outcome?: ArchivedRunOutcomeNote | null;
   defeatSummary?: ArchivedRunDefeatSummary | null;
   bondGains?: ArchivedRunBondGain[] | null;
+  retention?: ArchivedRunRecap['retention'] | null;
 };
 
 type LegacyRunNodeStatus = 'pending' | 'active' | 'resolved';
@@ -593,7 +595,8 @@ function buildArchivedRunRecap(
   run: RunState,
   outcome: ArchivedRunOutcomeNote,
   bondGains: ArchivedRunBondGain[],
-  defeatSummary: ArchivedRunDefeatSummary | null = null
+  defeatSummary: ArchivedRunDefeatSummary | null = null,
+  retention: ArchivedRunRecap['retention'] = null
 ): ArchivedRunRecap {
   return {
     activeCompanionId: run.activeCompanionId,
@@ -607,6 +610,7 @@ function buildArchivedRunRecap(
     outcome,
     defeatSummary,
     bondGains,
+    retention,
   };
 }
 
@@ -643,6 +647,7 @@ function normalizeArchivedRunRecap(
       levelAfter: Math.max(1, Math.floor(bondGain.levelAfter)),
       levelsEarned: Math.max(0, Math.floor(bondGain.levelsEarned)),
     })),
+    retention: recap.retention ?? null,
   };
 }
 
@@ -902,7 +907,8 @@ function buildRunHistoryEntry(
   result: ArchivedRunResult,
   outcome: ArchivedRunOutcomeNote,
   bondGains: ArchivedRunBondGain[],
-  defeatSummary: ArchivedRunDefeatSummary | null = null
+  defeatSummary: ArchivedRunDefeatSummary | null = null,
+  retention: ArchivedRunRecap['retention'] = null
 ): Omit<RunHistoryEntry, 'id'> {
   const className =
     getClassDefinition(run.heroClassId)?.name ?? humanizeId(run.heroClassId);
@@ -913,7 +919,7 @@ function buildRunHistoryEntry(
     classId: run.heroClassId,
     className,
     floorReached: run.floorIndex,
-    recap: buildArchivedRunRecap(run, outcome, bondGains, defeatSummary),
+    recap: buildArchivedRunRecap(run, outcome, bondGains, defeatSummary, retention),
     updatedAt: createTimestamp(),
     createdAt: run.createdAt,
   };
@@ -1084,12 +1090,19 @@ async function recordArchivedRunAsync(
   const db = await getDatabaseAsync();
   const profile = await loadOrSeedProfileAsync();
   const bondProgression = applyBondProgressionForArchivedRun(profile, run, result);
-  const nextEntry = buildRunHistoryEntry(
+  const retentionProgression = applyArchivedRunRetention({
+    profile: bondProgression.profile,
     run,
+    result,
+    bondGains: bondProgression.bondGains,
+  });
+  const nextEntry = buildRunHistoryEntry(
+    retentionProgression.run,
     result,
     outcome,
     bondProgression.bondGains,
-    defeatSummary
+    defeatSummary,
+    retentionProgression.summary
   );
 
   await db.runAsync(
@@ -1119,16 +1132,16 @@ async function recordArchivedRunAsync(
   );
 
   await saveProfileAsync({
-    ...bondProgression.profile,
+    ...retentionProgression.profile,
     stats: {
-      ...bondProgression.profile.stats,
-      totalRuns: bondProgression.profile.stats.totalRuns + 1,
+      ...retentionProgression.profile.stats,
+      totalRuns: retentionProgression.profile.stats.totalRuns + 1,
       totalWins:
-        bondProgression.profile.stats.totalWins + (result === 'win' ? 1 : 0),
+        retentionProgression.profile.stats.totalWins + (result === 'win' ? 1 : 0),
       totalDeaths:
-        bondProgression.profile.stats.totalDeaths + (result === 'loss' ? 1 : 0),
+        retentionProgression.profile.stats.totalDeaths + (result === 'loss' ? 1 : 0),
       totalBossesKilled:
-        bondProgression.profile.stats.totalBossesKilled +
+        retentionProgression.profile.stats.totalBossesKilled +
         Math.max(0, Math.floor(bossesKilledDelta)),
     },
   });

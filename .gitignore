@@ -59,6 +59,7 @@ app-example
 .codex-docx-temp-check/
 
 # local logs and smoke artifacts
+/artifacts/
 *.log
 android-*.png
 android-*.xml

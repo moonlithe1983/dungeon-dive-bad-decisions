@@ -4,6 +4,7 @@ import {
   defaultUnlockedCompanionIds,
 } from '@/src/content/companions';
 import { itemDefinitions } from '@/src/content/items';
+import { normalizeRetentionState } from '@/src/engine/retention/retention-engine';
 import { normalizeMetaUpgradeLevels } from '@/src/engine/meta/meta-upgrade-engine';
 import {
   normalizeCombatActionOrder,
@@ -47,9 +48,7 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
 
-function isNumberRecord(
-  value: unknown
-): value is Record<string, number> {
+function isNumberRecord(value: unknown): value is Record<string, number> {
   if (!value || typeof value !== 'object') {
     return false;
   }
@@ -63,9 +62,7 @@ function isMetaUpgradeLevels(value: unknown): value is MetaUpgradeLevels {
   return isNumberRecord(value);
 }
 
-function isProfileSettingsState(
-  value: unknown
-): value is ProfileSettingsState {
+function isProfileSettingsState(value: unknown): value is ProfileSettingsState {
   const candidate = value as Partial<ProfileSettingsState>;
 
   return (
@@ -125,11 +122,7 @@ function isProfileOnboardingState(
   );
 }
 
-function sanitizeIds(
-  value: string[],
-  validIds: Set<string>,
-  fallback: string[]
-) {
+function sanitizeIds(value: string[], validIds: Set<string>, fallback: string[]) {
   const uniqueIds = Array.from(
     new Set(value.filter((item) => validIds.has(item)))
   );
@@ -170,9 +163,7 @@ function normalizeBondLevels(value: Record<string, number>) {
   };
 }
 
-function normalizeSettings(
-  settings: ProfileSettingsState
-): ProfileSettingsState {
+function normalizeSettings(settings: ProfileSettingsState): ProfileSettingsState {
   const clampVolume = (value: number | undefined, fallback: number) => {
     const resolvedValue = typeof value === 'number' ? value : fallback;
 
@@ -280,6 +271,7 @@ function normalizeProfileState(profile: ProfileState): ProfileState {
     onboarding: normalizeOnboarding(profile.onboarding, normalizedStats),
     settings: normalizeSettings(profile.settings),
     stats: normalizedStats,
+    retention: normalizeRetentionState(profile.retention, updatedAt),
     createdAt,
     updatedAt,
   };
@@ -307,6 +299,7 @@ function createDefaultProfile(): ProfileState {
     onboarding: DEFAULT_PROFILE_ONBOARDING,
     settings: DEFAULT_PROFILE_SETTINGS,
     stats: DEFAULT_PROFILE_STATS,
+    retention: normalizeRetentionState(DEFAULT_PROFILE_STATE.retention, timestamp),
     createdAt: timestamp,
     updatedAt: timestamp,
   };
@@ -364,6 +357,7 @@ function parseProfileRow(row: ProfileRow | null) {
       stats: isProfileStats(candidate.stats)
         ? candidate.stats
         : DEFAULT_PROFILE_STATS,
+      retention: candidate.retention ?? DEFAULT_PROFILE_STATE.retention,
       createdAt:
         typeof candidate.createdAt === 'string'
           ? candidate.createdAt

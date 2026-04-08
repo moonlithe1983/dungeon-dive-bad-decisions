@@ -1,11 +1,13 @@
 # Mobile Dungeon Crawler Success Specification for Codex
 
-Version: 1.0  
+Version: 1.1
 Purpose: Provide a machine-readable product, design, UX, accessibility, retention, monetization, and technical specification for building a mobile-first dungeon crawler that is addictive, replayable, readable, accessible, and commercially viable without undermining trust.
 
 Audience: Codex, engineers, designers, product managers, UX designers, artists, audio designers, QA, live-ops, and analytics.
 
 Use this document as a binding implementation brief unless a conflicting product decision is explicitly documented.
+
+Update focus for version 1.1: explicit win-state design, replayability after first clear, cross-class motivation, executive endgame structure, soft run-pressure systems, quarterly episodic content, and related analytics/commercial guardrails.
 
 ---
 
@@ -71,9 +73,9 @@ The player must understand:
 - why they are there,
 - the language and acronyms being used,
 - why they fight,
-- the consequences of losing
-- any backstory or context that helps decision making, 
-- all needed information must be procivded before a decision or action is presented, 
+- the consequences of losing,
+- any backstory or context that helps decision making,
+- all needed information must be provided before a decision or action is presented,
 - what is dangerous,
 - what is safe,
 - what their abilities do,
@@ -186,6 +188,20 @@ Requirements:
 - Live-ops must reinforce the core gameplay loop rather than distract from it.
 - Event content should reuse core systems efficiently.
 - Rotations must create freshness without invalidating existing progression.
+
+### 5.7 Campaign / Mastery Loop (multi-session, account-level)
+Sequence:
+1. Achieve a first meaningful clear with one class.
+2. Unlock a new class, route, modifier tier, or narrative branch immediately.
+3. Re-enter with fresh asymmetry rather than repeating the exact same solved path.
+4. Build toward an account-level mastery state that requires more than one class or route.
+5. Use mastery completion to unlock a new inversion mode, higher mandate tier, or quarterly content bridge.
+
+Requirements:
+- The first meaningful clear must happen early enough that average players can believe the game respects their time.
+- A single-class win must not exhaust the product's fantasy or its progression map.
+- Account-level mastery should feel aspirational rather than mandatory for basic satisfaction.
+- The post-win state must answer, on the same screen, â€œwhy play again right now?â€
 
 ---
 
@@ -552,14 +568,14 @@ Write interface and tutorial text using:
 ### 14.2 Naming Rules
 For each system, use one stable name.
 Example:
-- choose either “Relic” or “Blessing” or “Augment,” not all three for the same concept.
+- choose either â€œRelicâ€ or â€œBlessingâ€ or â€œAugment,â€ not all three for the same concept.
 
 ### 14.3 Gameplay Copy Style
 Preferred:
-- “Dodge the blast.”
-- “Choose one relic.”
-- “Elite enemy incoming.”
-- “Break shield to stun.”
+- â€œDodge the blast.â€
+- â€œChoose one relic.â€
+- â€œElite enemy incoming.â€
+- â€œBreak shield to stun.â€
 
 Avoid:
 - vague flavor-first instructions,
@@ -693,6 +709,84 @@ Collection systems are allowed and useful when they:
 - do not create unfair in-run dominance,
 - are understandable and browseable.
 
+### 17.6 Win Condition Architecture
+The product must define at least three victory layers rather than one flat ending:
+
+1. **First meaningful victory**: a short-horizon clear that teaches the structure and proves the game can be beaten.
+2. **Primary campaign victory**: the first full class clear that most players will interpret as â€œI won.â€
+3. **Account-level mastery victory**: a broader meta goal that unlocks the strongest post-win continuation loop.
+
+Recommended targets:
+- first meaningful victory within the first 30-60 minutes of cumulative play,
+- first full class clear within roughly 2-4 cumulative hours for an average motivated player,
+- account-level mastery after multiple classes/routes across roughly 10-20+ cumulative hours.
+
+These are design targets, not promises. Tune around them using telemetry. A first clear that arrives too late will suppress retention. A first clear that arrives too early without new unlocks will accelerate uninstall behavior.
+
+### 17.7 Replayability After First Clear
+A first clear must unlock something that changes future runs immediately and visibly. Acceptable post-win unlocks include:
+- a new class with different resource logic,
+- a new faction or route,
+- a mandate tier with remixed mutators,
+- a new crisis deck or room/event pool,
+- a persistent narrative branch,
+- access to a higher-order metagame such as board politics or executive decisions.
+
+The post-win screen must never end at â€œcredits, then reset.â€ It should present at least one high-clarity continuation CTA such as:
+- play the newly unlocked class,
+- continue this class on a harder mandate,
+- enter an executive inversion run after meeting account-level criteria,
+- carry a quarterly code/token into the next update or event.
+
+### 17.8 Cross-Class Motivation
+Each class must justify its existence with more than stat changes. A player who has already cleared one class should care about another class because it offers:
+- a distinct control fantasy,
+- a distinct build grammar,
+- different strategic shortcuts and vulnerabilities,
+- different class-specific event resolutions,
+- different narrative intel or endings,
+- access to mastery rewards that cannot be earned by repeating one solved class forever.
+
+Guidance:
+- shared meta progression may reduce friction, but it must not flatten class identity,
+- each class should have at least one unique mechanic that changes room decision-making,
+- at least some bosses, contracts, endings, or relic synergies should feel meaningfully different per class.
+
+### 17.9 Recommended Corporate Victory Structure
+For a corporate-satire crawler, a strong default structure is:
+- **Class clear**: survive the current quarter stack and beat the end-of-quarter executive or board encounter,
+- **Campaign clear**: complete the Q1-Q4 arc for that class and resolve the department's fate,
+- **Total victory**: unlock and complete the overthrow/reform/corrupt route at the account level after meeting multi-class criteria.
+
+This structure supports both short-term closure and long-term aspiration. It also maps cleanly to live content and makes it easy to tease upcoming quarter updates.
+
+### 17.10 Executive Endgame / Inversion Mode
+After the player earns a true account-level victory, it is appropriate to unlock an â€œexecutiveâ€ mode or equivalent inversion fantasy where the player now occupies the seat of the person making bad strategic decisions.
+
+Rules for this mode:
+- it should be unlocked only after a meaningful total-win condition,
+- it should remix existing systems rather than requiring a fully separate game,
+- it should expose different tradeoffs such as budget extraction vs employee stability, short-term metrics vs long-term collapse, or public image vs internal dysfunction,
+- it should deepen satire and replayability rather than replace the main game.
+
+This is a strong answer to â€œwhy keep playing after I already won?â€ because it transforms victory into a new lens on the same system.
+
+### 17.11 Run Gating and Performance Review Pressure
+Do **not** hard-delete core meta progress for ordinary failure. In most products, punitive deletion of account progress after the player has already invested time will harm trust more than it improves retention.
+
+Preferred approach:
+- use **soft pressure** inside runs or seasons,
+- frame it as probation, quarterly review, mandate pressure, or contract expiry,
+- let failure cost bonus rewards, route access, streak bonuses, or prestige progress,
+- preserve core unlocks, collections, and fundamental meta identity.
+
+Acceptable hard-reset usage:
+- opt-in ironman contracts,
+- challenge ladders,
+- special seasonal variants with explicit warning and separate rewards.
+
+The base product should not feel like the company is deleting the player's personnel file every time they miss a promotion.
+
 ---
 
 ## 18. Economy and Monetization Guardrails
@@ -743,6 +837,27 @@ If random purchases exist:
 ### 18.5 Spend Safeguards
 Require confirmation for premium currency expenditures and expensive irreversible purchases.
 
+### 18.6 Time-Limited Codes, Quarterly Tokens, and FOMO Boundaries
+If wins generate a code, token, or carry-forward bonus for the next quarterly update, the reward should be:
+- exciting,
+- easy to understand,
+- recoverable later in some form,
+- non-essential to core power balance.
+
+Good uses:
+- cosmetic unlock tracks,
+- optional starting mutators,
+- narrative memos or intel,
+- side-path access,
+- event convenience.
+
+Bad uses:
+- irreplaceable power spikes that future players can never obtain,
+- required items for the main progression path,
+- opaque codes that feel like external homework.
+
+Quarterly continuity should create anticipation, not resentment.
+
 ---
 
 ## 19. Social and Live-Ops Systems
@@ -779,6 +894,26 @@ Possible implementations:
 ### 19.4 Event UI
 Do not over-clutter the home screen.
 Surface urgent live content clearly, but do not drown core actions in banners.
+
+### 19.5 Episodic / Quarterly Content Structure
+A corporate dungeon crawler should strongly consider a Q1-Q4 episodic structure. Each quarterly content beat should ideally ship with a compact package such as:
+- one new crisis chain or modifier set,
+- one new boss or executive directive,
+- one new room/event pack,
+- one cosmetic reward lane,
+- one cross-class challenge or mastery objective,
+- one clear tease for the next quarter.
+
+This structure gives live-ops a visible calendar without forcing players to relearn the game every update.
+
+### 19.6 Forward Teasing and Post-Win Hooks
+The game should tell players what is coming next before they leave. Good examples:
+- a next-quarter teaser on the win screen,
+- a visible locked route unlocked by another class,
+- a board memo that references the next seasonal crisis,
+- a token/code/banner that clearly says where it matters next.
+
+The player should exit a win state with one clear next objective already installed in their head.
 
 ---
 
@@ -861,6 +996,21 @@ A/B test carefully:
 - ad timing.
 
 Do not test changes that fundamentally confuse the player without guardrails.
+
+### 21.3 Replayability and Post-Win Analytics
+Instrument the systems that answer whether victory creates retention or churn. Track at minimum:
+- first meaningful victory reached,
+- first full class clear reached,
+- next action after win screen,
+- class selected after first clear,
+- percent of players who start another run within the same session after winning,
+- percent of players who try a second class within 24 hours / 7 days of first clear,
+- executive mode unlock and entry rate,
+- probation / pressure system failure rate,
+- quarterly teaser click-through or follow-through,
+- uninstall or inactivity risk signals after first clear.
+
+The product team must know whether the win state creates momentum or acts as a polite exit ramp.
 
 ---
 
@@ -1000,7 +1150,7 @@ Use this as a release gate.
 
 ### 24.3 UX and HUD
 - [ ] HUD prioritizes survival info over meta info.
-- [ ] Menus do not bury “Play.”
+- [ ] Menus do not bury â€œPlay.â€
 - [ ] Premium actions have appropriate confirmation.
 - [ ] Routine actions are not over-confirmed.
 
@@ -1045,11 +1195,19 @@ Use this as a release gate.
 - [ ] Resume/save is reliable.
 - [ ] Analytics instrumentation is present and validated.
 
+### 24.10 Retention and Replay
+- [ ] First meaningful victory happens early enough to feel attainable.
+- [ ] First full class clear unlocks a visibly different next step.
+- [ ] At least one additional class or route feels meaningfully distinct.
+- [ ] Base failure does not hard-delete core account progress.
+- [ ] Win-state rewards create anticipation for future content without creating unfair FOMO.
+- [ ] Executive/inversion mode is gated behind mastery, not dumped into FTUE.
+
 ---
 
 ## 25. Red-Flag Review Questions
 
-If the answer to any of these is “yes,” rework is likely needed.
+If the answer to any of these is â€œyes,â€ rework is likely needed.
 
 1. Is the game asking players to read too much before letting them have fun?
 2. Can VFX or environment art hide danger zones or projectiles?
@@ -1065,6 +1223,9 @@ If the answer to any of these is “yes,” rework is likely needed.
 12. Does failure feel like lost time instead of partial progress?
 13. Are events creating parallel chores instead of reinforcing the main loop?
 14. Would the game still be fun with placeholder art and no monetization?
+15. Does the first win feel like a finish line with no meaningful next step?
+16. Can one class or build satisfy the whole product, making other classes feel optional in the bad way?
+17. Would a punitive run-gating system make players feel the game is deleting effort instead of creating tension?
 
 ---
 
@@ -1115,6 +1276,7 @@ A sensible first shippable version should include:
 - 1 tileset/theme,
 - 1 run-upgrade pool,
 - 1 simple permanent progression system,
+- 1 explicit first-victory unlock that points to the second play session,
 - basic accessibility settings,
 - tutorial,
 - post-run summary,
@@ -1157,6 +1319,17 @@ If a future iteration needs a stricter traceable research appendix, add a formal
 
 ---
 
+
+### 29.1 2026 Research Update for This Revision
+The following external considerations informed the version 1.1 update:
+- current Expo guidance on when to use development builds instead of Expo Go,
+- current Expo guidance on EAS Build, notifications, haptics, audio, GL rendering, native modules, and in-app purchases,
+- current Apple App Review and App Store Connect guidance related to randomized purchases / loot boxes and age ratings,
+- current Google Play guidance on Data safety disclosures, including third-party SDK responsibility,
+- current Game Accessibility Guidelines emphasis on remapping, text size, color independence, subtitles, readable text, interactive tutorials, and low-friction startup.
+
+If a future version of this brief becomes an external-facing production spec, add a formal bibliography with direct links and last-checked dates.
+
 ## 30. Final Product Standard
 
 The intended final experience is:
@@ -1168,4 +1341,3 @@ The intended final experience is:
 - respectful of player time,
 - commercially sustainable,
 - unmistakably designed for phone rather than adapted to it.
-

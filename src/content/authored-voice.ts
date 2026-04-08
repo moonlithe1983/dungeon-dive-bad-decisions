@@ -201,6 +201,46 @@ const partyScenes: Record<string, PartyScene> = {
       },
     ],
   },
+  'first-route-choice-alt-1': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Left door feels trapped. Right door feels ambitious. Neither quality comforts me.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Take the lane with fewer adjectives. Meridian hides the knives in branding.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'I vote for whichever hallway looks most like a future apology memo.',
+      },
+    ],
+  },
+  'first-route-choice-alt-2': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'That route smells like live wiring and broken promises. Which narrows it down nicely.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Choose the danger we understand before the building upgrades it.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'For the record, I hate that those are our professional options.',
+      },
+    ],
+  },
   'battle-intro': {
     title: 'Crew Channel',
     lines: [
@@ -261,6 +301,26 @@ const partyScenes: Record<string, PartyScene> = {
       },
     ],
   },
+  'battle-intro-alt-3': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'There it is. Another room where policy learned to throw itself at people.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Good. I was worried we might have to be reasonable for a whole minute.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Reasonable can resume after the threat is horizontal.',
+      },
+    ],
+  },
   'suspicious-reward-screen': {
     title: 'Crew Read',
     lines: [
@@ -281,6 +341,46 @@ const partyScenes: Record<string, PartyScene> = {
       },
     ],
   },
+  'suspicious-reward-screen-alt-1': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'This reward table has the emotional tone of a trap wearing a blazer.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Then we take the trap that helps and decline the one that writes a memoir about it.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'I still think we should take the one humming at us.',
+      },
+    ],
+  },
+  'suspicious-reward-screen-alt-2': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Free equipment is how this tower flirts. Be rude and take the useful piece.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Prefer the payout that keeps us alive over the one that flatters us.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Excellent. We are making mature choices under completely deranged circumstances.',
+      },
+    ],
+  },
   'creepy-event-prompt': {
     title: 'Crew Read',
     lines: [
@@ -298,6 +398,46 @@ const partyScenes: Record<string, PartyScene> = {
         speakerId: 'former-executive-assistant',
         speakerName: 'Former Executive Assistant',
         text: 'Only if it is useful, deniable, or both.',
+      },
+    ],
+  },
+  'creepy-event-prompt-alt-1': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'That room is trying far too hard to look optional.',
+      },
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Understood. We proceed as though consent was forged.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Good. I hate it when the building plays hard to get.',
+      },
+    ],
+  },
+  'creepy-event-prompt-alt-2': {
+    title: 'Crew Read',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'I would prefer a hostile hallway. This feels personal.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Personal means breakable. Usually.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Wonderful. We have downgraded from safe to interpretable.',
       },
     ],
   },
@@ -361,44 +501,64 @@ const partyScenes: Record<string, PartyScene> = {
       },
     ],
   },
+  'low-health-alt-3': {
+    title: 'Crew Channel',
+    lines: [
+      {
+        speakerId: 'security-skeleton',
+        speakerName: 'Security Skeleton',
+        text: 'Critical condition acknowledged. We remain operational out of spite.',
+      },
+      {
+        speakerId: 'former-executive-assistant',
+        speakerName: 'Former Executive Assistant',
+        text: 'Do not collapse before the room learns from it.',
+      },
+      {
+        speakerId: 'facilities-goblin',
+        speakerName: 'Facilities Goblin',
+        text: 'Stay upright. I am not dragging dignity and body weight at the same time.',
+      },
+    ],
+  },
 };
 
 const rewardPackagePitches: Record<string, RewardPackagePitch> = {
   'expense-fraud': {
     name: 'Expense Account',
-    description: 'More resources, better upgrades, richer run.',
+    description: 'Buy breathing room now and bill the quarter later.',
   },
   'per-diem-skimming': {
     name: 'Expense Account',
-    description: 'More resources, better upgrades, richer run.',
+    description: 'Buy breathing room now and bill the quarter later.',
   },
   'black-card-overage': {
     name: 'Expense Account',
-    description: 'More resources, better upgrades, richer run.',
+    description: 'Buy breathing room now and bill the quarter later.',
   },
   'triage-cart': {
     name: 'Sick Leave',
-    description: 'Recover, reset, survive bad floors.',
+    description: 'Patch the body before the building notices weakness.',
   },
   'wellness-cooler': {
     name: 'Sick Leave',
-    description: 'Recover, reset, survive bad floors.',
+    description: 'Patch the body before the building notices weakness.',
   },
   'concierge-crash-cart': {
     name: 'Sick Leave',
-    description: 'Recover, reset, survive bad floors.',
+    description: 'Patch the body before the building notices weakness.',
   },
   'contraband-locker': {
     name: 'Back Channel',
-    description: 'Better setup, better flow, uglier tricks.',
+    description: 'Dirty tools, cleaner kills, worse ethics.',
   },
   'swag-bag-heist': {
     name: 'Lunch-and-Learn',
-    description: 'Companion juice, synergy now, payoff later.',
+    description: 'Crew-first value now, sharper synergy if you live long enough.',
   },
   'golden-parachute-cache': {
     name: 'Exit Package',
-    description: 'Desperate power for low-health comebacks.',
+    description: 'Emergency power for runs already halfway dead.',
   },
 };
 
@@ -478,30 +638,215 @@ const eventOverlays: Partial<Record<string, AuthoredEventOverlay>> = {
       },
     },
   },
+  'fire-drill-evangelism': {
+    title: 'Evacuation Gospel',
+    description:
+      'A safety lead has turned a fire drill into revival theater. The alarm cadence is wrong, the exits are overexplained, and the crowd is one slogan away from trampling itself for compliance.',
+    choices: {
+      'loot-the-muster-crate': {
+        label: 'Crack The Muster Crate',
+        description: 'Take the practical supplies before the sermon reaches attendance.',
+        outcomeText:
+          'You raid the emergency box while the floor is still pretending this is about safety. Inside: tape, sugar, one useful tool, and proof that Meridian stocks comfort as a prop first and a resource second.',
+      },
+      'fake-the-all-clear': {
+        label: 'Spoof The All-Clear',
+        description: 'Cut the ritual short, take the margin, and accept the scorch marks.',
+        outcomeText:
+          'You feed the room the sound it wants and the crowd obeys immediately. The exits clear faster, the panic turns profitable, and somewhere in the smoke a real problem learns it has been officially deprioritized.',
+      },
+      'appoint-a-fire-marshal': {
+        label: 'Nominate A Fire Marshal',
+        description: 'Move the whistle and the blame onto somebody else for a minute.',
+        outcomeText:
+          'The room accepts the new authority because uniforms and confidence still fool it. The drill remains nonsense, but the handoff buys space, structure, and one precious beat of survivable order.',
+      },
+    },
+  },
+  'shadow-it-market': {
+    title: 'Shadow IT Market',
+    description:
+      'Under the office, a hidden bazaar trades in stolen hardware, copied access, and favors nobody wants written down. Every stall feels one audit away from becoming a crime scene.',
+    choices: {
+      'buy-the-prototype': {
+        label: 'Buy The Prototype',
+        description: 'Take the dangerous machine and trust that danger can be aimed.',
+        outcomeText:
+          'You buy the hardware everyone else was smart enough to fear. It hums like trapped litigation and warms in your hands like it already knows whose problem it is now.',
+      },
+      'broker-a-resale-cut': {
+        label: 'Broker A Resale Cut',
+        description: 'Skip the object, take the margin, and leave the curse on the shelf.',
+        outcomeText:
+          'You move value without taking possession, which is the cleanest kind of theft this building allows. The vendors leave thinking you helped them. That is their mistake to keep.',
+      },
+      'let-the-reserve-haggle': {
+        label: 'Let The Reserve Haggle',
+        description: 'Rotate the conversation, recover your footing, and let somebody else get lied to first.',
+        outcomeText:
+          'The negotiation gets louder, uglier, and somehow more favorable. While the room argues over price, you recover enough composure to remember that survival is also a purchasing strategy.',
+      },
+    },
+  },
+  'expense-report-exorcism': {
+    title: 'Expense Report Exorcism',
+    description:
+      'Finance trapped something infernal inside reimbursement paperwork and now wants the problem solved without admitting the ritual was budget approved. The receipts twitch when you get too close.',
+    choices: {
+      'audit-the-possession': {
+        label: 'Audit The Possession',
+        description: 'Weaponize process until even the demon regrets the paperwork.',
+        outcomeText:
+          'You go line by line until the haunting realizes it has entered a slower hell than itself. The entity leaves out of sheer administrative fatigue, and the reimbursement clears with obscene politeness.',
+      },
+      'feed-it-receipts': {
+        label: 'Feed It Receipts',
+        description: 'Give the ritual worse fraud than it expected and keep what comes back.',
+        outcomeText:
+          'The paperwork burns blue, the columns scream, and the room smells like taxable regret. When the ritual settles, it leaves behind an object too useful to be moral and too expensive to ignore.',
+      },
+      'delegate-the-summons': {
+        label: 'Delegate The Summons',
+        description: 'Rotate the burden and let the ritual learn a new name.',
+        outcomeText:
+          'The circle stabilizes the moment the responsibility moves. Meridian, as always, becomes easiest to survive when somebody else is holding the clipboard and the curse.',
+      },
+    },
+  },
+  'all-hands-mutiny': {
+    title: 'All-Hands Mutiny',
+    description:
+      'A company-wide update has curdled into a soft coup conducted through mic feedback, broken slides, and applause that sounds increasingly mandatory. The room is deciding what kind of lie it wants to become next.',
+    choices: {
+      'seize-the-mic': {
+        label: 'Seize The Mic',
+        description: 'Take control of the room before control becomes another weapon pointed at you.',
+        outcomeText:
+          'You grab the meeting by the throat and force it to call that leadership. The crowd obeys just long enough to be monetized, and the stress bill lands exactly where you were standing.',
+      },
+      'loot-the-swag-table': {
+        label: 'Loot The Swag Table',
+        description: 'Ignore the coup, take the salvage, and let the slogans eat each other.',
+        outcomeText:
+          'The branded giveaways turn out to be mostly plastic lies with one real advantage hidden under the tote bags. You leave heavier, meaner, and considerably less respectful of offsite budgets.',
+      },
+      'push-the-reserve-onstage': {
+        label: 'Push The Reserve Onstage',
+        description: 'Change the face of the crisis and buy a cleaner angle for the rest of the crew.',
+        outcomeText:
+          'The room accepts the substitution because spectacle matters more than competence here. While the spotlight chases the new victim, you get the one thing mutiny rooms rarely offer: time.',
+      },
+    },
+  },
+  'breakroom-whistleblower': {
+    title: 'Breakroom Whistleblower',
+    description:
+      'Someone hid evidence of a policy disaster behind a passive-aggressive fridge note and a tray of severance cupcakes. The breakroom smells like panic, dairy, and legal exposure.',
+    choices: {
+      'raid-the-fridge-file': {
+        label: 'Raid The Fridge File',
+        description: 'Take the evidence, the hush fund, and whatever dignity still fits in your hands.',
+        outcomeText:
+          'You pull the documents from behind expired yogurt and discover that blackmail refrigerates beautifully. The attached snack stash is shameful, but not nearly as shameful as leaving value behind.',
+      },
+      'take-the-severance-lunch': {
+        label: 'Take The Severance Lunch',
+        description: 'Loot the premium meal prep and whatever contraband is hiding behind the frosting.',
+        outcomeText:
+          'The lunch itself is executive-grade denial in biodegradable packaging. The hidden prize behind it is much more honest: expensive, useful, and clearly never meant for the people doing the surviving.',
+      },
+      'make-the-reserve-sign': {
+        label: 'Make The Reserve Sign',
+        description: 'Move the witness burden, reset the line, and let HR chase the wrong signature.',
+        outcomeText:
+          'The paperwork still ends in threats, but the room loses track of who exactly it meant to punish first. In Meridian, that kind of confusion counts as cover.',
+      },
+    },
+  },
+  'trust-fall-incident-report': {
+    title: 'Trust Fall Incident Report',
+    description:
+      'The offsite legal team left a stack of waivers beside a trust-fall pit nobody wants to discuss directly. Every page smells like toner, liability, and the kind of optimism that kills witnesses.',
+    choices: {
+      'rewrite-the-liability': {
+        label: 'Rewrite The Liability',
+        description: 'Make the record honest enough that somebody has to pay to bury it.',
+        outcomeText:
+          'You clean the language until the blame points exactly where it should have from the start. The payout arrives fast, quiet, and deeply embarrassed to exist.',
+      },
+      'loot-the-waiver-box': {
+        label: 'Loot The Waiver Box',
+        description: 'Take the trauma gear, accept the scrape, and keep the best part of the accident kit.',
+        outcomeText:
+          'The box absolutely fights back. So did the retreat hardware that made it necessary. You leave scraped, vindicated, and carrying one item the safety team clearly meant for themselves.',
+      },
+      'appoint-a-fall-guy': {
+        label: 'Appoint A Fall Guy',
+        description: 'Rotate the blame, reset the formation, and let the room call it leadership.',
+        outcomeText:
+          'The liability cloud shifts just enough to stop sitting directly on your lungs. Someone else inherits the title, the paperwork, and the ceremonial part of the disaster.',
+      },
+    },
+  },
+  'golden-parachute-auction': {
+    title: 'Golden Parachute Auction',
+    description:
+      'Executive severance packages are being traded in whispers outside the corner office. The table is covered in emergency perks for people who caused the emergency and already expect to survive it.',
+    choices: {
+      'skim-the-payout-table': {
+        label: 'Skim The Payout Table',
+        description: 'Take the cleanest cash and accept what executive air does to your pulse.',
+        outcomeText:
+          'You steal directly from the panic budget of people who assumed panic was for other employees. The money comes easy. The atmosphere does not.',
+      },
+      'steal-the-emergency-perks': {
+        label: 'Steal The Emergency Perks',
+        description: 'Take the premium survival kit before someone with cufflinks remembers it exists.',
+        outcomeText:
+          'The elite panic package is obscene, overstocked, and annoyingly effective. It turns out executive compassion works fine once it is pointed inward.',
+      },
+      'nominate-the-reserve-bidder': {
+        label: 'Nominate The Reserve Bidder',
+        description: 'Push a different face into the auction and collect the recovery window it creates.',
+        outcomeText:
+          'The room pivots beautifully toward the new bidder because status theater is still stronger than sense. While the brass recalibrates, you recover and leave with a cleaner angle through the wreckage.',
+      },
+    },
+  },
 };
 
 const defeatAdvice = {
   'rushed-down-early':
-    'You brought a memo to a knife fight. Start next run with faster damage or cheaper control.',
+    'You brought a memo to a hallway execution. Start next run with faster damage or cheaper control.',
   'died-to-attrition':
-    'The Spire did not beat you quickly. It beat you professionally. Bring sustain.',
+    'The Spire did not beat you quickly. It beat you professionally. Bring sustain before professionalism kills you again.',
   'statuses-killed-you':
-    'Your bloodstream got audited. Pack cleanse, prevention, or shorter fights.',
+    'Your bloodstream got audited and failed compliance. Pack cleanse, prevention, or shorter fights.',
   'build-came-online-too-late':
-    'Great long-term vision. Shame about the short term. Front-load your first three floors.',
+    'Great long-term vision. Shame about the opening minutes. Front-load your first three floors.',
   'boss-outscaled-you':
-    'You survived the meeting and lost to the follow-up. Add a real finisher.',
+    'You survived the meeting and died in the follow-up email. Add a real finisher.',
   'spread-power-too-thin':
-    'This run died in committee. Pick one lane and overfund it.',
+    'This run died in committee. Pick one lane, overfund it, and let the others resent you.',
   'bad-route-choice':
-    'You chose greed over safety and Meridian noticed. Take the boring door once in a while.',
+    'You chose greed over safety and Meridian noticed immediately. Take the boring door once in a while.',
   'companion-mismatch':
-    'Good personalities. Bad team. Bring companions who solve the same problem on purpose.',
+    'Good chemistry. Bad survival math. Bring companions who solve the same problem on purpose.',
   'defense-fine-damage-not':
     'Congratulations on your very durable collapse. Convert safety into pressure sooner.',
   'damage-fine-defense-not':
     'You nearly won the sprint and lost the building. Add one plan for when the enemy gets a turn.',
 };
+
+function hashString(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
 
 export function getAuthoredClassCodexCard(classId: string) {
   return classCodexCards[classId] ?? null;
@@ -540,6 +885,20 @@ export function getPartyScene(
   const lines = scene.lines.filter((line) => filteredIds.includes(line.speakerId));
 
   return lines.length > 0 ? { ...scene, lines } : null;
+}
+
+export function getRotatedPartyScene(
+  sceneIds: string[],
+  seed: string,
+  companionIds?: string[] | null
+) {
+  if (sceneIds.length === 0) {
+    return null;
+  }
+
+  const sceneId = sceneIds[hashString(seed) % sceneIds.length] ?? sceneIds[0];
+
+  return getPartyScene(sceneId, companionIds);
 }
 
 export function getRewardPackagePitch(optionId: string | null | undefined) {

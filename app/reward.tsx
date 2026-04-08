@@ -24,15 +24,19 @@ import { GameButton } from '@/src/components/game-button';
 import { playUiHaptic } from '@/src/haptics/ui-haptics';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import {
-  getPartyScene,
+  getRotatedPartyScene,
   getRewardPackagePitch,
 } from '@/src/content/authored-voice';
-import { createTicketBrief } from '@/src/content/company-lore';
+import {
+  createClassRewardBrief,
+  createTicketBrief,
+} from '@/src/content/company-lore';
 import { getItemDefinition } from '@/src/content/items';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
+import { useRunHelpStartsCollapsed } from '@/src/hooks/use-run-help-starts-collapsed';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -112,8 +116,16 @@ export default function RewardScreen() {
       return null;
     }
 
-    return getPartyScene('suspicious-reward-screen', run.chosenCompanionIds);
-  }, [run]);
+    return getRotatedPartyScene(
+      [
+        'suspicious-reward-screen',
+        'suspicious-reward-screen-alt-1',
+        'suspicious-reward-screen-alt-2',
+      ],
+      `${run.runId}:${pendingReward?.rewardId ?? 'reward'}:reward-read`,
+      run.chosenCompanionIds
+    );
+  }, [pendingReward?.rewardId, run]);
   const rewardPackagePitch = useMemo(
     () => getRewardPackagePitch(selectedRewardOption?.optionId),
     [selectedRewardOption?.optionId]
@@ -134,10 +146,12 @@ export default function RewardScreen() {
     () => getLoopSurfaceArtSource('reward', settings),
     [settings]
   );
+  
   const rewardAmbientArtSource = useMemo(
     () => getBiomeAmbientArtSource(run?.floorIndex, settings),
     [run?.floorIndex, settings]
   );
+  const helpStartsCollapsed = useRunHelpStartsCollapsed(run?.floorIndex ?? 1);
   const selectedRewardArtSource = useMemo(
     () =>
       getRewardPackageArtSource(selectedRewardOption?.optionId, settings) ??
@@ -168,6 +182,10 @@ export default function RewardScreen() {
       sourceKind: pendingReward.sourceKind,
     });
   }, [pendingReward, run, settings]);
+
+  useEffect(() => {
+    setShowDetails(!helpStartsCollapsed);
+  }, [helpStartsCollapsed, run?.runId, pendingReward?.rewardId]);
 
   const handleSelectOption = async (optionId: string) => {
     if (!pendingReward?.options?.length) {
@@ -273,9 +291,10 @@ export default function RewardScreen() {
                       {ticketBrief.ticketId} - {ticketBrief.subject}
                     </Text>
                     <Text style={styles.detailCardBody}>
-                      {pendingReward.sourceKind === 'battle-victory'
-                        ? 'This payout came off a cleared escalation gate. Take what helps the ticket survive the next floor.'
-                        : 'This room still belongs to the same case file. Pick the haul that best keeps the escalation moving upward.'}
+                      {createClassRewardBrief(
+                        run.heroClassId,
+                        pendingReward.sourceKind
+                      )}
                     </Text>
                     <Text style={styles.detailCardBody}>
                       Current track: {ticketBrief.escalationTrack}
@@ -475,7 +494,7 @@ export default function RewardScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Extra source notes, crew flavor, and run-impact previews stay hidden unless you want the paperwork.
+Source notes and deeper run-impact previews stay tucked here once you know the reward flow.
                   </Text>
                 )}
                 <View style={styles.actionGroup}>
@@ -952,3 +971,7 @@ function createStyles(
     },
   });
 }
+
+
+
+

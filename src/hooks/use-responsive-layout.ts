@@ -15,9 +15,7 @@ export type ResponsiveLayoutMetrics = {
   shellPaddingHorizontal: number;
   stackStatCards: boolean;
   stackInlineHeader: boolean;
-  heroArtFrameHeight: number;
-  heroArtHeight: number;
-  heroArtTranslateY: number;
+  heroArtMaxHeight: number;
 };
 
 export function useResponsiveLayout(): ResponsiveLayoutMetrics {
@@ -41,9 +39,8 @@ export function useResponsiveLayout(): ResponsiveLayoutMetrics {
       shellPaddingHorizontal: isCompactWidth ? spacing.md : spacing.lg,
       stackStatCards: isCompactWidth || hasLargeText,
       stackInlineHeader: isCompactWidth || hasLargeText,
-      heroArtFrameHeight: isLandscape ? 212 : hasLargeText ? 208 : 232,
-      heroArtHeight: isLandscape ? 292 : 320,
-      heroArtTranslateY: isLandscape ? -8 : hasLargeText ? 12 : 6,
+      heroArtMaxHeight: isLandscape ? 320 : hasLargeText ? 440 : 520,
     };
   }, [fontScale, height, width]);
 }
+

@@ -170,7 +170,7 @@ export default function CompanionSelectScreen() {
 
           {ticketBrief ? (
             <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Assigned Ticket</Text>
+              <Text style={styles.panelTitle}>Current Ticket</Text>
               <Text style={styles.panelBody}>
                 {ticketBrief.ticketId} - {ticketBrief.subject}
               </Text>

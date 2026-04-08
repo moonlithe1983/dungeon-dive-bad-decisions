@@ -20,7 +20,7 @@ import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getBiomeAmbientArtSource } from '@/src/assets/supplemental-art-sources';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { GameButton } from '@/src/components/game-button';
-import { getPartyScene } from '@/src/content/authored-voice';
+import { getRotatedPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { getCompanyDisasterSummary } from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
@@ -30,6 +30,7 @@ import { getRunNodeRoute } from '@/src/engine/run/progress-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
+import { useRunHelpStartsCollapsed } from '@/src/hooks/use-run-help-starts-collapsed';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -88,8 +89,12 @@ export default function EventScreen() {
       return null;
     }
 
-    return getPartyScene('creepy-event-prompt', run.chosenCompanionIds);
-  }, [run]);
+    return getRotatedPartyScene(
+      ['creepy-event-prompt', 'creepy-event-prompt-alt-1', 'creepy-event-prompt-alt-2'],
+      `${run.runId}:${eventScene?.eventId ?? 'event'}:${currentNode?.id ?? 'node'}:event-read`,
+      run.chosenCompanionIds
+    );
+  }, [currentNode?.id, eventScene?.eventId, run]);
   const eventArtSource = useMemo(
     () => getEventArtSource(eventScene?.eventId, settings),
     [eventScene?.eventId, settings]
@@ -102,6 +107,7 @@ export default function EventScreen() {
     () => getBiomeAmbientArtSource(run?.floorIndex, settings),
     [run?.floorIndex, settings]
   );
+  const helpStartsCollapsed = useRunHelpStartsCollapsed(run?.floorIndex ?? 1);
 
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'event'
@@ -122,6 +128,10 @@ export default function EventScreen() {
     eventOpenCueRef.current = cueKey;
     void playUiSfx('event-open', settings);
   }, [currentNode, eventScene, run, settings]);
+
+  useEffect(() => {
+    setShowSupportingReads(!helpStartsCollapsed);
+  }, [helpStartsCollapsed, run?.runId, currentNode?.id]);
 
   const handleChoice = async (choiceId: string) => {
     void playUiSfx('event-confirm', settings);
@@ -382,7 +392,7 @@ export default function EventScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-                    Open this if you want extra class context or crew flavor before locking the choice.
+Extra class context and crew reads stay tucked here once the event loop makes sense.
                   </Text>
                 )}
               </View>

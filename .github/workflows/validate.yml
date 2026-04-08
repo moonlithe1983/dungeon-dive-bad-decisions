@@ -39,5 +39,8 @@ jobs:
       - name: Run type check
         run: npx tsc --noEmit
 
+      - name: Run class support audit
+        run: npm run audit:classes
+
       - name: Run smoke simulation
         run: npm run smoke:sim

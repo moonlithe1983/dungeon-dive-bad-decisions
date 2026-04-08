@@ -211,13 +211,15 @@
     "run_structure": {
       "opening_flow": [
         "title",
+        "onboarding",
+        "class-select",
         "companion-select",
         "run-map",
         "battle",
         "reward",
         "event"
       ],
-      "delivery_method": "Story is delivered in-system through role briefings, route choices, event text, battle intros, reward language, companion tone, and defeat recaps rather than long cutscenes.",
+      "delivery_method": "Story is delivered in-system through the onboarding tutorial, role briefings, route choices, event text, battle intros, reward language, companion tone, and defeat recaps rather than long cutscenes.",
       "defeat_as_narrative": "Losses are reportable incidents in a hostile corporate survival cycle. Recaps preserve what happened and suggest what to try next in a voiced, in-world way."
     },
     "plot_arc": {

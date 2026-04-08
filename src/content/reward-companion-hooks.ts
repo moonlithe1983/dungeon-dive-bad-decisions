@@ -20,7 +20,7 @@ export type ResolvedRewardCompanionOptionBonus = RewardCompanionOptionBonus & {
 const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
   'former-executive-assistant': {
     preview:
-      'Finance-heavy office and executive payout packages pay out better with them in the room.',
+      'Executive-facing payouts get sharper when someone in the room knows exactly where leadership hides the real money.',
     bonuses: [
       {
         optionId: 'expense-fraud',
@@ -41,7 +41,7 @@ const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
   },
   'facilities-goblin': {
     preview:
-      'Supply carts, wellness caches, and recovery-heavy haul packages heal more when the goblin gets first look.',
+      'Recovery hauls get much better the second the goblin starts pulling useful supplies out from under the fake wellness layer.',
     bonuses: [
       {
         optionId: 'triage-cart',
@@ -62,7 +62,7 @@ const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
   },
   'security-skeleton': {
     preview:
-      'Guarded payouts and controlled skims come out cleaner when security handles the perimeter.',
+      'Guarded payouts come out cleaner when security locks the perimeter and dares the room to object.',
     bonuses: [
       {
         optionId: 'per-diem-skimming',
@@ -83,7 +83,7 @@ const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
   },
   'possessed-copier': {
     preview:
-      'Contraband-focused haul packages duplicate value in ways nobody should allow.',
+      'Contraband packages get stranger and more profitable when the copier decides value should come in duplicates.',
     bonuses: [
       {
         optionId: 'contraband-locker',
@@ -105,7 +105,7 @@ const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
   },
   'disillusioned-temp': {
     preview:
-      'Mixed survival hauls and offsite skim packages come out better when the temp handles the ugly details.',
+      'Mixed survival hauls pay out better when the temp handles the ugly details nobody salaried wanted to touch.',
     bonuses: [
       {
         optionId: 'expense-fraud',
@@ -132,7 +132,7 @@ const rewardCompanionProfiles: Record<string, RewardCompanionProfile> = {
 export function getCompanionRewardEdgePreview(companionId: string) {
   return (
     rewardCompanionProfiles[companionId]?.preview ??
-    'No documented reward-room edge yet.'
+    'No documented reward-room edge yet. Bring them anyway only if the rest of the team can afford dead weight.'
   );
 }
 

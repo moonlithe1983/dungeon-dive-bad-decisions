@@ -38,9 +38,12 @@ export default function OnboardingScreen() {
     returnTo?: string | string[];
   }>();
   const updateOnboarding = useProfileStore((state) => state.updateOnboarding);
+  const totalRuns = useProfileStore((state) => state.profile?.stats.totalRuns ?? 0);
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const [isContinuing, setIsContinuing] = useState(false);
   const [tutorialStepIndex, setTutorialStepIndex] = useState(0);
+  const [showTutorialOverview, setShowTutorialOverview] = useState(true);
+  const [showStepLesson, setShowStepLesson] = useState(false);
   const [tutorialSelections, setTutorialSelections] = useState<
     Record<string, string>
   >({});
@@ -86,6 +89,8 @@ export default function OnboardingScreen() {
     setExperienceMode(modeParam);
     setTutorialStepIndex(0);
     setTutorialSelections({});
+    setShowTutorialOverview(true);
+    setShowStepLesson(false);
     hasTrackedTutorialStart.current = false;
   }, [modeParam]);
 
@@ -100,11 +105,24 @@ export default function OnboardingScreen() {
     });
   }, [experienceMode, isFirstRun]);
 
+  useEffect(() => {
+    setShowTutorialOverview(tutorialStepIndex === 0);
+  }, [tutorialStepIndex]);
+
   const currentStep = onboardingTutorialSteps[tutorialStepIndex] ?? null;
   const selectedChoiceId = currentStep ? tutorialSelections[currentStep.id] : null;
   const selectedChoice =
     currentStep?.choices?.find((choice) => choice.id === selectedChoiceId) ?? null;
   const tutorialProgress = `${tutorialStepIndex + 1}/${onboardingTutorialSteps.length}`;
+
+  useEffect(() => {
+    if (!selectedChoice) {
+      setShowStepLesson(false);
+      return;
+    }
+
+    setShowStepLesson(isFirstRun && totalRuns === 0 && tutorialStepIndex < 2);
+  }, [isFirstRun, selectedChoice, totalRuns, tutorialStepIndex]);
 
   const handleReturn = () => {
     router.replace(returnHref);
@@ -241,11 +259,30 @@ export default function OnboardingScreen() {
           {experienceMode === 'tutorial' && currentStep ? (
             <>
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Interactive FTUE</Text>
-                <Text style={styles.panelBody}>
-                  This teaches the real loop by doing it once in miniature: route,
-                  fight, reward, event, then carry-forward.
-                </Text>
+                <Pressable
+                  style={styles.toggleRow}
+                  onPress={() => {
+                    setShowTutorialOverview((current) => !current);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Tutorial progress"
+                  accessibilityHint={
+                    showTutorialOverview
+                      ? 'Double tap to collapse the tutorial overview.'
+                      : 'Double tap to expand the tutorial overview.'
+                  }
+                  accessibilityState={{ expanded: showTutorialOverview }}
+                >
+                  <Text style={styles.panelTitle}>Tutorial Progress</Text>
+                  <Text style={styles.toggleLabel}>
+                    {showTutorialOverview ? 'Hide' : 'Show'}
+                  </Text>
+                </Pressable>
+                {showTutorialOverview ? (
+                  <Text style={styles.panelBody}>
+                    One practice floor: route, fight, reward, event, then carry-forward.
+                  </Text>
+                ) : null}
                 <View style={styles.progressCard}>
                   <Text style={styles.progressEyebrow}>
                     {currentStep.eyebrow}
@@ -301,10 +338,34 @@ export default function OnboardingScreen() {
 
                 {selectedChoice ? (
                   <View style={styles.resolutionCard}>
-                    <Text style={styles.resolutionTitle}>What That Teaches</Text>
-                    <Text style={styles.resolutionBody}>
-                      {selectedChoice.resolution}
-                    </Text>
+                    <Pressable
+                      style={styles.toggleRow}
+                      onPress={() => {
+                        setShowStepLesson((current) => !current);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Why it matters"
+                      accessibilityHint={
+                        showStepLesson
+                          ? 'Double tap to collapse the lesson for this choice.'
+                          : 'Double tap to expand the lesson for this choice.'
+                      }
+                      accessibilityState={{ expanded: showStepLesson }}
+                    >
+                      <Text style={styles.resolutionTitle}>Why It Matters</Text>
+                      <Text style={styles.toggleLabel}>
+                        {showStepLesson ? 'Hide' : 'Show'}
+                      </Text>
+                    </Pressable>
+                    {showStepLesson ? (
+                      <Text style={styles.resolutionBody}>
+                        {selectedChoice.resolution}
+                      </Text>
+                    ) : (
+                      <Text style={styles.panelBody}>
+                        Open this if you want the short lesson tied to this practice choice.
+                      </Text>
+                    )}
                   </View>
                 ) : null}
 
@@ -572,6 +633,7 @@ function createStyles(
       lineHeight: scaleLineHeight(16, settings),
       textTransform: 'uppercase',
       letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      flex: 1,
     },
     progressTitle: {
       color: colors.textPrimary,
@@ -654,6 +716,21 @@ function createStyles(
       borderWidth: 1,
       borderColor: colors.accent,
       gap: spacing.xs + 2,
+    },
+    toggleRow: {
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
+      justifyContent: 'space-between',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
+      gap: spacing.sm,
+      minHeight: 48,
+    },
+    toggleLabel: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     },
     resolutionTitle: {
       color: colors.accent,

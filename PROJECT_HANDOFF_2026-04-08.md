@@ -14,7 +14,7 @@ Purpose: use this addendum as the current source of truth for the repo state aft
   - the static packet still exists as a replayable briefing mode from Settings and Codex
 - Audio accessibility moved closer to the design spec:
   - profile settings now persist master, SFX, music, voice, and ambient volume channels
-  - `app/settings.tsx` now exposes those channels with honest “live now” versus “profile-ready” language
+  - `app/settings.tsx` now exposes those channels with honest "live now" versus "profile-ready" language
   - live UI cue playback currently respects master and SFX levels
 - Input accessibility improved materially:
   - profile settings now persist dominant-hand bias, controller-style hint visibility, and combat action order
@@ -59,39 +59,50 @@ Purpose: use this addendum as the current source of truth for the repo state aft
   - the UI can show controller-style action hints
   - handedness bias is now persisted and reflected in battle action presentation
 - Combat is still fundamentally turn-based:
-  - the new `dodge` action improves tempo and defensive choice-making
+  - the new dodge action improves tempo and defensive choice-making
   - the game is not yet a movement/aim/dodge action roguelite in the spec sense
+- The latest runtime polish also includes:
+  - the home screen now shows the full title image without forced cropping
+  - the installed Android launcher icon now uses the `ddbd logo` asset
+  - first-run helper text now collapses behind toggles after floor 1 of the first-ever dive, and from floor 1 onward on future dives
+  - battle now scrolls back to the HP / threat area after each action instead of leaving the player stranded lower in the log
+  - end-run archive recap copy now renders on a readable solid card instead of over the archive art
 
 ## 3. Validation refreshed on April 8, 2026
 
 Automated validation rerun on the current tree:
 
 - `npx tsc --noEmit`: passed
+- `npm run audit:classes`: passed
 - `npm run lint`: passed
 - `npm run smoke:sim`: passed
 - GitHub validation workflow still matches the local gate:
-  - `.github/workflows/validate.yml` runs `npm run lint`, `npx tsc --noEmit`, and `npm run smoke:sim`
+  - `.github/workflows/validate.yml` runs `npm run lint`, `npx tsc --noEmit`, `npm run audit:classes`, and `npm run smoke:sim`
 
 Notes:
 
-- This April 8 pass was a repo/code/docs readiness sweep, not a new Android tester-build generation pass.
-- The latest verified local tester-build snapshot still remains the April 7 release-build emulator pass described in `PROJECT_HANDOFF_2026-04-07.md`.
+- The April 8 repo/code/docs readiness sweep was followed by a fresh Android tester-build generation pass from the same source tree.
+- The current verified local tester-build snapshot is now the April 8 release APK and tester-share copy, with title -> onboarding -> class briefing -> companion select -> run-map -> battle -> reward -> resume -> event -> end-run sanity-covered on Android.
 
 ## 4. Current release artifact status
 
 - The canonical local Android release output path remains:
   - `android/app/build/outputs/apk/release/app-release.apk`
-- The latest dated tester-share copy already in the repo workspace remains:
-  - `release/dungeon-dive-bad-decisions-android-tester-2026-04-07.apk`
-- No new APK was generated as part of this April 8 GitHub-readiness pass.
-- If a fresh outside-tester artifact is needed after the April 8 source changes, rebuild from the current source and repeat the Android release sanity pass before distribution.
+- The latest dated tester-share copy already in the repo workspace is:
+  - `release/dungeon-dive-bad-decisions-android-tester-2026-04-08.apk`
+- A fresh local release APK already exists at:
+  - `android/app/build/outputs/apk/release/app-release.apk`
+- The current dated outside-tester share copy already exists at:
+  - `release/dungeon-dive-bad-decisions-android-tester-2026-04-08.apk`
+- Rebuild again only if source changes after this April 8 snapshot.
 
 ## 5. What remains before upload
 
-The highest-value remaining work is still human validation, final release packaging, and choosing which “partial” systems stay partial for first release:
+The highest-value remaining work is still human validation, final release packaging, and choosing which "partial" systems stay partial for first release:
 
-1. Rebuild a fresh Android release APK from the current April 8 source before any new tester wave.
-2. Run a focused Android sanity pass covering:
+1. Share the already-built April 8 tester APK for the next outside smoke wave unless a new source change lands first.
+2. If source changes again, rebuild a fresh Android release APK before the next tester wave.
+3. Run a focused Android sanity pass covering:
    - title
    - first-run onboarding
    - class briefing
@@ -101,11 +112,11 @@ The highest-value remaining work is still human validation, final release packag
    - reward / event
    - cold relaunch resume
    - end-run
-3. Decide whether hardware controller input remains explicitly post-launch or becomes a release blocker.
-4. Decide whether the remote analytics adapter remains dev-only for first release or gets connected to a real production backend before launch.
-5. Finalize the public support inbox and any hosted support/privacy URLs needed for Play submission.
-6. Finalize Google Play listing copy, screenshots, feature graphic, and Data safety answers.
-7. Fix only blocker bugs or compliance issues found there.
+4. Decide whether hardware controller input remains explicitly post-launch or becomes a release blocker.
+5. Decide whether the remote analytics adapter remains dev-only for first release or gets connected to a real production backend before launch.
+6. Finalize the public support inbox and any hosted support/privacy URLs needed for Play submission.
+7. Finalize Google Play listing copy, screenshots, feature graphic, and Data safety answers.
+8. Fix only blocker bugs or compliance issues found there.
 
 ## 6. Repo guidance after this pass
 
@@ -114,36 +125,38 @@ The highest-value remaining work is still human validation, final release packag
 - Keep archive-backed recap behavior.
 - Keep content IDs kebab-case.
 - Keep `scripts/smoke-sim.cjs` aligned with system changes.
+- Keep `scripts/audit-class-support.cjs` aligned with the actual class-extension requirements so post-launch class additions fail loudly when support surfaces are missing.
 - Keep `src/state/uxTelemetryStore.ts` local-only unless the privacy model is intentionally expanded later.
 - Keep the remote analytics adapter vendor-neutral until a real backend decision is made.
 - Keep feature freeze intact until outside testing or store review reveals a real blocker.
+- Keep the writing hierarchy explicit:
+  - gameplay-facing reactive copy first
+  - recurring loop dialogue second
+  - lore expansion third
 
 ## 7. Source of truth after this pass
 
-Use these docs together:
+Current canonical docs:
 
 - `PROJECT_HANDOFF_2026-04-08.md`
 - `PROJECT_HANDOFF_2026-04-08.docx`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-08.docx`
-- `PROJECT_HANDOFF_2026-04-07.md`
-- `PROJECT_HANDOFF_2026-04-07.docx`
-- `PROJECT_HANDOFF_2026-04-06.md`
-- `PROJECT_HANDOFF_2026-04-06.docx`
-- `PROJECT_HANDOFF_2026-04-04.md`
-- `PROJECT_HANDOFF_2026-04-02.md`
-- `PROJECT_HANDOFF_2026-03-31.md`
-- `PROJECT_HANDOFF_2026-03-30.md`
-- `PROJECT_HANDOFF_2026-03-27.md`
-- `PROJECT_HANDOFF_2026-03-24.md`
 - `README.md`
 - `SUPPORT.md`
 - `PRIVACY_POLICY.md`
+- `docs/class-extension-checklist.md`
 - `docs/design-spec-audit.md`
 - `.github/BRANCH_PROTECTION.md`
 
-Simple rule:
+Historical background only when needed:
 
-- March 24 remains the broad product/system handoff
-- April 4 remains the authored-voice / pre-regression snapshot
-- April 7 remains the prior tester-build/readability snapshot
-- April 8 is now the freshest repo-readiness, controls/remapping, dodge-combat, analytics-validation, and documentation-alignment snapshot
+- `PROJECT_HANDOFF_2026-04-07.md`
+- `PROJECT_HANDOFF_2026-04-04.md`
+- `PROJECT_HANDOFF_2026-03-24.md`
+
+Canonical local repo root:
+
+- `C:\ddbd`
+- use `C:\ddbd` in docs, references, and handoff notes
+
+

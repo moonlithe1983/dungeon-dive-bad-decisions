@@ -40,7 +40,7 @@ March 24, 2026 validation addendum:
   - `app/reward.tsx` now renders the current run error inline so a failed reward claim/update will not look like a dead button to the player or tester
 - Important Windows rebuild/tooling blocker discovered on March 24, 2026:
   - after the reward-diagnostic source patch, a fresh Windows `assembleRelease` rebuild began failing inside `react-native-screens` native build steps with `Filename longer than 260 characters`
-  - the failing native path is rooted under `C:\Users\moonl\dungeon-dive-bad-decisions\.gradle-local\...`
+  - the failing native path is rooted under `C:\ddbd\.gradle-local\...`
   - attempted workarounds in this session:
     - forcing `GRADLE_USER_HOME` to `C:\g`
     - Gradle clean + rebuild

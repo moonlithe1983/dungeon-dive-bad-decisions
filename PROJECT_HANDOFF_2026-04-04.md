@@ -24,7 +24,8 @@ Purpose: This addendum captures the April 4 authored-writing/content pass. For t
   - codex entries now include richer bodies, first-seen lines, archive flavor, and sharper role framing
 - The opening companion blurbs were upgraded so the first team choice lands with more character and less generic summary text.
 - The IT Support class blurb was upgraded so the assigned-role opening better matches the intended burned-out-fixer fantasy.
-- The first three authored early-biome event sheets are now integrated into the live event pool through overlays on the existing event system:
+- The authored event overlay layer now covers the full current live event pool through the existing event system.
+- The first three orientation-phase authored sheets remain the clearest bespoke early-biome signature set:
   - `Warm Badges`
   - `Applause Threshold`
   - `Career Accelerator`
@@ -40,6 +41,10 @@ Purpose: This addendum captures the April 4 authored-writing/content pass. For t
   - no fake class choice on fresh profiles when only IT Support is unlocked
   - three default companions make the first decision feel real
   - the app now presents the world with a more consistent game-show-absurdity + corporate-horror voice
+- Writing priority is now clearer and should stay explicit in future passes:
+  - writing should enter through onboarding, route choice, battle intros, reward and event choices, companion reactions, and defeat recaps
+  - new lore should only be added if it sharpens one of those gameplay-facing surfaces
+  - gameplay-facing reactive copy should stay more important than codex expansion or background exposition
 - The main run flow is still intentionally compact and mobile-readable:
   - route choices stay current-floor only
   - battle and reward still lead with the shortest useful decision view
@@ -107,25 +112,47 @@ This pass improved tone, clarity, and repo accuracy, but it did not finish the r
 
 Content note:
 
-- only the first three authored event sheets are integrated into the live event pool right now
-- the remaining writing pack material is still available for a second content pass if desired
+- authored event overlays now cover the current live event pool
+- the first three orientation-phase sheets remain the clearest early-biome authored signature set
+- broader reserve material is still available for future targeted content passes where the runtime surface is ready
 
 
 ## 5a. Writing source bundles added on April 4
 
-The canonical repo now also contains a verified-complete local writing bundle set under `C:\ddbd\writing`:
+The canonical repo also contains a verified local writing bundle set under `C:\ddbd\writing`.
 
-- `ddbd_all_content_master_pack_verified_complete_2026-04-04.json`
-- `ddbd_all_content_master_pack_index_verified_complete_2026-04-04.json`
-- `ddbd_final_content_bundle.json`
-- `ddbd_codex_cards_with_archive_ui.json`
-- `ddbd_reward_and_route_ui_pack.json`
-- `ddbd_status_and_countermeasure_pack.json`
-- `ddbd_enemy_and_miniboss_voice_pack.json`
-- `ddbd_boss_encounter_pack.json`
-- `ddbd_ending_and_recap_pack.json`
+Status legend:
 
-These files extend the earlier April 4 writing source set and should now be treated as the preferred local narrative/content source material for future import passes. They are source material, not required runtime assets, so they can remain local until intentionally integrated into app content.
+- `Live now`: actively represented in the shipped runtime surfaces today
+- `Integrated but gated`: partially surfaced, represented through semantic overlays, or present in the repo as the next live-ready layer
+- `Authored reserve`: useful source material, but not a current runtime dependency
+
+Bundle status:
+
+- `ddbd_all_content_master_pack_verified_complete_2026-04-04.json` — `Integrated but gated`
+  - broad source-of-truth export spanning live, partial, and reserve content; use this as a writer-facing reference, not as proof that every section is fully runtime-visible
+- `ddbd_all_content_master_pack_index_verified_complete_2026-04-04.json` — `Integrated but gated`
+  - authoritative verification/index layer for the master pack; use this to resolve content-state questions before reusing older bundle metadata
+- `ddbd_final_content_bundle.json` — `Authored reserve`
+  - older export kept for archive/reference purposes; its verification metadata is superseded by the verified master-pack index
+- `ddbd_codex_cards_with_archive_ui.json` — `Live now`
+  - codex/archive-facing identity work is broadly represented in the current codex and recap surfaces
+- `ddbd_reward_and_route_ui_pack.json` — `Live now`
+  - route/reward-facing authored cues and readability copy now materially shape the live loop
+- `ddbd_status_and_countermeasure_pack.json` — `Integrated but gated`
+  - some status/countermeasure framing is represented, but the full authored pack is not surfaced one-to-one in the runtime yet
+- `ddbd_enemy_and_miniboss_voice_pack.json` — `Integrated but gated`
+  - encounter framing is partially live through aligned battle/header surfaces, but the named roster remains a provisional overlay rather than settled canon
+- `ddbd_boss_encounter_pack.json` — `Live now`
+  - boss encounter and archive-facing framing now have real runtime homes in battle and end-run surfaces
+- `ddbd_ending_and_recap_pack.json` — `Live now`
+  - ending accents, archive recap framing, and defeat-facing authored copy are now materially represented in the live app
+
+Simple rule:
+
+- import or expand `Live now` material only when it improves a current gameplay surface
+- pull from `Integrated but gated` only when the target runtime surface is actually ready to carry it
+- keep `Authored reserve` out of the active loop until a deliberate content pass promotes it
 
 ## 6. Best next move after this pass
 
@@ -175,4 +202,3 @@ Simple rule:
 - use March 31 for the prior polish/readiness snapshot
 - use April 2 for the route-choice/readability snapshot
 - use this April 4 addendum for the current authored narrative layer, GitHub-ready repo state, and latest validation status
-

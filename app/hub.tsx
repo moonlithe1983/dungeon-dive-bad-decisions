@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { GameButton } from '@/src/components/game-button';
 import { classDefinitions, getClassDefinition } from '@/src/content/classes';
 import {
@@ -32,6 +33,7 @@ import {
   getRunResumeTarget,
 } from '@/src/engine/run/progress-run';
 import { loadLatestRunHistoryEntryAsync } from '@/src/save/runRepo';
+import { getNextGoalSummary } from '@/src/progression/next-goal';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import {
@@ -127,6 +129,10 @@ export default function HubScreen() {
       void initializeApp();
     }
   }, [bootstrapStatus, initializeApp]);
+
+  useEffect(() => {
+    void trackAnalyticsEvent('meta_screen_viewed', { screen: 'hub' });
+  }, []);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle' || bootstrapStatus === 'loading') {
@@ -306,6 +312,10 @@ export default function HubScreen() {
   const latestArchiveLabel = latestArchive
     ? formatSaveTimestampLabel(latestArchive.updatedAt)
     : 'No archive yet';
+  const nextGoal = useMemo(
+    () => getNextGoalSummary({ profile: resolvedProfile, activeRun }),
+    [activeRun, resolvedProfile]
+  );
 
   const handlePurchase = async (offer: RequisitionOffer) => {
     setActiveRequisitionId(`${offer.kind}:${offer.id}`);
@@ -818,6 +828,25 @@ export default function HubScreen() {
                       <Text style={styles.shortcutBody}>{shortcut.body}</Text>
                     </Pressable>
                   ))}
+                </View>
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Next Goal</Text>
+                <Text style={styles.panelBody}>
+                  The hub should always point at the clearest next piece of progress so a short session still ends with direction.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine label="Focus" value={nextGoal.title} />
+                  <DetailLine label="Why now" value={nextGoal.body} />
+                </View>
+                <View style={styles.actionGroup}>
+                  <GameButton
+                    label={nextGoal.ctaLabel}
+                    onPress={() => {
+                      router.push(nextGoal.href);
+                    }}
+                  />
                 </View>
               </View>
 

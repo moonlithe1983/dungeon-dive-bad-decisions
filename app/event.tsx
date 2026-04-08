@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -15,6 +15,9 @@ import {
   getEventArtSource,
   getLoopSurfaceArtSource,
 } from '@/src/assets/loop-art-sources';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
+import { playUiSfx } from '@/src/audio/ui-sfx';
+import { getBiomeAmbientArtSource } from '@/src/assets/supplemental-art-sources';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { GameButton } from '@/src/components/game-button';
 import { getPartyScene } from '@/src/content/authored-voice';
@@ -26,6 +29,7 @@ import { getEventSceneForCurrentNode } from '@/src/engine/event/event-engine';
 import { getRunNodeRoute } from '@/src/engine/run/progress-run';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -41,8 +45,13 @@ export default function EventScreen() {
     (state) => state.isApplyingEventChoice
   );
   const [showSupportingReads, setShowSupportingReads] = useState(false);
+  const eventOpenCueRef = useRef<string | null>(null);
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   const className = useMemo(() => {
     if (!run) {
@@ -89,16 +98,56 @@ export default function EventScreen() {
     () => getLoopSurfaceArtSource('event', settings),
     [settings]
   );
+  const eventAmbientArtSource = useMemo(
+    () => getBiomeAmbientArtSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
 
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'event'
       ? getRunNodeRoute(currentNode.kind)
       : null;
 
+  useEffect(() => {
+    if (!run || !currentNode || currentNode.kind !== 'event' || !eventScene) {
+      return;
+    }
+
+    const cueKey = `${run.runId}:${currentNode.id}:${eventScene.eventId}`;
+
+    if (eventOpenCueRef.current === cueKey) {
+      return;
+    }
+
+    eventOpenCueRef.current = cueKey;
+    void playUiSfx('event-open', settings);
+  }, [currentNode, eventScene, run, settings]);
+
   const handleChoice = async (choiceId: string) => {
+    void playUiSfx('event-confirm', settings);
+    void trackAnalyticsEvent('event_choice_applied', {
+      runId: run?.runId ?? null,
+      eventId: eventScene?.eventId ?? null,
+      choiceId,
+    });
     const result = await applyEventChoice(choiceId);
 
+    if (currentNode && run) {
+      void trackAnalyticsEvent('room_exited', {
+        runId: run.runId,
+        nodeId: currentNode.id,
+        kind: currentNode.kind,
+        floorIndex: run.floorIndex,
+        outcome: result.nextRoute === '/end-run' ? 'run-ended' : 'resolved',
+      });
+    }
+
     if (result.nextRoute === '/end-run') {
+      void trackAnalyticsEvent('run_ended', {
+        runId: result.run.runId,
+        result: 'win',
+        floorIndex: result.run.floorIndex,
+      });
       router.replace(
         `/end-run?runId=${encodeURIComponent(result.run.runId)}` as Href
       );
@@ -189,6 +238,7 @@ export default function EventScreen() {
                 <LoopArtPanel
                   title="Room Signal"
                   body={eventScene.description}
+                  ambientSource={eventAmbientArtSource}
                   source={eventArtSource}
                   backgroundSource={eventSurfaceArtSource}
                   frameVariant="portrait"
@@ -274,6 +324,13 @@ export default function EventScreen() {
                     setShowSupportingReads((current) => !current);
                   }}
                   accessibilityRole="button"
+                  accessibilityLabel="Class and Crew Reads"
+                  accessibilityHint={
+                    showSupportingReads
+                      ? 'Double tap to collapse class and crew reads.'
+                      : 'Double tap to expand class and crew reads.'
+                  }
+                  accessibilityState={{ expanded: showSupportingReads }}
                 >
                   <Text style={styles.panelTitle}>Class and Crew Reads</Text>
                   <Text style={styles.toggleLabel}>
@@ -339,7 +396,11 @@ export default function EventScreen() {
 
 function LoadingPanel({ label }: { label: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -367,7 +428,11 @@ function InfoPanel({
   secondaryHref?: string;
 }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.panel}>
@@ -396,7 +461,11 @@ function InfoPanel({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.statCard}>
@@ -420,7 +489,11 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 function DetailLine({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <Text style={styles.detailLine}>
@@ -432,7 +505,8 @@ function DetailLine({ label, value }: { label: string; value: string }) {
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
   safeArea: {
@@ -444,7 +518,10 @@ function createStyles(
   },
   shell: {
     flex: 1,
-    paddingHorizontal: spacing.lg,
+    width: '100%',
+    maxWidth: layout.maxContentWidth,
+    alignSelf: 'center',
+    paddingHorizontal: layout.shellPaddingHorizontal,
     paddingTop: spacing.md,
     paddingBottom: spacing.xxl,
     gap: spacing.lg,
@@ -507,7 +584,7 @@ function createStyles(
     gap: spacing.sm,
   },
   statGrid: {
-    flexDirection: 'row',
+    flexDirection: layout.stackStatCards ? 'column' : 'row',
     gap: spacing.sm + 2,
   },
   statCard: {
@@ -657,10 +734,11 @@ function createStyles(
     lineHeight: scaleLineHeight(18, settings),
   },
   toggleRow: {
-    flexDirection: 'row',
+    flexDirection: layout.stackInlineHeader ? 'column' : 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
     gap: spacing.sm,
+    minHeight: 48,
   },
   toggleLabel: {
     color: colors.accent,

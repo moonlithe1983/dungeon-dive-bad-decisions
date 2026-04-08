@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { getCompanionCardArtSource } from '@/src/assets/supplemental-art-sources';
+import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
@@ -251,14 +254,22 @@ export default function CompanionSelectScreen() {
                       'reserve',
                       bondLevel
                     );
+                    const companionArtSource = getCompanionCardArtSource(
+                      companion.id,
+                      settings
+                    );
 
                     return (
                       <Pressable
                         key={companion.id}
                         onPress={() => {
+                          if (isDisabled) {
+                            void playUiSfx('invalid-tap', settings);
+                            return;
+                          }
+
                           toggleSelectedCompanionId(companion.id);
                         }}
-                        disabled={isDisabled}
                         accessibilityRole="button"
                         accessibilityState={{ selected: isSelected, disabled: isDisabled }}
                         style={({ pressed }) => [
@@ -268,6 +279,15 @@ export default function CompanionSelectScreen() {
                           pressed && !isDisabled && styles.optionCardPressed,
                         ]}
                       >
+                        {companionArtSource ? (
+                          <View style={styles.optionArtFrame}>
+                            <Image
+                              source={companionArtSource}
+                              style={styles.optionArt}
+                              resizeMode="contain"
+                            />
+                          </View>
+                        ) : null}
                         <Text style={styles.optionTitle}>{companion.name}</Text>
                         <Text style={styles.optionMeta}>
                           {companion.specialty}
@@ -477,6 +497,23 @@ function createStyles(
     borderRadius: 16,
     padding: spacing.lg,
     gap: spacing.xs + 2,
+  },
+  optionArtFrame: {
+    minHeight: 112,
+    borderRadius: 14,
+    backgroundColor: colors.surfaceRaised,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm + 2,
+    marginBottom: spacing.xs,
+  },
+  optionArt: {
+    width: '100%',
+    height: 92,
   },
   optionCardSelected: {
     borderColor: colors.accent,

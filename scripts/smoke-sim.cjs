@@ -983,7 +983,8 @@ async function main() {
     combatState: cloneCombatState(itemTestCombatState),
   }).map((action) => action.label);
   assert(
-    itActionLabels.join('|') === 'Patch Notes|Escalate Ticket|Stabilize Systems',
+    itActionLabels.join('|') ===
+      'Patch Notes|Escalate Ticket|Stabilize Systems|Reroute Traffic',
     'Expected IT Support to expose its authored combat kit labels.'
   );
   const itNeutralEscalate = performCombatAction(
@@ -1037,7 +1038,7 @@ async function main() {
   });
   assert(
     customerServiceActions.map((action) => action.label).join('|') ===
-      'Scripted Reassurance|Escalation Script|Call Recovery',
+      'Scripted Reassurance|Escalation Script|Call Recovery|De-escalate Caller',
     'Expected Customer Service Rep to expose its authored combat kit labels.'
   );
   const customerServicePatch = performCombatAction(
@@ -1128,7 +1129,7 @@ async function main() {
   });
   assert(
     salesActions.map((action) => action.label).join('|') ===
-      'Warm Lead|Hard Close|Reset The Pitch',
+      'Warm Lead|Hard Close|Reset The Pitch|Side-Step Objection',
     'Expected Sales Rep to expose its authored combat kit labels.'
   );
   const salesEscalate = performCombatAction(
@@ -1217,7 +1218,7 @@ async function main() {
   });
   assert(
     internActions.map((action) => action.label).join('|') ===
-      'Ask For Help|Touch Everything|Steal Breakroom Coffee',
+      'Ask For Help|Touch Everything|Steal Breakroom Coffee|Trip Over Success',
     'Expected Intern to expose its authored combat kit labels.'
   );
   const internStabilize = performCombatAction(
@@ -1263,7 +1264,7 @@ async function main() {
   });
   assert(
     paralegalActions.map((action) => action.label).join('|') ===
-      'Redline Clause|Discovery Demand|File Injunction',
+      'Redline Clause|Discovery Demand|File Injunction|Procedural Sidestep',
     'Expected Paralegal to expose its authored combat kit labels.'
   );
   const paralegalPatch = performCombatAction(

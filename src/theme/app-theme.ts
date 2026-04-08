@@ -5,6 +5,8 @@ import type {
 } from '@/src/types/profile';
 import { DEFAULT_PROFILE_SETTINGS } from '@/src/types/profile';
 import { useProfileStore } from '@/src/state/profileStore';
+import { useSystemAccessibilityStore } from '@/src/state/systemAccessibilityStore';
+import { useWindowDimensions } from 'react-native';
 
 export type AppPalette = {
   background: string;
@@ -141,16 +143,11 @@ function getTextScale(textSize: TextSizeSetting) {
   return 1;
 }
 
-function getMaxFontSizeMultiplier(textSize: TextSizeSetting) {
-  if (textSize === 'largest') {
-    return 1.7;
-  }
+function getMaxFontSizeMultiplier(textSize: TextSizeSetting, fontScale: number) {
+  const configuredMaximum =
+    textSize === 'largest' ? 3.6 : textSize === 'large' ? 3.1 : 2.6;
 
-  if (textSize === 'large') {
-    return 1.4;
-  }
-
-  return 1.2;
+  return Math.max(configuredMaximum, fontScale);
 }
 
 function resolveBasePalette(themePreset: ThemePresetId) {
@@ -179,12 +176,15 @@ export function resolveAppPalette(settings: ProfileSettingsState): AppPalette {
   return basePalette;
 }
 
-export function getReadableMetrics(settings: ProfileSettingsState) {
+export function getReadableMetrics(
+  settings: ProfileSettingsState,
+  fontScale = 1
+) {
   return {
     textScale: getTextScale(settings.textSize),
     lineHeightScale: settings.dyslexiaAssistEnabled ? 1.18 : 1,
     letterSpacing: settings.dyslexiaAssistEnabled ? 0.18 : 0,
-    maxFontSizeMultiplier: getMaxFontSizeMultiplier(settings.textSize),
+    maxFontSizeMultiplier: getMaxFontSizeMultiplier(settings.textSize, fontScale),
   };
 }
 
@@ -198,12 +198,27 @@ export function scaleLineHeight(baseLineHeight: number, settings: ProfileSetting
 }
 
 export function useAppTheme() {
-  const settings =
+  const { fontScale } = useWindowDimensions();
+  const profileSettings =
     useProfileStore((state) => state.profile?.settings) ?? DEFAULT_PROFILE_SETTINGS;
+  const reduceMotionEnabled = useSystemAccessibilityStore(
+    (state) => state.reduceMotionEnabled
+  );
+  const screenReaderEnabled = useSystemAccessibilityStore(
+    (state) => state.screenReaderEnabled
+  );
+
+  const settings: ProfileSettingsState = {
+    ...profileSettings,
+    reducedMotionEnabled:
+      profileSettings.reducedMotionEnabled || reduceMotionEnabled,
+    screenReaderHintsEnabled:
+      profileSettings.screenReaderHintsEnabled || screenReaderEnabled,
+  };
 
   return {
     settings,
     colors: resolveAppPalette(settings),
-    metrics: getReadableMetrics(settings),
+    metrics: getReadableMetrics(settings, fontScale),
   };
 }

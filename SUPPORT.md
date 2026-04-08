@@ -1,6 +1,6 @@
 # Dungeon Dive: Bad Decisions Support
 
-Last updated: April 7, 2026
+Last updated: April 8, 2026
 
 ## Current Launch Defaults
 
@@ -37,9 +37,11 @@ If you report a problem, include:
 - settings now include a live preview so readability, contrast, and motion choices can be checked before a run starts
 - battle, reward, event, and route screens now prioritize the immediate player decision and progressively disclose deeper flavor/detail
 - one full 10-floor Android release-build validation pass has already been completed on the prior candidate
-- fresh-profile onboarding now starts with a short title intro, an assigned IT Support role briefing, and then three default companion options
+- fresh-profile onboarding now starts with a short title intro, an interactive orientation sim, an assigned-role class briefing, and then three default companion options
 - the current polished source now includes compact route choice, loop-facing art panels, stronger defeat recap, authored early-run writing integration, and clearer progressive-disclosure treatment on event/setup screens
 - the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
-- the April 7 local release APK was rebuilt from the current source and verified on Android through title -> new run -> run-map -> battle -> reward -> resume -> end-run
+- battle now supports a remappable action order, controller-style hint badges, and a new dodge action that adds a more defensive tempo choice to the turn loop
+- the native-dev `Smoke Lab` route now includes a vendor-neutral remote analytics validation surface, but that path is still dev-only and is not part of the public release build by default
+- the April 7 local release APK remains the last rebuilt tester artifact; the April 8 repo pass focused on code, docs, and GitHub readiness rather than generating a new tester build
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
-- the `Smoke Lab` route is native-dev only and now surfaces local-only UX telemetry for manual QA; it is not part of the public release build or support burden
+- the `Smoke Lab` route is native-dev only and now surfaces local UX telemetry plus optional remote analytics validation for manual QA; it is not part of the public release build or support burden

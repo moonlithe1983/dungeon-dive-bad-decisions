@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { getClassActionKit } from '@/src/content/class-actions';
 import {
   getAuthoredClassCodexCard,
@@ -22,6 +23,10 @@ import { companionDefinitions } from '@/src/content/companions';
 import { enemyDefinitions } from '@/src/content/enemies';
 import { eventDefinitions } from '@/src/content/events';
 import { itemDefinitions } from '@/src/content/items';
+import {
+  onboardingBriefingSections,
+  onboardingCodexCategoryDescription,
+} from '@/src/content/onboarding';
 import { statusDefinitions } from '@/src/content/statuses';
 import {
   buildMetaUpgradeCatalog,
@@ -40,6 +45,7 @@ import type { ProfileSettingsState, ProfileState } from '@/src/types/profile';
 type CodexLoadStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 type CodexCategoryId =
+  | 'orientation'
   | 'classes'
   | 'companions'
   | 'items'
@@ -67,6 +73,13 @@ type CodexEntry = {
 };
 
 const codexCategories: CodexCategoryDefinition[] = [
+  {
+    id: 'orientation',
+    label: 'Orientation',
+    total: onboardingBriefingSections.length,
+    unlocked: () => onboardingBriefingSections.length,
+    description: onboardingCodexCategoryDescription,
+  },
   {
     id: 'items',
     label: 'Items',
@@ -163,6 +176,10 @@ export default function CodexScreen() {
       void initializeApp();
     }
   }, [bootstrapStatus, initializeApp]);
+
+  useEffect(() => {
+    void trackAnalyticsEvent('meta_screen_viewed', { screen: 'codex' });
+  }, []);
 
   useEffect(() => {
     if (bootstrapStatus === 'idle' || bootstrapStatus === 'loading') {
@@ -443,6 +460,15 @@ export default function CodexScreen() {
                 <Text style={styles.panelTitle}>Actions</Text>
                 <View style={styles.actionGroup}>
                   <GameButton
+                    label="Replay Interactive Tutorial"
+                    onPress={() => {
+                      router.push(
+                        '/onboarding?mode=tutorial&returnTo=%2Fcodex' as Href
+                      );
+                    }}
+                    variant="secondary"
+                  />
+                  <GameButton
                     label="Refresh Codex"
                     onPress={() => {
                       void handleRefresh();
@@ -478,6 +504,17 @@ function buildCodexEntries(
   categoryId: CodexCategoryId,
   profile: ProfileState | null
 ): CodexEntry[] {
+  if (categoryId === 'orientation') {
+    return onboardingBriefingSections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      subtitle: section.summary,
+      body: section.body,
+      tag: section.eyebrow,
+      locked: false,
+    }));
+  }
+
   if (categoryId === 'classes') {
     return classDefinitions.map((item) => {
       const locked = !profile?.unlockedClassIds.includes(item.id);

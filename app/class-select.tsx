@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import {
+  getClassEmblemAlignmentLabel,
+  getClassEmblemSource,
+} from '@/src/assets/supplemental-art-sources';
+import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getClassActionKit } from '@/src/content/class-actions';
 import { classDefinitions } from '@/src/content/classes';
 import {
@@ -141,11 +147,17 @@ export default function ClassSelectScreen() {
                 <View style={styles.cardGrid}>
                   {unlockedClasses.map((classDefinition) => {
                     const isSelected = selectedClassId === classDefinition.id;
+                    const emblemSource = getClassEmblemSource(
+                      classDefinition.id,
+                      settings
+                    );
+                    const emblemLabel = getClassEmblemAlignmentLabel(
+                      classDefinition.id
+                    );
 
                     return (
                       <Pressable
                         key={classDefinition.id}
-                        disabled={!hasMultipleClassChoices}
                         accessibilityRole="button"
                         accessibilityState={{
                           selected: isSelected,
@@ -153,6 +165,7 @@ export default function ClassSelectScreen() {
                         }}
                         onPress={() => {
                           if (!hasMultipleClassChoices) {
+                            void playUiSfx('invalid-tap', settings);
                             return;
                           }
 
@@ -164,12 +177,24 @@ export default function ClassSelectScreen() {
                           pressed && hasMultipleClassChoices && styles.optionCardPressed,
                         ]}
                       >
+                        {emblemSource ? (
+                          <View style={styles.optionArtFrame}>
+                            <Image
+                              source={emblemSource}
+                              style={styles.optionArt}
+                              resizeMode="contain"
+                            />
+                          </View>
+                        ) : null}
                         <Text style={styles.optionTitle}>
                           {classDefinition.name}
                         </Text>
                         <Text style={styles.optionRole}>
                           {getClassNarrative(classDefinition.id).roleLabel}
                         </Text>
+                        {emblemLabel ? (
+                          <Text style={styles.optionTrack}>{emblemLabel}</Text>
+                        ) : null}
                         <Text style={styles.optionMeta}>
                           {classDefinition.combatIdentity}
                         </Text>
@@ -216,7 +241,34 @@ export default function ClassSelectScreen() {
                 </Text>
                 {selectedClassDefinition ? (
                   <View style={styles.selectionDetailCard}>
-                    <Text style={styles.selectionIdentity}>{selectedClassDefinition.name}</Text>
+                    {getClassEmblemSource(selectedClassDefinition.id, settings) ? (
+                      <View style={styles.selectionArtRow}>
+                        <View style={styles.selectionArtFrame}>
+                          <Image
+                            source={getClassEmblemSource(
+                              selectedClassDefinition.id,
+                              settings
+                            )!}
+                            style={styles.selectionArt}
+                            resizeMode="contain"
+                          />
+                        </View>
+                        <View style={styles.selectionArtCopy}>
+                          <Text style={styles.selectionIdentity}>
+                            {selectedClassDefinition.name}
+                          </Text>
+                          {getClassEmblemAlignmentLabel(selectedClassDefinition.id) ? (
+                            <Text style={styles.selectionTrack}>
+                              {getClassEmblemAlignmentLabel(selectedClassDefinition.id)}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </View>
+                    ) : (
+                      <Text style={styles.selectionIdentity}>
+                        {selectedClassDefinition.name}
+                      </Text>
+                    )}
                     <Text style={styles.selectionActionLine}>
                       <Text style={styles.selectionActionLabel}>Role: </Text>
                       {selectedNarrative?.roleLabel ?? 'Unknown'}
@@ -437,6 +489,22 @@ function createStyles(
       padding: spacing.lg,
       gap: spacing.xs + 2,
     },
+    optionArtFrame: {
+      width: 72,
+      height: 72,
+      borderRadius: 18,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.sm,
+      marginBottom: spacing.xs,
+    },
+    optionArt: {
+      width: '100%',
+      height: '100%',
+    },
     optionCardSelected: {
       borderColor: colors.accent,
     },
@@ -461,6 +529,12 @@ function createStyles(
       fontWeight: '800',
       letterSpacing: 0.5 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
       textTransform: 'uppercase',
+    },
+    optionTrack: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
     },
     optionBody: {
       color: colors.textMuted,
@@ -513,11 +587,42 @@ function createStyles(
       padding: spacing.md,
       gap: spacing.xs,
     },
+    selectionArtRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      marginBottom: spacing.xs,
+    },
+    selectionArtFrame: {
+      width: 70,
+      height: 70,
+      borderRadius: 18,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: spacing.sm,
+    },
+    selectionArt: {
+      width: '100%',
+      height: '100%',
+    },
+    selectionArtCopy: {
+      flex: 1,
+      gap: spacing.xs,
+    },
     selectionIdentity: {
       color: colors.accent,
       fontSize: scaleFontSize(13, settings),
       fontWeight: '800',
       lineHeight: scaleLineHeight(18, settings),
+    },
+    selectionTrack: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(17, settings),
     },
     selectionActionLine: {
       color: colors.textMuted,

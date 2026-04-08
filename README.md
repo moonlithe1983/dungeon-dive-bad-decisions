@@ -10,8 +10,8 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> class select -> companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
-- Opening setup: fresh profiles now get a short first-run title intro, then an assigned IT Support role briefing before companion selection
+- Core loop: title -> interactive onboarding tutorial -> class select -> companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
+- Opening setup: fresh profiles now get a short first-run title intro, then an interactive orientation sim and assigned-role class briefing before companion selection
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
 - Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
@@ -26,7 +26,9 @@ Premium mobile roguelite where a burned-out office worker gets dragged into a pr
 - Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
 - Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
 - Accessibility foundation: persisted theme presets, text-size controls, contrast/motion toggles, dyslexia-friendly spacing, and screen-reader hints are now in the live settings route
-- Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation plus local-only UX telemetry readouts
+- Input accessibility: battle now supports a profile-backed action order, dominant-hand bias, and controller-style hint badges
+- Combat shape: battle is still turn-based, but now includes a real dodge/tempo action instead of only attack-or-heal choices
+- Dev QA route: native-only `dev-smoke` path for seeded final-boss win/loss validation, local UX telemetry readouts, and vendor-neutral remote analytics validation
 - Policy/support surfaces: repository markdown and the in-app `support` / `privacy` routes now reflect the current offline-only, local-save, no-account shipping model
 
 ## MVP Content Snapshot
@@ -97,7 +99,7 @@ Notes:
 - Native iOS is intentionally out of scope for this project now.
 - `npm run smoke:sim` is the fastest automated gameplay guardrail.
 - `app/settings.tsx` is now the live accessibility and theme control surface, including a visible preview for readability/contrast changes.
-- `app/dev-smoke.tsx` is the quickest place to sanity-check local-only UX telemetry counters during manual QA.
+- `app/dev-smoke.tsx` is the quickest place to sanity-check local UX telemetry counters and the remote analytics validation surface during manual QA.
 
 ## Native Android Release Build
 
@@ -197,7 +199,7 @@ The game is in release-candidate hardening mode:
 - the live settings route now persists the real accessibility/theme settings that the app actually uses
 - the live settings route now includes a visual preview so high contrast, color assist, reduced motion, and readability changes are visibly testable
 - the primary gameplay, recap, reference, and test routes now respect the saved accessibility/theme profile rather than only the shared chrome
-- the in-app support/privacy routes and the repo markdown now agree on the offline-only/local-save model and the dev-only/local-only telemetry scope
+- the in-app support/privacy routes and the repo markdown now agree on the offline-only/local-save model, while `dev-smoke` remains the explicit QA surface for telemetry and remote analytics checks
 - class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
 - older companion/meta writing now carries more of that sharper company-specific tone
 - combat log ordering now places the rolling narrative above the action list
@@ -207,7 +209,9 @@ The game is in release-candidate hardening mode:
 - the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
 - the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
 - the local Android launcher now resolves the real workspace path first, so `npm run android` works from the current repo checkout without the earlier Expo root-resolution failure
-- the native-only `dev-smoke` route now surfaces local-only UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, and `Run It Back` usage
+- the native-only `dev-smoke` route now surfaces local UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, `Run It Back` usage, and remote analytics validation state
+- the April 8 pass added profile-backed combat remapping, controller-style action hints, a live dodge action in battle, and a vendor-neutral remote analytics adapter / validation surface
+- the current app and markdown policy docs now agree that public gameplay remains offline-first while remote analytics validation is a dev-only, explicitly configured QA path
 - the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
 - the April 7 pass added a persistent first-run intro, clearer route-objective language, cleaner mandatory reward CTAs, plain-language defeat/status support, and finalized Play icon/feature-graphic treatment in the repo and app config
 - the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
@@ -243,9 +247,11 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-04-08.md`
+- `PROJECT_HANDOFF_2026-04-08.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-08.docx`
 - `PROJECT_HANDOFF_2026-04-07.md`
 - `PROJECT_HANDOFF_2026-04-07.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-07.docx`
 - `PROJECT_HANDOFF_2026-04-06.md`
 - `PROJECT_HANDOFF_2026-04-06.docx`
 - `SUPPORT.md`

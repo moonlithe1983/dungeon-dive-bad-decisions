@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,6 +10,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import {
+  flushAnalyticsEvents,
+  getBufferedAnalyticsEvents,
+  trackAnalyticsEvent,
+} from '@/src/analytics/client';
+import {
+  getRemoteAnalyticsDebugState,
+  installRemoteAnalyticsAdapter,
+  validateRemoteAnalyticsEndpoint,
+} from '@/src/analytics/http-adapter';
 import { GameButton } from '@/src/components/game-button';
 import {
   createDevSmokeRun,
@@ -29,6 +39,7 @@ import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
 
 type PendingScenario = DevSmokeScenarioId | null;
+type PendingAnalyticsAction = 'validate' | 'flush' | null;
 
 export default function DevSmokeScreen() {
   const profile = useProfileStore((state) => state.profile);
@@ -46,6 +57,11 @@ export default function DevSmokeScreen() {
   }));
   const resetTelemetry = useUxTelemetryStore((state) => state.resetSession);
   const [pendingScenario, setPendingScenario] = useState<PendingScenario>(null);
+  const [pendingAnalyticsAction, setPendingAnalyticsAction] =
+    useState<PendingAnalyticsAction>(null);
+  const [remoteAnalyticsState, setRemoteAnalyticsState] = useState(
+    getRemoteAnalyticsDebugState()
+  );
   const [error, setError] = useState<string | null>(null);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
@@ -61,6 +77,42 @@ export default function DevSmokeScreen() {
 
     return Math.round(total / telemetry.floorOneCommitSamplesMs.length);
   }, [telemetry.floorOneCommitSamplesMs]);
+  const bufferedAnalyticsCount = getBufferedAnalyticsEvents().length;
+
+  useEffect(() => {
+    installRemoteAnalyticsAdapter();
+    setRemoteAnalyticsState(getRemoteAnalyticsDebugState());
+  }, []);
+
+  const refreshRemoteAnalyticsState = () => {
+    setRemoteAnalyticsState(getRemoteAnalyticsDebugState());
+  };
+
+  const handleValidateRemoteAnalytics = async () => {
+    setPendingAnalyticsAction('validate');
+
+    try {
+      await trackAnalyticsEvent('screen_viewed', {
+        screen: 'dev-smoke',
+        source: 'remote-analytics-validation',
+      });
+      await validateRemoteAnalyticsEndpoint();
+      refreshRemoteAnalyticsState();
+    } finally {
+      setPendingAnalyticsAction(null);
+    }
+  };
+
+  const handleFlushRemoteAnalytics = async () => {
+    setPendingAnalyticsAction('flush');
+
+    try {
+      await flushAnalyticsEvents();
+      refreshRemoteAnalyticsState();
+    } finally {
+      setPendingAnalyticsAction(null);
+    }
+  };
 
   const seedScenario = async (scenarioId: DevSmokeScenarioId) => {
     if (!__DEV__) {
@@ -183,7 +235,7 @@ export default function DevSmokeScreen() {
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>UX Telemetry</Text>
             <Text style={styles.panelBody}>
-              Local-only session metrics for validating loop clarity without adding a remote analytics dependency.
+              Local session metrics still help validate loop clarity, and this screen now also exposes the remote analytics adapter state for delivery checks.
             </Text>
             <View style={styles.metricsCard}>
               <MetricLine label="Runs started" value={String(telemetry.runsStarted)} />
@@ -200,6 +252,88 @@ export default function DevSmokeScreen() {
               variant="secondary"
               disabled={pendingScenario !== null}
             />
+          </View>
+
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>Remote Analytics</Text>
+            <Text style={styles.panelBody}>
+              Vendor-neutral delivery is configured through `EXPO_PUBLIC_ANALYTICS_ENDPOINT` plus optional key/source env values. Use the validation probe first, then flush any buffered events to confirm the endpoint accepts the live envelope shape.
+            </Text>
+            <View style={styles.metricsCard}>
+              <MetricLine
+                label="Configured"
+                value={remoteAnalyticsState.configured ? 'Yes' : 'No'}
+              />
+              <MetricLine
+                label="Endpoint"
+                value={remoteAnalyticsState.endpoint ?? 'Not configured'}
+              />
+              <MetricLine
+                label="Source"
+                value={remoteAnalyticsState.source ?? 'Not configured'}
+              />
+              <MetricLine
+                label="Buffered events"
+                value={String(bufferedAnalyticsCount)}
+              />
+              <MetricLine
+                label="Pending remote queue"
+                value={String(remoteAnalyticsState.pendingCount)}
+              />
+              <MetricLine
+                label="Last flush"
+                value={
+                  remoteAnalyticsState.lastFlushAt
+                    ? `${remoteAnalyticsState.lastFlushStatus} (${remoteAnalyticsState.lastFlushCount}) at ${remoteAnalyticsState.lastFlushAt}`
+                    : 'No flush yet'
+                }
+              />
+              <MetricLine
+                label="Last validation"
+                value={
+                  remoteAnalyticsState.lastValidationAt
+                    ? `${remoteAnalyticsState.lastValidationOk ? 'Accepted' : 'Failed'}${
+                        remoteAnalyticsState.lastValidationStatusCode != null
+                          ? ` [${remoteAnalyticsState.lastValidationStatusCode}]`
+                          : ''
+                      } at ${remoteAnalyticsState.lastValidationAt}`
+                    : 'No validation probe yet'
+                }
+              />
+              <MetricLine
+                label="Remote note"
+                value={
+                  remoteAnalyticsState.lastValidationMessage ??
+                  remoteAnalyticsState.lastError ??
+                  'No remote adapter message yet'
+                }
+              />
+            </View>
+            <View style={styles.actionGroup}>
+              <GameButton
+                label={
+                  pendingAnalyticsAction === 'validate'
+                    ? 'Validating Remote Analytics...'
+                    : 'Send Validation Probe'
+                }
+                onPress={() => {
+                  void handleValidateRemoteAnalytics();
+                }}
+                disabled={pendingAnalyticsAction !== null}
+              />
+              <GameButton
+                label={
+                  pendingAnalyticsAction === 'flush'
+                    ? 'Flushing Buffered Events...'
+                    : 'Flush Buffered Events'
+                }
+                onPress={() => {
+                  void handleFlushRemoteAnalytics();
+                }}
+                disabled={pendingAnalyticsAction !== null}
+                variant="secondary"
+              />
+            </View>
           </View>
 
           {pendingScenario ? (
@@ -363,6 +497,9 @@ function createStyles(
   metricLabel: {
     color: colors.textPrimary,
     fontWeight: '800',
+  },
+  actionGroup: {
+    gap: spacing.sm,
   },
   });
 }

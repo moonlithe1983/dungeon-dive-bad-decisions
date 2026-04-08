@@ -83,6 +83,7 @@ type CombatActionEffects = {
   recoilBonus: number;
   retaliationReduction: number;
   stabilizeDamage: number;
+  dodgeDamage: number;
   directHeal: number;
   notes: string[];
 };
@@ -447,6 +448,7 @@ function createEmptyCombatActionEffects(): CombatActionEffects {
     recoilBonus: 0,
     retaliationReduction: 0,
     stabilizeDamage: 0,
+    dodgeDamage: 0,
     directHeal: 0,
     notes: [],
   };
@@ -461,6 +463,7 @@ function combineCombatActionEffects(effects: CombatActionEffects[]) {
       retaliationReduction:
         combined.retaliationReduction + nextEffects.retaliationReduction,
       stabilizeDamage: combined.stabilizeDamage + nextEffects.stabilizeDamage,
+      dodgeDamage: combined.dodgeDamage + nextEffects.dodgeDamage,
       directHeal: combined.directHeal + nextEffects.directHeal,
       notes: [...combined.notes, ...nextEffects.notes],
     }),
@@ -615,6 +618,17 @@ function createCombatActionClassEffects(
       nextEffects.notes.push('Status triage adds 1 healing.');
     }
 
+    if (actionId === 'dodge') {
+      nextEffects.retaliationReduction += 4;
+      nextEffects.dodgeDamage += 1;
+      nextEffects.notes.push('IT Support reroutes the hit window and reduces retaliation by 4.');
+
+      if (heroStatusPressure) {
+        nextEffects.directHeal += 1;
+        nextEffects.notes.push('Status pressure triage restores 1 HP on the move.');
+      }
+    }
+
     return nextEffects;
   }
 
@@ -639,6 +653,17 @@ function createCombatActionClassEffects(
       nextEffects.notes.push("CC'd target recovery adds 3 healing.");
     }
 
+    if (actionId === 'dodge') {
+      nextEffects.retaliationReduction += 4;
+      nextEffects.dodgeDamage += 1;
+      nextEffects.notes.push('Caller de-escalation reduces retaliation by 4.');
+
+      if (enemyCcd) {
+        nextEffects.retaliationReduction += 1;
+        nextEffects.notes.push("CC'd target reduces retaliation by 1 more.");
+      }
+    }
+
     return nextEffects;
   }
 
@@ -656,6 +681,16 @@ function createCombatActionClassEffects(
     if (actionId === 'stabilize' && enemyEscalated) {
       nextEffects.stabilizeDamage += 2;
       nextEffects.notes.push('The pitch stays hot for 2 pressure damage.');
+    }
+
+    if (actionId === 'dodge') {
+      nextEffects.retaliationReduction += 3;
+      nextEffects.dodgeDamage += enemyEscalated ? 3 : 1;
+      nextEffects.notes.push(
+        enemyEscalated
+          ? 'Side-step objection cashes out 3 setup damage on an Escalated target.'
+          : 'Side-step objection reduces retaliation by 3 and deals 1 setup damage.'
+      );
     }
 
     return nextEffects;
@@ -686,6 +721,14 @@ function createCombatActionClassEffects(
       nextEffects.notes.push('Panic recovery adds 2 healing below half HP.');
     }
 
+    if (actionId === 'dodge') {
+      nextEffects.retaliationReduction += 3;
+      nextEffects.dodgeDamage += 2;
+      nextEffects.notes.push('Chaotic evasive movement reduces retaliation by 3 and clips for 2 damage.');
+      nextEffects.directHeal += 1;
+      nextEffects.notes.push('Accidental recovery restores 1 HP mid-stumble.');
+    }
+
     return nextEffects;
   }
 
@@ -700,6 +743,16 @@ function createCombatActionClassEffects(
       nextEffects.retaliationReduction += 2;
       nextEffects.notes.push(
         'Discovery leverage adds 2 damage and reduces retaliation by 2.'
+      );
+    }
+
+    if (actionId === 'dodge') {
+      nextEffects.retaliationReduction += 4;
+      nextEffects.dodgeDamage += compromisedTarget ? 2 : 1;
+      nextEffects.notes.push(
+        compromisedTarget
+          ? 'Procedural sidestep exploits a compromised target for 2 setup damage.'
+          : 'Procedural sidestep reduces retaliation by 4 and deals 1 setup damage.'
       );
     }
 
@@ -778,6 +831,17 @@ export function getCombatActionDefinitions(run: RunState): CombatActionDefinitio
       enemyStatuses
     ),
     createCombatActionTeamSynergyEffects(run, 'stabilize'),
+  ]);
+  const dodgeEffects = combineCombatActionEffects([
+    createCombatActionItemEffects(preview, 'dodge', modifiers),
+    createCombatActionClassEffects(
+      run,
+      preview,
+      'dodge',
+      heroStatuses,
+      enemyStatuses
+    ),
+    createCombatActionTeamSynergyEffects(run, 'dodge'),
   ]);
   const outgoingDamagePenalty = getCombatStatusOutgoingDamagePenalty(heroStatuses);
   const outgoingHealingPenalty = getCombatStatusOutgoingHealingPenalty(heroStatuses);
@@ -883,6 +947,27 @@ export function getCombatActionDefinitions(run: RunState): CombatActionDefinitio
             ? [getClassActionStatusNote(run, 'stabilize') as string]
             : []),
         ]
+      ),
+    },
+    {
+      id: 'dodge',
+      label:
+        getClassActionPreview(run.heroClassId, 'dodge')?.label ??
+        'Reroute Traffic',
+      description: createActionDescription(
+        `Deal ${Math.max(
+          0,
+          dodgeEffects.dodgeDamage +
+            enemyIncomingDamageBonus -
+            outgoingDamagePenalty
+        )} setup damage, reduce retaliation by ${
+          dodgeEffects.retaliationReduction
+        }${
+          dodgeEffects.directHeal > 0
+            ? `, and restore ${dodgeEffects.directHeal} HP`
+            : ''
+        } while you slip the next bad exchange.`,
+        [...dodgeEffects.notes, ...statusNotes]
       ),
     },
   ];
@@ -1001,7 +1086,9 @@ export function performCombatAction(
       ? 'Patch Notes'
       : actionId === 'escalate'
         ? 'Escalate Ticket'
-        : 'Stabilize Systems');
+        : actionId === 'stabilize'
+          ? 'Stabilize Systems'
+          : 'Reroute Traffic');
   const heroOutgoingDamagePenalty = getCombatStatusOutgoingDamagePenalty(
     nextCombat.heroStatuses
   );
@@ -1103,6 +1190,29 @@ export function performCombatAction(
         `${actionLabel} keeps pressure on for ${actionEffects.stabilizeDamage} damage.`
       );
     }
+  }
+
+  if (actionId === 'dodge') {
+    const dodgeDamage = Math.max(
+      0,
+      actionEffects.dodgeDamage +
+        enemyIncomingDamageBonus -
+        heroOutgoingDamagePenalty
+    );
+
+    if (dodgeDamage > 0) {
+      nextCombat.enemy.currentHp = Math.max(
+        0,
+        nextCombat.enemy.currentHp - dodgeDamage
+      );
+    }
+
+    nextCombat.log = appendLog(
+      nextCombat.log,
+      dodgeDamage > 0
+        ? `${actionLabel} slips the counter window, clips for ${dodgeDamage} setup damage, and cuts the return hit.`
+        : `${actionLabel} trades your attack window for a cleaner defensive read.`
+    );
   }
 
   if (actionEffects.directHeal > 0) {

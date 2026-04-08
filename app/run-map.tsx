@@ -16,9 +16,19 @@ import {
   getLoopSurfaceArtSource,
   getRouteNodeArtSource,
 } from '@/src/assets/loop-art-sources';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
+import { playUiSfx } from '@/src/audio/ui-sfx';
+import {
+  getBiomeAmbientArtSource,
+  getFloorActHeaderSource,
+  getFloorActLabelForIndex,
+  getFloorBadgeArtSource,
+  getFloorHeaderArtSource,
+} from '@/src/assets/supplemental-art-sources';
 import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
+import { playUiHaptic } from '@/src/haptics/ui-haptics';
 import { getEarlyFloorBeat, getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import {
@@ -39,6 +49,7 @@ import {
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useUxTelemetryStore } from '@/src/state/uxTelemetryStore';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -135,7 +146,11 @@ export default function RunMapScreen() {
   const [showCrewNotes, setShowCrewNotes] = useState(false);
   const [showBriefing, setShowBriefing] = useState(true);
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   const className = useMemo(() => {
     if (!run) {
@@ -241,6 +256,22 @@ export default function RunMapScreen() {
     () => getLoopSurfaceArtSource('run-map', settings),
     [settings]
   );
+  const runMapAmbientArtSource = useMemo(
+    () => getBiomeAmbientArtSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
+  const floorHeaderArtSource = useMemo(
+    () => getFloorHeaderArtSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
+  const floorActHeaderSource = useMemo(
+    () => getFloorActHeaderSource(run?.floorIndex, settings),
+    [run?.floorIndex, settings]
+  );
+  const floorActLabel = useMemo(
+    () => getFloorActLabelForIndex(run?.floorIndex),
+    [run?.floorIndex]
+  );
   const selectedRouteArtSource = useMemo(
     () =>
       getRouteNodeArtSource(
@@ -297,13 +328,32 @@ export default function RunMapScreen() {
   };
 
   const handleChooseRoute = async (nodeId: string) => {
+    const changedSelection = currentNode?.id !== nodeId;
+
     if (run) {
       recordRouteSelection({
         runId: run.runId,
-        changedSelection: currentNode?.id !== nodeId,
+        changedSelection,
       });
     }
 
+    if (!changedSelection) {
+      void playUiHaptic('error', settings);
+      void playUiSfx('invalid-tap', settings);
+      return;
+    }
+
+    void playUiHaptic('select', settings);
+    void playUiSfx('route-select', settings);
+    if (run) {
+      const selectedNode = floorChoices.find((node) => node.id === nodeId);
+      void trackAnalyticsEvent('route_selected', {
+        runId: run.runId,
+        nodeId,
+        floorIndex: run.floorIndex,
+        kind: selectedNode?.kind ?? null,
+      });
+    }
     await chooseCurrentNode(nodeId);
   };
 
@@ -377,6 +427,42 @@ export default function RunMapScreen() {
             <>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Progress</Text>
+                {floorActHeaderSource || floorHeaderArtSource ? (
+                  <View style={styles.floorHeaderCard}>
+                    {runMapAmbientArtSource ? (
+                      <Image
+                        source={runMapAmbientArtSource}
+                        style={styles.floorHeaderAmbientArt}
+                        resizeMode="cover"
+                      />
+                    ) : null}
+                    {floorActHeaderSource ? (
+                      <Image
+                        source={floorActHeaderSource}
+                        style={styles.floorActHeaderArt}
+                        resizeMode="contain"
+                      />
+                    ) : null}
+                    {floorHeaderArtSource ? (
+                      <Image
+                        source={floorHeaderArtSource}
+                        style={styles.floorHeaderArt}
+                        resizeMode="contain"
+                      />
+                    ) : null}
+                    <View style={styles.floorHeaderCopy}>
+                      <Text style={styles.floorHeaderEyebrow}>
+                        {floorActLabel ?? 'Current Act'}
+                      </Text>
+                      <Text style={styles.floorHeaderTitle}>
+                        {selectedFloor?.label ?? currentFloor?.label ?? 'Current floor'}
+                      </Text>
+                      <Text style={styles.floorHeaderBody}>
+                        {selectedFloor?.description ?? currentFloor?.description}
+                      </Text>
+                    </View>
+                  </View>
+                ) : null}
                 <View style={styles.progressStrip}>
                   {run.map.floors.map((floor) => (
                     <FloorMarker
@@ -391,11 +477,6 @@ export default function RunMapScreen() {
                   <StatCard label="Lead" value={activeCompanionName ?? 'Unknown'} />
                   <StatCard label="Choices" value={`${floorChoices.length} open`} />
                 </View>
-                <Text style={styles.panelBody}>
-                  {selectedFloor?.label ?? currentFloor?.label ?? 'Current floor'}.
-                  {' '}
-                  {selectedFloor?.description ?? currentFloor?.description}
-                </Text>
                 <Text style={styles.noticeText}>{floorObjective}</Text>
                 {recoveredFromBackup ? (
                   <Text style={styles.noticeText}>
@@ -502,6 +583,13 @@ export default function RunMapScreen() {
                       setShowBriefing((current) => !current);
                     }}
                     accessibilityRole="button"
+                    accessibilityLabel="Mission Brief"
+                    accessibilityHint={
+                      showBriefing
+                        ? 'Double tap to collapse the mission brief.'
+                        : 'Double tap to expand the mission brief.'
+                    }
+                    accessibilityState={{ expanded: showBriefing }}
                   >
                     <Text style={styles.panelTitle}>Mission Brief</Text>
                     <Text style={styles.toggleLabel}>
@@ -581,6 +669,7 @@ export default function RunMapScreen() {
                         ? `${currentNode.label}: ${summarizeRoute(currentNode)}`
                         : 'Choose a route below to preview what comes next.'
                     }
+                    ambientSource={runMapAmbientArtSource}
                     source={selectedRouteArtSource}
                     backgroundSource={runMapSurfaceArtSource}
                     frameVariant="portrait"
@@ -601,6 +690,12 @@ export default function RunMapScreen() {
                           }}
                           accessibilityRole="button"
                           accessibilityState={{ selected: isSelected }}
+                          accessibilityLabel={`${getRoleCue(node)} route. ${node.label}. ${node.description}`}
+                          accessibilityHint={
+                            isSelected
+                              ? 'Already selected. Use the Enter action below to continue into this room.'
+                              : `Double tap to select this route. ${summarizeRoute(node)}`
+                          }
                         >
                           <View style={styles.choiceHeader}>
                             <View style={styles.choiceHeaderContent}>
@@ -632,6 +727,7 @@ export default function RunMapScreen() {
                         label={`Enter ${currentNode.label}`}
                         onPress={() => {
                           if (!currentNodeRoute) {
+                            void playUiSfx('invalid-tap', settings);
                             return;
                           }
 
@@ -639,6 +735,18 @@ export default function RunMapScreen() {
                             runId: run.runId,
                             nodeId: currentNode.id,
                             floorIndex: run.floorIndex,
+                          });
+                          void trackAnalyticsEvent('route_committed', {
+                            runId: run.runId,
+                            nodeId: currentNode.id,
+                            floorIndex: run.floorIndex,
+                            kind: currentNode.kind,
+                          });
+                          void trackAnalyticsEvent('room_entered', {
+                            runId: run.runId,
+                            nodeId: currentNode.id,
+                            floorIndex: run.floorIndex,
+                            kind: currentNode.kind,
                           });
                           router.push(currentNodeRoute as Href);
                         }}
@@ -669,6 +777,13 @@ export default function RunMapScreen() {
                       setShowCrewNotes((current) => !current);
                     }}
                   accessibilityRole="button"
+                  accessibilityLabel="Crew Notes"
+                  accessibilityHint={
+                    showCrewNotes
+                      ? 'Double tap to collapse the crew notes.'
+                      : 'Double tap to expand the crew notes.'
+                  }
+                  accessibilityState={{ expanded: showCrewNotes }}
                 >
                   <Text style={styles.panelTitle}>Crew Notes</Text>
                   <Text style={styles.toggleLabel}>
@@ -791,16 +906,31 @@ function FloorMarker({
   isCurrent: boolean;
 }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
   const markerStyle =
     floor.status === 'resolved'
       ? styles.floorMarkerResolved
       : isCurrent
         ? styles.floorMarkerCurrent
         : styles.floorMarkerLocked;
+  const badgeSource = useMemo(
+    () => getFloorBadgeArtSource(floor.floorNumber, settings),
+    [floor.floorNumber, settings]
+  );
 
   return (
     <View style={[styles.floorMarker, markerStyle]}>
+      {badgeSource ? (
+        <Image
+          source={badgeSource}
+          style={styles.floorMarkerBadge}
+          resizeMode="contain"
+        />
+      ) : null}
       <Text style={styles.floorMarkerText}>{floor.floorNumber}</Text>
     </View>
   );
@@ -808,7 +938,11 @@ function FloorMarker({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <View style={styles.statCard}>
@@ -834,7 +968,11 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 function DetailLine({ label, value }: { label: string; value: string }) {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <Text style={styles.detailLine}>
@@ -846,7 +984,8 @@ function DetailLine({ label, value }: { label: string; value: string }) {
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -858,7 +997,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -931,14 +1073,65 @@ function createStyles(
       flexWrap: 'wrap',
       gap: spacing.xs + 2,
     },
+    floorHeaderCard: {
+      borderRadius: 16,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+      gap: spacing.xs,
+      paddingBottom: spacing.sm + 2,
+    },
+    floorHeaderAmbientArt: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0.16,
+      width: undefined,
+      height: undefined,
+    },
+    floorActHeaderArt: {
+      width: '100%',
+      height: 58,
+      marginTop: spacing.xs,
+      alignSelf: 'center',
+    },
+    floorHeaderArt: {
+      width: '100%',
+      height: 74,
+      alignSelf: 'center',
+    },
+    floorHeaderCopy: {
+      gap: spacing.xs,
+      paddingHorizontal: spacing.sm + 2,
+    },
+    floorHeaderEyebrow: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(17, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    floorHeaderTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(17, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
+    floorHeaderBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
     floorMarker: {
-      minWidth: 36,
-      minHeight: 36,
-      borderRadius: 18,
+      width: 64,
+      height: 48,
+      borderRadius: 14,
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 1,
-      paddingHorizontal: 8,
+      paddingHorizontal: 4,
+      overflow: 'hidden',
     },
     floorMarkerResolved: {
       backgroundColor: colors.surface,
@@ -955,12 +1148,18 @@ function createStyles(
     },
     floorMarkerText: {
       color: colors.textPrimary,
-      fontSize: scaleFontSize(12, settings),
+      fontSize: scaleFontSize(11, settings),
       fontWeight: '800',
       lineHeight: scaleLineHeight(16, settings),
+      position: 'absolute',
+    },
+    floorMarkerBadge: {
+      width: 56,
+      height: 24,
+      opacity: 0.94,
     },
     statGrid: {
-      flexDirection: 'row',
+      flexDirection: layout.stackStatCards ? 'column' : 'row',
       gap: spacing.sm + 2,
     },
     statCard: {
@@ -1015,9 +1214,9 @@ function createStyles(
       borderColor: colors.accent,
     },
     choiceHeader: {
-      flexDirection: 'row',
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
       justifyContent: 'space-between',
-      alignItems: 'flex-start',
+      alignItems: layout.stackInlineHeader ? 'stretch' : 'flex-start',
       gap: spacing.sm,
     },
     choiceHeaderContent: {
@@ -1081,9 +1280,9 @@ function createStyles(
       lineHeight: scaleLineHeight(19, settings),
     },
     toggleRow: {
-      flexDirection: 'row',
+      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
+      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
       gap: spacing.sm,
       minHeight: 48,
     },

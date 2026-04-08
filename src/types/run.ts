@@ -1,5 +1,8 @@
 import type { CombatState } from '@/src/types/combat';
-import type { MetaUpgradeLevels } from '@/src/types/profile';
+import type {
+  ArchivedRunRetentionSummary,
+  MetaUpgradeLevels,
+} from '@/src/types/profile';
 
 export type RunNodeKind = 'battle' | 'event' | 'reward' | 'boss';
 export type RunNodeStatus = 'locked' | 'active' | 'resolved';
@@ -113,6 +116,7 @@ export type ArchivedRunRecap = {
   outcome: ArchivedRunOutcomeNote;
   defeatSummary?: ArchivedRunDefeatSummary | null;
   bondGains: ArchivedRunBondGain[];
+  retention?: ArchivedRunRetentionSummary | null;
 };
 
 export type RunState = {

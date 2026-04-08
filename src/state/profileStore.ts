@@ -6,6 +6,10 @@ import {
   purchaseClassUnlock as purchaseClassUnlockInEngine,
   purchaseCompanionUnlock as purchaseCompanionUnlockInEngine,
 } from '@/src/engine/meta/requisition-engine';
+import {
+  activateProbationContract as activateProbationContractInEngine,
+  cancelProbationContract as cancelProbationContractInEngine,
+} from '@/src/engine/retention/retention-engine';
 import { applyPendingReward } from '@/src/engine/reward/apply-pending-reward';
 import {
   loadOrSeedProfileAsync,
@@ -24,6 +28,8 @@ type ProfileStoreState = {
   purchaseClassUnlock: (classId: string) => Promise<ProfileState>;
   purchaseCompanionUnlock: (companionId: string) => Promise<ProfileState>;
   purchaseMetaUpgrade: (upgradeId: MetaUpgradeId) => Promise<ProfileState>;
+  activateProbationContract: () => Promise<ProfileState>;
+  cancelProbationContract: () => Promise<ProfileState>;
   unlockItem: (itemId: string) => Promise<ProfileState>;
   unlockEvent: (eventId: string) => Promise<ProfileState>;
   setBondLevel: (companionId: string, level: number) => Promise<ProfileState>;
@@ -114,6 +120,22 @@ export const useProfileStore = create<ProfileStoreState>((set) => ({
   purchaseMetaUpgrade: async (upgradeId) => {
     const nextProfile = await updateProfileAsync((profile) =>
       purchaseMetaUpgradeInEngine(profile, upgradeId)
+    );
+
+    set({ profile: nextProfile });
+    return nextProfile;
+  },
+  activateProbationContract: async () => {
+    const nextProfile = await updateProfileAsync((profile) =>
+      activateProbationContractInEngine(profile)
+    );
+
+    set({ profile: nextProfile });
+    return nextProfile;
+  },
+  cancelProbationContract: async () => {
+    const nextProfile = await updateProfileAsync((profile) =>
+      cancelProbationContractInEngine(profile)
     );
 
     set({ profile: nextProfile });

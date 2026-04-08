@@ -12,8 +12,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { GameButton } from '@/src/components/game-button';
-import { getBondScenesUnlockedByBondGains } from '@/src/content/bond-scenes';
+import {
+  bondSceneDefinitions,
+  getBondScenesUnlockedByBondGains,
+} from '@/src/content/bond-scenes';
 import { getCompanionDefinition } from '@/src/content/companions';
+import { classDefinitions } from '@/src/content/classes';
 import { getItemDefinition } from '@/src/content/items';
 import {
   buildMetaUpgradeCatalog,
@@ -23,6 +27,12 @@ import {
 } from '@/src/engine/meta/meta-upgrade-engine';
 import { loadRunHistoryAsync } from '@/src/save/runRepo';
 import { getNextGoalSummary } from '@/src/progression/next-goal';
+import {
+  endingStateDefinitions,
+  formatQuarterIdLabel,
+  getClassTruthRouteSummary,
+  getQuarterlyChallengeSnapshot,
+} from '@/src/engine/retention/retention-engine';
 import { useGameStore } from '@/src/state/gameStore';
 import { useProfileStore } from '@/src/state/profileStore';
 import {
@@ -45,6 +55,8 @@ async function loadProgressionData() {
 export default function ProgressionScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
+  const activateProbationContract = useProfileStore((state) => state.activateProbationContract);
+  const cancelProbationContract = useProfileStore((state) => state.cancelProbationContract);
   const bootstrapProfile = useGameStore((state) => state.profile);
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const bootstrapError = useGameStore((state) => state.error);
@@ -160,7 +172,43 @@ export default function ProgressionScreen() {
     () => getNextGoalSummary({ profile: resolvedProfile, activeRun: null }),
     [resolvedProfile]
   );
-
+  const truthEndingCount = resolvedProfile?.retention.truth.discoveredEndingIds.length ?? 0;
+  const missingEndingState = resolvedProfile
+    ? endingStateDefinitions.find(
+        (ending) => !resolvedProfile.retention.truth.discoveredEndingIds.includes(ending.id)
+      ) ?? null
+    : null;
+  const nextFullExposureClass = resolvedProfile
+    ? classDefinitions.find(
+        (classDefinition) =>
+          !resolvedProfile.retention.truth.fullExposureClassIds.includes(classDefinition.id)
+      ) ?? null
+    : null;
+  const quarterlySnapshot = resolvedProfile
+    ? getQuarterlyChallengeSnapshot(resolvedProfile.retention)
+    : null;
+  const probationStatus = resolvedProfile?.retention.probation.status ?? 'inactive';
+  const probationRunsRemaining = resolvedProfile
+    ? Math.max(
+        0,
+        resolvedProfile.retention.probation.deadlineRunCount - resolvedProfile.stats.totalRuns
+      )
+    : 0;
+  const relationshipSceneCount =
+    resolvedProfile?.retention.relationship.unlockedBondSceneIds.length ?? 0;
+  const relationshipPairCount =
+    resolvedProfile?.retention.relationship.synergyPairIds.length ?? 0;
+  const rosterReadyLabel =
+    resolvedProfile?.retention.roster.lastAffordableUnlockId
+      ? resolvedProfile.retention.roster.lastAffordableUnlockKind === 'class'
+        ? classDefinitions.find(
+            (classDefinition) =>
+              classDefinition.id === resolvedProfile.retention.roster.lastAffordableUnlockId
+          )?.name ?? resolvedProfile.retention.roster.lastAffordableUnlockId
+        : getCompanionDefinition(
+            resolvedProfile.retention.roster.lastAffordableUnlockId
+          )?.name ?? resolvedProfile.retention.roster.lastAffordableUnlockId
+      : 'Nothing queued yet';
   const handleRefresh = async () => {
     setLoadStatus('loading');
     setLoadError(null);
@@ -290,6 +338,73 @@ export default function ProgressionScreen() {
                 </View>
               </View>
 
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Post-Win Ladders</Text>
+                <Text style={styles.panelBody}>
+                  Winning should open another reason to keep going immediately: more truth states, more roster churn, and more relationship-specific archive texture.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine
+                    label="Truth Ladder"
+                    value={`${truthEndingCount}/${endingStateDefinitions.length} ending states logged${nextFullExposureClass ? `, ${resolvedProfile.retention.truth.fullExposureClassIds.length}/${classDefinitions.length} classes at Full Exposure` : ''}`}
+                  />
+                  <DetailLine
+                    label="Next Truth"
+                    value={missingEndingState ? missingEndingState.label : nextFullExposureClass ? `${nextFullExposureClass.name}: ${getClassTruthRouteSummary(nextFullExposureClass.id).label}` : 'Truth ladder completed'}
+                  />
+                  <DetailLine
+                    label="Roster Ladder"
+                    value={`${resolvedProfile.retention.roster.winsFundingUnlocks} win subsidies, +${resolvedProfile.retention.roster.totalBonusCurrency} bonus chits, ready unlock: ${rosterReadyLabel}`}
+                  />
+                  <DetailLine
+                    label="Relationship Ladder"
+                    value={`${relationshipSceneCount}/${bondSceneDefinitions.length} bond scenes, ${relationshipPairCount} archived pairings, ${resolvedProfile.retention.relationship.archivedCompanionIds.length} companions covered`}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Quarterly Pressure</Text>
+                <Text style={styles.panelBody}>
+                  Seasonal pressure is live without deleting profile progress. Scores can cool off, but your archive, roster, and wins stay yours.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine
+                    label="Quarter"
+                    value={quarterlySnapshot ? formatQuarterIdLabel(quarterlySnapshot.quarterId) : 'Unavailable'}
+                  />
+                  <DetailLine
+                    label="Score"
+                    value={quarterlySnapshot ? `${quarterlySnapshot.score} current / ${quarterlySnapshot.bestScore} best` : 'Unavailable'}
+                  />
+                  <DetailLine
+                    label="Next Tier"
+                    value={quarterlySnapshot?.nextTier ? `${quarterlySnapshot.nextTier.label} at ${quarterlySnapshot.nextTier.threshold}` : 'Quarter ladder capped for now'}
+                  />
+                  <DetailLine
+                    label="Probation"
+                    value={probationStatus === 'active' ? `Active, ${probationRunsRemaining} run${probationRunsRemaining === 1 ? '' : 's'} remaining` : 'Inactive'}
+                  />
+                </View>
+                <View style={styles.actionGroup}>
+                  {probationStatus === 'active' ? (
+                    <GameButton
+                      label="Cancel Probation Contract"
+                      onPress={() => {
+                        void cancelProbationContract();
+                      }}
+                      variant="secondary"
+                    />
+                  ) : (
+                    <GameButton
+                      label="Start Probation Contract"
+                      onPress={() => {
+                        void activateProbationContract();
+                      }}
+                    />
+                  )}
+                </View>
+              </View>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Permanent Upgrades</Text>
                 <Text style={styles.panelBody}>

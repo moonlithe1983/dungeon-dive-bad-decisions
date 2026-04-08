@@ -2,7 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { createTimestamp } from '@/src/utils/time';
 
-export const LATEST_SCHEMA_VERSION = 7;
+export const LATEST_SCHEMA_VERSION = 8;
 
 async function getUserVersionAsync(db: SQLiteDatabase) {
   const row = await db.getFirstAsync<{ user_version: number }>(
@@ -106,6 +106,12 @@ export async function runMigrationsAsync(db: SQLiteDatabase) {
   if (currentVersion < 7) {
     await db.execAsync(`
       PRAGMA user_version = 7;
+    `);
+  }
+
+  if (currentVersion < 8) {
+    await db.execAsync(`
+      PRAGMA user_version = 8;
     `);
   }
 

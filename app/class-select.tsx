@@ -33,6 +33,7 @@ import {
   getMetaUpgradeRewardHealingBonus,
 } from '@/src/engine/meta/meta-upgrade-engine';
 import { getRunHeroMaxHp } from '@/src/engine/run/run-hero';
+import { getClassTruthRouteSummary } from '@/src/engine/retention/retention-engine';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
 import {
@@ -195,6 +196,9 @@ export default function ClassSelectScreen() {
                         {emblemLabel ? (
                           <Text style={styles.optionTrack}>{emblemLabel}</Text>
                         ) : null}
+                        <Text style={styles.optionTrack}>
+                          {getClassTruthRouteSummary(classDefinition.id).shortLabel}: {getClassTruthRouteSummary(classDefinition.id).label}
+                        </Text>
                         <Text style={styles.optionMeta}>
                           {classDefinition.combatIdentity}
                         </Text>
@@ -272,6 +276,13 @@ export default function ClassSelectScreen() {
                     <Text style={styles.selectionActionLine}>
                       <Text style={styles.selectionActionLabel}>Role: </Text>
                       {selectedNarrative?.roleLabel ?? 'Unknown'}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      <Text style={styles.selectionActionLabel}>Truth Route: </Text>
+                      {getClassTruthRouteSummary(selectedClassDefinition.id).label}
+                    </Text>
+                    <Text style={styles.selectionActionLine}>
+                      {getClassTruthRouteSummary(selectedClassDefinition.id).body}
                     </Text>
                     <Text style={styles.selectionActionLine}>
                       {selectedNarrative?.openingHook ?? getCompanyDisasterSummary()}
@@ -659,4 +670,3 @@ function createStyles(
     },
   });
 }
-

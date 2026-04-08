@@ -145,6 +145,7 @@ This is a deliberate product constraint. Do not add a second save path unless th
 - Keep archive-backed recap behavior.
 - Keep `scripts/smoke-sim.cjs` aligned with system changes.
 - Treat the handoff document as the current source of truth for release planning.
+- Treat pacing, long-tail retention, and pricing fit as release blockers; use `docs/launch-postlaunch-retention-plan.md` as the retention source of truth before locking the launch business model.
 
 ## Content Status Legend
 
@@ -170,6 +171,9 @@ Manual:
 - Use `dev-smoke` in native dev builds to validate final-boss win/loss archive flows.
 - Validate at least one full 10-floor run in release-candidate builds before store upload.
 - Confirm title, new-run setup, run map, reward/event resolution, archive recap, and resume behavior on target devices.
+- Run guided first-session tests with outside players and confirm they understand the hook, complete the opening path, and can name a next goal without coaching.
+- Confirm support/privacy/store materials, permissions, and launch screenshots all match the real shipped build.
+- Confirm the release measurement plan is explicit: either verified production analytics/crash reporting or a deliberate low-data launch approach backed by strong manual evidence.
 
 ## Repo Guide
 
@@ -191,7 +195,8 @@ Canonical local repo root:
 
 The game is in release-candidate hardening mode:
 
-- feature freeze is recommended
+- feature freeze is recommended outside retention tuning, pricing, and release-readiness work called out in `docs/launch-postlaunch-retention-plan.md`
+- pacing, long-tail retention, and post-first-win motivation must be tuned and validated before the game can launch at `US$3.99`; if that bar is not met, revisit a free route with optional paid upgrades, future games, or extras
 - fresh-profile onboarding now starts with a one-time title intro, then routes through an interactive orientation sim before the assigned-role class briefing and companion selection
 - the opening roster now shows 3 companions so the first team pick is a real choice
 - the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
@@ -228,10 +233,12 @@ The game is in release-candidate hardening mode:
 - the local Android launcher now resolves the real workspace path first, so `npm run android` works from the current repo checkout without the earlier Expo root-resolution failure
 - the native-only `dev-smoke` route now surfaces local UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, `Run It Back` usage, and remote analytics validation state
 - the April 8 pass added profile-backed combat remapping, controller-style action hints, a live dodge action in battle, and a vendor-neutral remote analytics adapter / validation surface
+- the April 8 retention pass added Truth / Roster / Relationship ladders, class truth-route framing, quarterly challenge score, optional probation contracts, and quick-clear bonus tracking across save, recap, hub, progression, class-select, and next-goal surfaces
 - the current app and markdown policy docs now agree that public gameplay remains offline-first while remote analytics validation is a dev-only, explicitly configured QA path
 - the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
 - the April 7 pass added a persistent first-run intro, clearer route-objective language, cleaner mandatory reward CTAs, plain-language defeat/status support, and finalized Play icon/feature-graphic treatment in the repo and app config
-- the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop`r`n- the home screen now shows the full title image without forced cropping, and the installed Android launcher icon now uses the `ddbd logo` asset
+- the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
+- the home screen now shows the full title image without forced cropping, and the installed Android launcher icon now uses the `ddbd logo` asset
 - the April 6 emulator pass confirmed title -> new run -> run-map -> battle -> reward -> cold relaunch resume -> reward claim -> end-run
 - the April 7 release-build emulator pass confirmed fresh-install title -> first-run setup -> run-map -> battle -> reward -> cold relaunch reward resume -> reward claim -> run-map -> abandon -> end-run
 - before tester or store distribution after future source changes, rebuild from the final accepted source in the current repo checkout and re-verify install behavior
@@ -243,7 +250,7 @@ The game is in release-candidate hardening mode:
 - Google Play only
 - English-speaking regions first: United States, United Kingdom, Canada, Australia, New Zealand, and Ireland
 - public developer name: `Moonlithe`
-- working launch price default: `US$3.99` unless external testing later clearly supports `US$4.99`
+- working launch price target remains `US$3.99` only if the retention and pacing bar in `docs/launch-postlaunch-retention-plan.md` is met; otherwise revisit a free route with optional paid upgrades, future games, or extras
 - public support inbox still needs final owner confirmation before store setup
 
 ## Support And Privacy Drafts
@@ -268,6 +275,7 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 - `PROJECT_HANDOFF_2026-04-08.md`
 - `PROJECT_HANDOFF_2026-04-08.docx`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-08.docx`
+- `docs/launch-postlaunch-retention-plan.md`
 - `PROJECT_HANDOFF_2026-04-07.md`
 - `PROJECT_HANDOFF_2026-04-07.docx`
 - `PROJECT_HANDOFF_2026-04-06.md`
@@ -280,5 +288,3 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 - `PROJECT_HANDOFF_2026-03-30.md`
 - `PROJECT_HANDOFF_2026-03-27.md`
 - `PROJECT_HANDOFF_2026-03-24.md`
-
-

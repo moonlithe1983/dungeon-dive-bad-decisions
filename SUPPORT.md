@@ -1,6 +1,6 @@
-# Dungeon Dive: Bad Decisions Support
+﻿# Dungeon Dive: Bad Decisions Support
 
-Last updated: April 8, 2026
+Last updated: April 14, 2026
 
 ## Current Launch Defaults
 
@@ -8,7 +8,7 @@ Last updated: April 8, 2026
 - store: Google Play only
 - public developer name: Moonlithe
 - working launch regions: United States, United Kingdom, Canada, Australia, New Zealand, and Ireland
-- working launch price default: `US$3.99` unless external testing later clearly supports `US$4.99`
+- working launch model: keep a premium `US$3.99` launch only if outside testing proves the first session and replay hook justify it; otherwise revisit a free route with optional paid upgrades, future games, or extras
 
 ## Current Support Status
 
@@ -42,7 +42,6 @@ If you report a problem, include:
 - the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
 - battle now supports a remappable action order, controller-style hint badges, and a new dodge action that adds a more defensive tempo choice to the turn loop
 - the native-dev `Smoke Lab` route now includes a vendor-neutral remote analytics validation surface, but that path is still dev-only and is not part of the public release build by default
-- the April 8 local release APK is now the current rebuilt tester artifact and should be the default smoke-testing build until source changes again
+- the April 8 local release APK is still the current rebuilt tester artifact and should remain the default smoke-testing build until runtime source changes again
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
 - the `Smoke Lab` route is native-dev only and now surfaces local UX telemetry plus optional remote analytics validation for manual QA; it is not part of the public release build or support burden
-

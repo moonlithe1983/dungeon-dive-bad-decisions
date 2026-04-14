@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -13,9 +13,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { getCompanionCardArtSource } from '@/src/assets/supplemental-art-sources';
 import { playUiSfx } from '@/src/audio/ui-sfx';
-import { getPartyScene } from '@/src/content/authored-voice';
 import { getClassDefinition } from '@/src/content/classes';
 import { companionDefinitions } from '@/src/content/companions';
 import { createTicketBrief } from '@/src/content/company-lore';
@@ -35,6 +35,40 @@ import {
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
 
+function getCompanionPickPitch(companionId: string) {
+  switch (companionId) {
+    case 'facilities-goblin':
+      return 'Pick this if you want the safest early floors and the strongest recovery swing.';
+    case 'former-executive-assistant':
+      return 'Pick this if you want cleaner first hits, sharper timing, and better boss reads.';
+    case 'security-skeleton':
+      return 'Pick this if you need a steadier defense and fewer ugly counter-hits.';
+    case 'possessed-copier':
+      return 'Pick this if you want chaotic pressure, duplicated problems, and a weirder snowball.';
+    case 'disillusioned-temp':
+      return 'Pick this if you want bargain survival tech and backup plans when runs turn ugly.';
+    default:
+      return 'Pick this if their perks solve a problem your class cannot solve alone.';
+  }
+}
+
+function getCompanionFirstRoomPlan(companionId: string) {
+  switch (companionId) {
+    case 'facilities-goblin':
+      return 'Start safer and recover faster through the first ugly exchange.';
+    case 'former-executive-assistant':
+      return 'Open with sharper damage and cleaner boss-reading pressure.';
+    case 'security-skeleton':
+      return 'Soak more mistakes and make incoming damage less punishing.';
+    case 'possessed-copier':
+      return 'Lean into unstable pressure and force stranger room swings.';
+    case 'disillusioned-temp':
+      return 'Play dirtier, stabilize later, and survive through backup plans.';
+    default:
+      return 'Solve a weakness your class cannot cover alone.';
+  }
+}
+
 export default function CompanionSelectScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
@@ -46,7 +80,6 @@ export default function CompanionSelectScreen() {
   const createRunFromSetup = useRunStore((state) => state.createRunFromSetup);
   const isCreatingRun = useRunStore((state) => state.isCreatingRun);
   const setupError = useRunStore((state) => state.setupError);
-  const [showCrewChemistry, setShowCrewChemistry] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -55,6 +88,10 @@ export default function CompanionSelectScreen() {
       void refreshProfile();
     }
   }, [profile, refreshProfile]);
+
+  useEffect(() => {
+    void trackAnalyticsEvent('meta_screen_viewed', { screen: 'companion-select' });
+  }, []);
 
   const selectedClass = selectedClassId
     ? getClassDefinition(selectedClassId)
@@ -66,9 +103,25 @@ export default function CompanionSelectScreen() {
         activeCompanionId: selectedCompanionIds[0] ?? null,
       })
     : [];
-  const openingScene = useMemo(() => getPartyScene('first-meeting'), []);
   const unlockedCompanions = companionDefinitions.filter((companion) =>
     profile?.unlockedCompanionIds.includes(companion.id)
+  );
+  const selectionGuidance = useMemo(
+    () => [
+      {
+        title: 'Pick your lead for the first room',
+        body: 'Your first pick acts as lead. Choose the companion who solves your biggest early problem: staying alive, landing damage, or controlling the enemy.',
+      },
+      {
+        title: 'Pick your reserve for the weak spot',
+        body: 'Your second pick supports from reserve and can become the better floor-start lead later. Use this slot to cover what your class or first companion does poorly.',
+      },
+      {
+        title: 'Compare what changes immediately',
+        body: 'Focus on Active Perk, Reserve Perk, and Reward Edge below. Those tell you why this companion is stronger for this run than another option.',
+      },
+    ],
+    []
   );
   const hasMultipleClassChoices = (profile?.unlockedClassIds.length ?? 0) > 1;
   const ticketBrief = useMemo(() => {
@@ -141,76 +194,47 @@ export default function CompanionSelectScreen() {
       >
         <View style={styles.shell}>
           <View style={styles.heroCard}>
-            <Text style={styles.eyebrow}>RUN SETUP</Text>
-            <Text style={styles.title}>Choose Two Companions</Text>
+            <Text style={styles.eyebrow}>FIRST SESSION</Text>
+            <Text style={styles.title}>Build Your Crew</Text>
             <Text style={styles.subtitle}>
               First pick is active. Second pick is reserve.
             </Text>
             <Text style={styles.body}>
               {hasMultipleClassChoices
-                ? `Current class: ${selectedClass?.name ?? selectedClassId}. Pick the two companions that best support this role.`
-                : `${selectedClass?.name ?? selectedClassId} is locked in. Pick one lead and one reserve to support the run.`}
+                ? `Current class: ${selectedClass?.name ?? selectedClassId}. Pick the two companions that make the first rooms feel strongest.`
+                : `${selectedClass?.name ?? selectedClassId} is locked in. Pick one lead and one reserve to cover its weak spots and sharpen its strengths.`}
             </Text>
           </View>
 
-          {ticketBrief ? (
-            <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Role Snapshot</Text>
-              <View style={styles.selectionDetailCard}>
-                <Text style={styles.selectionDetailTitle}>
-                  {selectedClass?.name ?? selectedClassId}
-                </Text>
-                <Text style={styles.selectionDetailBody}>
-                  You are bringing two companions to support this role on the active
-                  ticket. First pick becomes lead. Second pick becomes reserve.
-                </Text>
-              </View>
-            </View>
-          ) : null}
-
-          {ticketBrief ? (
-            <View style={styles.panel}>
-              <Text style={styles.panelTitle}>Current Ticket</Text>
-              <Text style={styles.panelBody}>
-                {ticketBrief.ticketId} - {ticketBrief.subject}
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>Crew Goal</Text>
+            <View style={styles.selectionDetailCard}>
+              <Text style={styles.selectionDetailTitle}>
+                {selectedClass?.name ?? selectedClassId}
               </Text>
-              <View style={styles.selectionDetailCard}>
-                <Text style={styles.panelBody}>Filed by: {ticketBrief.filedBy}</Text>
-                <Text style={styles.panelBody}>Track: {ticketBrief.escalationTrack}</Text>
-                <Text style={styles.panelBody}>{ticketBrief.summary}</Text>
-              </View>
+              <Text style={styles.selectionDetailBody}>
+                Your first pick leads the opening room. Your second pick covers the
+                blind spot you do not want to discover mid-fight.
+              </Text>
+              {ticketBrief ? (
+                <Text style={styles.selectionDetailBody}>
+                  First case file: {ticketBrief.subject}
+                </Text>
+              ) : null}
             </View>
-          ) : null}
+          </View>
 
-          {openingScene ? (
-            <View style={styles.panel}>
-              <Pressable
-                style={styles.toggleRow}
-                onPress={() => {
-                  setShowCrewChemistry((current) => !current);
-                }}
-                accessibilityRole="button"
-              >
-                <Text style={styles.panelTitle}>{openingScene.title}</Text>
-                <Text style={styles.toggleLabel}>
-                  {showCrewChemistry ? 'Hide' : 'Show'}
-                </Text>
-              </Pressable>
-              {showCrewChemistry ? (
-                <View style={styles.selectionDetailCard}>
-                  {openingScene.lines.map((line) => (
-                    <Text key={line.speakerId} style={styles.panelBody}>
-                      {line.speakerName}: {line.text}
-                    </Text>
-                  ))}
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>How To Choose Companions</Text>
+            <View style={styles.selectionDetailCard}>
+              {selectionGuidance.map((item) => (
+                <View key={item.title} style={styles.selectionDetailItem}>
+                  <Text style={styles.selectionDetailName}>{item.title}</Text>
+                  <Text style={styles.selectionDetailBody}>{item.body}</Text>
                 </View>
-              ) : (
-                <Text style={styles.panelBody}>
-                  Optional flavor. Open it if you want the crew intro before you lock the team.
-                </Text>
-              )}
+              ))}
             </View>
-          ) : null}
+          </View>
 
           {!profile ? (
             <View style={styles.panel}>
@@ -225,6 +249,10 @@ export default function CompanionSelectScreen() {
             <>
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>Unlocked Companions</Text>
+                <Text style={styles.panelBody}>
+                  Each card should answer one question fast: why would you pick this
+                  companion instead of another one?
+                </Text>
                 <View style={styles.cardGrid}>
                   {unlockedCompanions.map((companion) => {
                     const selectedIndex = selectedCompanionIds.indexOf(
@@ -254,6 +282,7 @@ export default function CompanionSelectScreen() {
                       'reserve',
                       bondLevel
                     );
+                    const pickPitch = getCompanionPickPitch(companion.id);
                     const companionArtSource = getCompanionCardArtSource(
                       companion.id,
                       settings
@@ -268,6 +297,19 @@ export default function CompanionSelectScreen() {
                             return;
                           }
 
+                          const nextSlot =
+                            isSelected
+                              ? 'removed'
+                              : selectedCompanionIds.length === 0
+                                ? 'active'
+                                : 'reserve';
+
+                          void trackAnalyticsEvent('companion_selected', {
+                            companionId: companion.id,
+                            classId: selectedClassId,
+                            slot: nextSlot,
+                            selected: !isSelected,
+                          });
                           toggleSelectedCompanionId(companion.id);
                         }}
                         accessibilityRole="button"
@@ -292,6 +334,7 @@ export default function CompanionSelectScreen() {
                         <Text style={styles.optionMeta}>
                           {companion.specialty}
                         </Text>
+                        <Text style={styles.optionPitch}>{pickPitch}</Text>
                         <Text style={styles.optionBody}>
                           {companion.description}
                         </Text>
@@ -347,6 +390,22 @@ export default function CompanionSelectScreen() {
                         })
                         .join(' | ')}
                 </Text>
+                {selectedCompanionIds[0] ? (
+                  <View style={styles.selectionDetailCard}>
+                    <Text style={styles.selectionDetailTitle}>First room plan</Text>
+                    <Text style={styles.selectionDetailBody}>
+                      {getCompanionFirstRoomPlan(selectedCompanionIds[0])}
+                    </Text>
+                    <Text style={styles.selectionDetailBody}>
+                      Lead companion: {companionDefinitions.find((item) => item.id === selectedCompanionIds[0])?.name ?? selectedCompanionIds[0]}
+                    </Text>
+                    {selectedCompanionIds[1] ? (
+                      <Text style={styles.selectionDetailBody}>
+                        Reserve cover: {companionDefinitions.find((item) => item.id === selectedCompanionIds[1])?.name ?? selectedCompanionIds[1]}
+                      </Text>
+                    ) : null}
+                  </View>
+                ) : null}
                 <Text style={styles.hintText}>
                   Bonds carry forward between dives. Stronger ties improve early turns, recovery, and role support.
                 </Text>
@@ -535,6 +594,12 @@ function createStyles(
     fontSize: scaleFontSize(13, settings),
     fontWeight: '700',
     lineHeight: scaleLineHeight(18, settings),
+  },
+  optionPitch: {
+    color: colors.textPrimary,
+    fontSize: scaleFontSize(13, settings),
+    fontWeight: '800',
+    lineHeight: scaleLineHeight(19, settings),
   },
   optionBody: {
     color: colors.textMuted,

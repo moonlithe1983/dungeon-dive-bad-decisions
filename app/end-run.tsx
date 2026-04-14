@@ -396,7 +396,7 @@ export default function EndRunScreen() {
           <View style={styles.heroCard}>
             <Text style={styles.eyebrow}>RUN RESULT</Text>
             <Text style={styles.title}>
-              {isFailedRun ? 'Read The Wreckage' : 'End Run'}
+              {isFailedRun ? 'Read The Wreckage' : isAbandonedRun ? 'Run Archived' : 'Run Complete'}
             </Text>
             <Text style={styles.subtitle}>
               {loadStatus === 'ready'
@@ -404,12 +404,12 @@ export default function EndRunScreen() {
                   ? 'Even a retreat leaves a paper trail.'
                   : isFailedRun
                     ? 'Read the failure. Keep the lesson.'
-                    : 'Victory is only useful if you know what made it work.'
+                    : 'You cleared the dive. Here is what mattered and what carried forward.'
                 : 'The archive is opening your latest result.'}
             </Text>
             <Text style={styles.body}>
               {loadStatus === 'ready'
-                ? 'This recap is pulled from the run archive, so the climb is gone but the lesson remains.'
+                ? 'This recap is pulled from the run archive, so the climb is over but the useful parts should still be easy to read.'
                 : 'The climb is already over. The archive is rebuilding the final report.'}
             </Text>
           </View>
@@ -445,7 +445,7 @@ export default function EndRunScreen() {
                     ? 'Abandon Logged'
                     : isFailedRun
                       ? 'Loss Logged'
-                      : 'Victory Logged'}
+                      : 'Run Complete'}
                 </Text>
                 <View style={styles.statGrid}>
                   <StatCard label="Floor" value={String(archivedRun.floorReached)} />
@@ -732,11 +732,11 @@ export default function EndRunScreen() {
 
               {retentionSummary ? (
                 <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Retention Update</Text>
+                  <Text style={styles.panelTitle}>What Carried Forward</Text>
                   <Text style={styles.panelBody}>
                     {archivedRun.result === 'win'
-                      ? 'A win should unlock the next reason to keep playing. This run advanced the long-term ladders below instead of ending the conversation.'
-                      : 'Even a failed or abandoned run should move at least one long-term ladder forward. This recap shows what stayed with you.'}
+                      ? 'Winning should leave behind more than a checkbox. This section shows what the run unlocked, improved, or moved forward for the next climb.'
+                      : 'Even a failed or abandoned run should move something forward. This section shows what stayed with you.'}
                   </Text>
                   <View style={styles.detailCard}>
                     <DetailLine
@@ -814,9 +814,11 @@ export default function EndRunScreen() {
               ) : null}
 
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Next Run</Text>
+                <Text style={styles.panelTitle}>What To Do Now</Text>
                 <Text style={styles.panelBody}>
-                  The run is safely archived. If the postmortem gave you a clear next experiment, start another dive while the lesson is still fresh.
+                  {archivedRun.result === 'win'
+                    ? 'You finished this dive. Start another dive for a fresh run, open the run archive to review what unlocked, or return to the employee portal.'
+                    : 'The run is safely archived. If the recap gave you a clear next experiment, start another dive while the lesson is still fresh.'}
                 </Text>
                 <View style={styles.actionGroup}>
                   <GameButton label="Start Another Dive" onPress={handleRunItBack} />

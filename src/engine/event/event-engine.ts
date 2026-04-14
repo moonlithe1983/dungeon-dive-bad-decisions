@@ -112,6 +112,25 @@ function createRewardPayload(
   };
 }
 
+function rebalanceEventChoiceEconomy(choice: EventChoice): EventChoice {
+  const hasItem = Boolean(choice.effect.itemId);
+  const baseCurrency = Math.max(0, Math.floor(choice.effect.metaCurrency));
+  const nextCurrency =
+    baseCurrency <= 0
+      ? 0
+      : Math.max(hasItem ? 1 : 2, Math.ceil(baseCurrency * (hasItem ? 0.3 : 0.45)));
+  const nextEffect = {
+    ...choice.effect,
+    metaCurrency: nextCurrency,
+  };
+
+  return {
+    ...choice,
+    effect: nextEffect,
+    preview: createPreviewParts(nextEffect),
+  };
+}
+
 function applyAuthoredEventChoiceCopy(
   eventId: string,
   choice: EventChoice
@@ -1077,13 +1096,15 @@ export function getEventSceneForCurrentNode(run: RunState): EventScene {
     choices: createChoicesForEvent(run, eventDefinition.id).map((choice) => {
       const withOverlay = applyAuthoredEventChoiceCopy(eventDefinition.id, choice);
 
-      return applyEventTeamSynergyBonusesToChoice(
+      return rebalanceEventChoiceEconomy(
+        applyEventTeamSynergyBonusesToChoice(
         run,
         eventDefinition.id,
         applyEventCompanionBonusesToChoice(
           run,
           eventDefinition.id,
           applyEventClassBonusToChoice(run, eventDefinition.id, withOverlay)
+        )
         )
       );
     }),

@@ -138,19 +138,19 @@ const companionCodexCards: Partial<Record<string, AuthoredCodexCard>> = {
 
 const earlyFloorBeats: Record<number, EarlyFloorBeat> = {
   1: {
-    title: 'Welcome to Meridian Spire',
+    title: 'Floor 1: False Welcome',
     summary:
-      'A launch-night game show built by HR and lit by a dying sun. Warm employee badges do not match the people wearing them.',
+      'HR turned the entry floor into a fake welcome experience. It tells you this tower rewards performance over safety and expects you to smile while it does it.',
   },
   2: {
-    title: 'Audience Participation',
+    title: 'Floor 2: Approval Pressure',
     summary:
-      'Doors unlock when the building hears enough applause. The Spire is teaching itself what people will agree to if it is called a contest.',
+      'This floor teaches that access now depends on applause, approval, and spectacle. The Spire is testing what people will agree to if it sounds like a contest.',
   },
   3: {
-    title: 'Performance Improvement Round',
+    title: 'Floor 3: Weaponized Performance',
     summary:
-      'Rewards arrive attached to hidden deductions, debts, and body counts. The Spire does not want winners. It wants compliant participants.',
+      'By here the tower openly attaches rewards to deductions and pain. The lesson is that Meridian does not want winners. It wants compliant survivors.',
   },
 };
 
@@ -162,22 +162,22 @@ const startingTrioSceneOrder = [
 
 const partyScenes: Record<string, PartyScene> = {
   'first-meeting': {
-    title: 'Crew Chemistry',
+    title: 'How Companions Help',
     lines: [
       {
         speakerId: 'facilities-goblin',
         speakerName: 'Facilities Goblin',
-        text: 'Good news. The pipes still scream, which means the floor is alive.',
+        text: 'Pick me when you want more recovery and better scavenging. I keep shaky runs upright.',
       },
       {
         speakerId: 'former-executive-assistant',
         speakerName: 'Former Executive Assistant',
-        text: 'That is not, under any recognized policy, good news.',
+        text: 'Pick me when timing matters. I make first turns cleaner and boss reads sharper.',
       },
       {
         speakerId: 'security-skeleton',
         speakerName: 'Security Skeleton',
-        text: 'It is the best news this building usually offers.',
+        text: 'Pick me when you need blunt protection. I make ugly rooms less likely to snowball.',
       },
     ],
   },
@@ -212,7 +212,7 @@ const partyScenes: Record<string, PartyScene> = {
       {
         speakerId: 'former-executive-assistant',
         speakerName: 'Former Executive Assistant',
-        text: 'Take the lane with fewer adjectives. Meridian hides the knives in branding.',
+        text: 'Take the route with fewer adjectives. Meridian hides the knives in branding.',
       },
       {
         speakerId: 'facilities-goblin',

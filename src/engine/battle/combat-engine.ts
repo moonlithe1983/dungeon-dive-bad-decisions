@@ -41,6 +41,7 @@ import type {
   CombatState,
   CombatStatusId,
   CombatStatusState,
+  CombatTurnSummary,
 } from '@/src/types/combat';
 import type { RunNodeState, RunState } from '@/src/types/run';
 import { createId } from '@/src/utils/ids';
@@ -49,6 +50,11 @@ type CombatActionDefinition = {
   id: CombatActionId;
   label: string;
   description: string;
+};
+
+type CombatActionRecommendation = {
+  actionId: CombatActionId;
+  reason: string;
 };
 
 type CombatStatusApplication = {
@@ -92,15 +98,15 @@ const MAX_LOG_ENTRIES = 8;
 
 const encounterTuningByTier: Record<CombatEnemyState['tier'], EncounterTuning> = {
   normal: {
-    healthMultiplier: 1.05,
+    healthMultiplier: 0.88,
     enemyDamageRange: [5, 8],
   },
   miniboss: {
-    healthMultiplier: 1.15,
+    healthMultiplier: 1.02,
     enemyDamageRange: [6, 9],
   },
   boss: {
-    healthMultiplier: 0.95,
+    healthMultiplier: 0.92,
     enemyDamageRange: [6, 9],
   },
 };
@@ -135,6 +141,10 @@ function createDeterministicRoll(
 
 function appendLog(log: string[], nextEntry: string) {
   return [...log, nextEntry].slice(-MAX_LOG_ENTRIES);
+}
+
+function formatStatusName(statusId: CombatStatusId) {
+  return getStatusDefinition(statusId)?.name ?? statusId;
 }
 
 function applyStatusWithLog(
@@ -399,7 +409,7 @@ function getEncounterTuning(
   const damageBonus = Math.floor(floorStep / 3);
 
   return {
-    healthMultiplier: baseTuning.healthMultiplier + floorStep * 0.05,
+    healthMultiplier: baseTuning.healthMultiplier + floorStep * 0.03,
     enemyDamageRange: [
       baseTuning.enemyDamageRange[0] + damageBonus,
       baseTuning.enemyDamageRange[1] + damageBonus,
@@ -973,6 +983,68 @@ export function getCombatActionDefinitions(run: RunState): CombatActionDefinitio
   ];
 }
 
+export function getRecommendedCombatAction(
+  run: RunState
+): CombatActionRecommendation | null {
+  const combat = run.combatState;
+
+  if (!combat || combat.phase !== 'player-turn') {
+    return null;
+  }
+
+  const heroHpRatio =
+    combat.heroMaxHp > 0 ? combat.heroHp / combat.heroMaxHp : 0;
+  const enemyHpRatio =
+    combat.enemy.maxHp > 0 ? combat.enemy.currentHp / combat.enemy.maxHp : 0;
+  const profile = getEffectiveCombatProfile(run);
+  const likelyEscalateRecoil =
+    Math.max(profile.escalateSelfDamage[0], profile.escalateSelfDamage[1]) + 1;
+
+  if (heroHpRatio <= 0.35) {
+    return {
+      actionId: 'stabilize',
+      reason: 'You are low on HP. Recover first so the next enemy exchange does not end the room.',
+    };
+  }
+
+  if (hasCombatStatus(combat.heroStatuses, 'escalated') && heroHpRatio <= 0.6) {
+    return {
+      actionId: 'dodge',
+      reason: 'You are under Escalated pressure. Cut retaliation before chasing damage.',
+    };
+  }
+
+  if (enemyHpRatio <= 0.25 && combat.heroHp > likelyEscalateRecoil) {
+    return {
+      actionId: 'escalate',
+      reason: 'The enemy is low enough that a fast finish is worth the recoil.',
+    };
+  }
+
+  if (
+    combat.enemyStatuses.some(
+      (status) => status.id === 'on-hold' || status.id === 'ccd' || status.id === 'micromanaged'
+    )
+  ) {
+    return {
+      actionId: 'patch',
+      reason: 'The enemy is already softened up. Take the clean damage while the room is still open.',
+    };
+  }
+
+  if (combat.enemy.tier === 'boss') {
+    return {
+      actionId: 'dodge',
+      reason: 'Boss rooms punish greedy trades. Reduce the return hit, then attack again from a cleaner board.',
+    };
+  }
+
+  return {
+    actionId: 'patch',
+    reason: 'Start with the safest clean hit when the board is still even.',
+  };
+}
+
 export function createCombatStateForCurrentNode(run: RunState): CombatState {
   if (!run.currentNodeId) {
     throw new Error('There is no active node available for combat.');
@@ -1042,6 +1114,7 @@ export function createCombatStateForCurrentNode(run: RunState): CombatState {
       intent: enemyDefinition.intent,
     }),
     lastActionId: null,
+    lastTurnSummary: null,
   };
 }
 
@@ -1068,7 +1141,12 @@ export function performCombatAction(
     enemyStatuses: [...combat.enemyStatuses],
     log: [...combat.log],
     lastActionId: actionId,
+    lastTurnSummary: null,
   };
+  const heroHpBefore = combat.heroHp;
+  const enemyHpBefore = combat.enemy.currentHp;
+  const playerHighlights: string[] = [];
+  const enemyHighlights: string[] = [];
   const actionEffects = combineCombatActionEffects([
     createCombatActionItemEffects(preview, actionId, modifiers),
     createCombatActionClassEffects(
@@ -1117,6 +1195,7 @@ export function performCombatAction(
 
     nextCombat.rollCursor = damageRoll.nextCursor;
     nextCombat.enemy.currentHp = Math.max(0, nextCombat.enemy.currentHp - damageRoll.value);
+    playerHighlights.push(`You dealt ${damageRoll.value} damage.`);
     nextCombat.log = appendLog(
       nextCombat.log,
       `${actionLabel} lands for ${damageRoll.value} damage.`
@@ -1151,6 +1230,8 @@ export function performCombatAction(
     nextCombat.rollCursor = recoilRoll.nextCursor;
     nextCombat.enemy.currentHp = Math.max(0, nextCombat.enemy.currentHp - damageRoll.value);
     nextCombat.heroHp = Math.max(0, nextCombat.heroHp - recoilRoll.value);
+    playerHighlights.push(`You dealt ${damageRoll.value} damage.`);
+    playerHighlights.push(`You took ${recoilRoll.value} recoil damage.`);
     nextCombat.log = appendLog(
       nextCombat.log,
       `${actionLabel} hits for ${damageRoll.value}, but the recoil costs ${recoilRoll.value} HP.`
@@ -1175,6 +1256,7 @@ export function performCombatAction(
 
     nextCombat.rollCursor = healRoll.nextCursor;
     nextCombat.heroHp = Math.min(nextCombat.heroMaxHp, nextCombat.heroHp + healRoll.value);
+    playerHighlights.push(`You recovered ${healRoll.value} HP.`);
     nextCombat.log = appendLog(
       nextCombat.log,
       `${actionLabel} restores ${healRoll.value} HP.`
@@ -1184,6 +1266,9 @@ export function performCombatAction(
       nextCombat.enemy.currentHp = Math.max(
         0,
         nextCombat.enemy.currentHp - actionEffects.stabilizeDamage
+      );
+      playerHighlights.push(
+        `You dealt ${actionEffects.stabilizeDamage} backlash damage.`
       );
       nextCombat.log = appendLog(
         nextCombat.log,
@@ -1205,7 +1290,13 @@ export function performCombatAction(
         0,
         nextCombat.enemy.currentHp - dodgeDamage
       );
+      playerHighlights.push(`You dealt ${dodgeDamage} setup damage.`);
     }
+    playerHighlights.push(
+      actionEffects.retaliationReduction > 0
+        ? `You reduced retaliation by ${actionEffects.retaliationReduction}.`
+        : 'You traded the attack window for a cleaner defensive read.'
+    );
 
     nextCombat.log = appendLog(
       nextCombat.log,
@@ -1220,6 +1311,7 @@ export function performCombatAction(
       nextCombat.heroMaxHp,
       nextCombat.heroHp + actionEffects.directHeal
     );
+    playerHighlights.push(`You restored ${actionEffects.directHeal} HP on contact.`);
     nextCombat.log = appendLog(
       nextCombat.log,
       `${actionLabel} restores ${actionEffects.directHeal} HP on contact.`
@@ -1227,6 +1319,7 @@ export function performCombatAction(
   }
 
   for (const note of actionEffects.notes) {
+    playerHighlights.push(note);
     nextCombat.log = appendLog(nextCombat.log, note);
   }
 
@@ -1242,6 +1335,11 @@ export function performCombatAction(
   );
   nextCombat.log = enemyStatusUpdate.log;
   nextCombat.enemyStatuses = enemyStatusUpdate.statuses;
+  if (classStatusApplication) {
+    playerHighlights.push(
+      `You applied ${formatStatusName(classStatusApplication.statusId)}.`
+    );
+  }
 
   if (run.heroClassId === 'it-support' && actionId === 'stabilize') {
     const cleanseResult = removeFirstHeroStatus(nextCombat);
@@ -1249,6 +1347,9 @@ export function performCombatAction(
     nextCombat.heroStatuses = cleanseResult.combat.heroStatuses;
 
     if (cleanseResult.removedStatus) {
+      playerHighlights.push(
+        `You cleared ${formatStatusName(cleanseResult.removedStatus.id)}.`
+      );
       nextCombat.log = appendLog(
         nextCombat.log,
         `IT Support clears ${getStatusDefinition(cleanseResult.removedStatus.id)?.name ?? cleanseResult.removedStatus.id}.`
@@ -1272,12 +1373,27 @@ export function performCombatAction(
   );
   nextCombat.heroStatuses = consumeCombatStatusTurns(nextCombat.heroStatuses);
 
+  const buildTurnSummary = (): CombatTurnSummary => ({
+    actionId,
+    actionLabel,
+    heroHpBefore,
+    heroHpAfter: nextCombat.heroHp,
+    enemyHpBefore,
+    enemyHpAfter: nextCombat.enemy.currentHp,
+    heroDelta: nextCombat.heroHp - heroHpBefore,
+    enemyDelta: nextCombat.enemy.currentHp - enemyHpBefore,
+    playerHighlights,
+    enemyHighlights,
+  });
+
   if (nextCombat.enemy.currentHp <= 0) {
     nextCombat.phase = 'victory';
+    enemyHighlights.push('The enemy collapsed before it could answer back.');
     nextCombat.log = appendLog(
       nextCombat.log,
       `${nextCombat.enemy.name} folds under the paperwork.`
     );
+    nextCombat.lastTurnSummary = buildTurnSummary();
 
     return {
       run: syncRunHeroState(
@@ -1294,10 +1410,12 @@ export function performCombatAction(
 
   if (nextCombat.heroHp <= 0) {
     nextCombat.phase = 'defeat';
+    enemyHighlights.push('You fell before the enemy retaliation phase finished.');
     nextCombat.log = appendLog(
       nextCombat.log,
       'You collapse under the combined weight of process and consequences.'
     );
+    nextCombat.lastTurnSummary = buildTurnSummary();
 
     return {
       run: syncRunHeroState(
@@ -1350,6 +1468,11 @@ export function performCombatAction(
 
   nextCombat.rollCursor = enemyDamageRoll.nextCursor;
   nextCombat.heroHp = Math.max(0, nextCombat.heroHp - mitigatedEnemyDamage);
+  enemyHighlights.push(
+    mitigatedEnemyDamage > 0
+      ? `${nextCombat.enemy.name} hit back for ${mitigatedEnemyDamage} damage.`
+      : `${nextCombat.enemy.name} tried to hit back, but the retaliation window collapsed.`
+  );
   nextCombat.log = appendLog(
     nextCombat.log,
     mitigatedEnemyDamage > 0
@@ -1375,14 +1498,19 @@ export function performCombatAction(
 
     nextCombat.log = heroStatusUpdate.log;
     nextCombat.heroStatuses = heroStatusUpdate.statuses;
+    enemyHighlights.push(
+      `You gained ${formatStatusName(heroStatusApplication.statusId)}.`
+    );
   }
 
   if (nextCombat.heroHp <= 0) {
     nextCombat.phase = 'defeat';
+    enemyHighlights.push('The enemy closed the room before you could recover.');
     nextCombat.log = appendLog(
       nextCombat.log,
       'The office wins this round. Your run is over.'
     );
+    nextCombat.lastTurnSummary = buildTurnSummary();
 
     return {
       run: syncRunHeroState(
@@ -1400,6 +1528,7 @@ export function performCombatAction(
 
   nextCombat.phase = 'player-turn';
   nextCombat.turnNumber += 1;
+  nextCombat.lastTurnSummary = buildTurnSummary();
 
   return {
     run: syncRunHeroState(

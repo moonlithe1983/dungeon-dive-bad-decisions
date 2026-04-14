@@ -31,214 +31,163 @@ export type OnboardingTutorialStep = {
   choices?: OnboardingTutorialChoice[];
 };
 
-export const onboardingBriefingTitle = 'HR Onboarding';
+export const onboardingBriefingTitle = 'Briefing Packet';
 export const onboardingBriefingSubtitle =
-  'Mandatory orientation for employees still trapped inside the incident.';
+  'Short reference notes for the live orientation and the first case file.';
 export const onboardingCodexCategoryDescription =
-  'Replay the full first-run orientation packet, including story setup, run flow, combat basics, and what progress carries forward.';
-export const onboardingTutorialTitle = 'Interactive Orientation Sim';
+  'Replay the short first-run orientation, then open the packet if you want the reference notes in one place.';
+export const onboardingTutorialTitle = 'Live Orientation';
 export const onboardingTutorialSubtitle =
-  'Short guided first-session tutorial for learning the live loop by doing.';
+  'Learn the first run by making real-looking choices, not by reading a wall of HR copy.';
 
 export const onboardingBriefingSections: OnboardingBriefingSection[] = [
   {
-    id: 'welcome',
-    eyebrow: 'Story Blurb',
-    title: 'Welcome to Meridian Spire',
-    summary: 'Why the building is alive, hostile, and somehow still billable.',
+    id: 'situation',
+    eyebrow: 'Situation',
+    title: 'What Went Wrong',
+    summary: 'Who you are, what the tower became, and why this run matters.',
     body: `${getCompanyDisasterSummary()}
 
-You are the employee still holding the live incident when everyone important either evacuated, blamed another department, or promoted themselves out of reach.
+You are the employee still inside the incident while everyone important runs, blames another department, or hides behind policy.
 
-Your job is not to save the company. Your job is to survive ${TOWER_NAME}, force the disaster upward, and make the people who created it confront their own mess.`,
+Your job is to stay alive, force the disaster upward, and drag proof out of ${TOWER_NAME} before ${COMPANY_NAME} buries the cost on you.`,
   },
   {
-    id: 'run-flow',
-    eyebrow: 'Run Flow',
-    title: 'How a Dive Works',
-    summary: 'Each run is a floor-by-floor escalation through the tower.',
-    body: `A dive starts with a class choice and two companion picks. Your class defines your combat identity, while companions change your early pressure, support tools, and recovery angles.
+    id: 'loop',
+    eyebrow: 'Live Loop',
+    title: 'What A Run Asks You To Do',
+    summary: 'Read danger fast, win rooms, draft upgrades, and keep the climb moving.',
+    body: `A run starts with a class pick and two companions. Your class changes how you solve trouble. Your companions change how stable your first rooms feel.
 
-Each floor contains a short chain of nodes. Battles wear you down, events force ugly choices, rewards stabilize the run, and bosses decide whether the ticket keeps climbing.
+Rooms should be short and legible. Fights, rewards, and risk beats all need to tell you what changed without making you hunt for it.
 
-Clear the current node, move to the next stop, and keep pushing the incident toward executive ownership before the tower turns you into the scapegoat.`,
+When the run ends, the game should show what carried forward and why another climb is worth it immediately.`,
   },
   {
-    id: 'combat',
-    eyebrow: 'Mechanics',
-    title: 'Combat Basics',
-    summary: 'You win by managing pressure, not by playing politely.',
-    body: `Combat is turn-based. Your core actions trade off aggression, survival, and tempo, so the right answer depends on the enemy intent and your remaining health.
+    id: 'accessibility',
+    eyebrow: 'Accessibility',
+    title: 'Set Up Readability First',
+    summary: 'Text size, contrast, motion, and comfort settings are part of the real game.',
+    body: `Before the first live dive, Settings can change text size, contrast, reduced motion, dyslexia assist, handedness bias, haptics, and audio levels.
 
-Statuses matter. Some enemies stack damage or disruption over multiple turns, and some class tools only shine when you exploit that timing instead of reacting late.
-
-If your health hits zero, the run ends. The safest fight is usually the one you finish quickly, before a bad room gets to demonstrate how unfair it really is.`,
-  },
-  {
-    id: 'events-rewards',
-    eyebrow: 'Choices',
-    title: 'Events, Rewards, and Companions',
-    summary: 'Not every room is a fight, but every room can still cost you.',
-    body: `Event rooms trade certainty for fallout. They can hand you healing, items, currency, or damage, and their outcomes permanently archive themselves in the codex once seen.
-
-Reward rooms and victory payouts let you recover health, earn permanent currency, or add contraband that changes the rest of the run.
-
-Companions are not cosmetic. Their bond levels and specialties make weak starts survivable, cover class blind spots, and sometimes create the difference between stabilizing a floor and collapsing on it.`,
-  },
-  {
-    id: 'persistence',
-    eyebrow: 'Persistence',
-    title: 'What Carries Forward',
-    summary: 'Runs end, but the profile keeps receipts.',
-    body: `Your active run autosaves, and the game also keeps a backup save in case the current slot breaks mid-disaster.
-
-Outside the run, your profile tracks unlocked classes, companions, codex discoveries, bond growth, upgrades, and total career damage such as runs, wins, deaths, and bosses cleared.
-
-Meta currency and operations upgrades improve future dives, so even failed runs can still teach the tower something expensive. If you ever want to start clean, Settings now includes a full delete-all-save-states option.`,
+Those are not fake options or afterthoughts. Use them before the first case file if the default view is not doing its job for you.`,
   },
 ];
 
 export function getOnboardingReplayLabel() {
-  return `${onboardingBriefingTitle} Replay`;
+  return 'Replay Live Orientation';
 }
 
 export function getOnboardingHeroBody() {
-  return `${onboardingBriefingSubtitle} ${COMPANY_NAME} requires acknowledgement before first descent.`;
+  return 'This is a short, choice-driven first-run setup. It should explain the fantasy quickly, surface accessibility immediately, and get you to the first real decision fast.';
 }
 
 export const onboardingTutorialSteps: OnboardingTutorialStep[] = [
   {
     id: 'intro',
-    eyebrow: 'Orientation Start',
-    title: 'Enter the orientation sim',
-    summary: 'This is a short guided version of the real loop.',
-    body: `This sim teaches the live run one decision at a time: pick a route, survive a fight, claim a reward, resolve an event, and see what carries forward after the smoke clears.`,
-    instruction: 'Start the simulation.',
+    eyebrow: 'Step 1',
+    title: 'Know the job in one screen',
+    summary: 'You are not fixing the company. You are surviving it long enough to force the damage upward.',
+    body: `${COMPANY_NAME} turned the building into a live incident. ${TOWER_NAME} is now a hostile workplace ruin. Your run is one case file inside that disaster, and the point is to survive, expose, and keep moving.`,
+    instruction: 'Continue when the fantasy is clear.',
     kind: 'intro',
   },
   {
-    id: 'route-choice',
-    eyebrow: 'Step 1',
-    title: 'Pick the next room',
-    summary: 'A floor starts with a visible route choice.',
-    body: 'You do not clear every room. You read the threat, pick one active node, and accept that the wrong hallway can kill a good run faster than a bad swing.',
-    instruction: 'Tap one route to see how route reading works.',
+    id: 'room-choice',
+    eyebrow: 'Step 2',
+    title: 'Pick the problem you want first',
+    summary: 'A floor should show the danger and the payoff before it asks you to commit.',
+    body: 'Every room asks a different question. Some are cleaner fights. Some are riskier detours. Good route reading means knowing what kind of trouble you can afford right now.',
+    instruction: 'Choose the room you would open first.',
     kind: 'route',
     choices: [
       {
-        id: 'event-node',
-        title: 'Applause Threshold',
-        description: 'Risk event. Fast progress, ugly fallout.',
-        preview: 'Events trade certainty for upside. Good when you can afford volatility.',
+        id: 'direct-fight',
+        title: 'Direct Fight',
+        description: 'Cleaner path, clearer danger, immediate pressure.',
+        preview: 'Take this when you want a more honest room and a quick answer.',
         resolution:
-          'You opened the event lane. That teaches the first rule of floor flow: read the room type before you commit, because every node is asking what kind of mistake you can still afford.',
+          'You chose the cleaner confrontation. That is the right play when the room tells you exactly what can go wrong and you would rather solve it now than let it scale later.',
       },
       {
-        id: 'reward-node',
-        title: 'Concierge Cache',
-        description: 'Reward room. Lower pressure, smaller immediate danger.',
-        preview: 'Reward nodes help stabilize weak starts and patch bad floors.',
+        id: 'risky-detour',
+        title: 'Risky Detour',
+        description: 'Higher variance room with possible upside and messier fallout.',
+        preview: 'Take this when the upside matters more than a stable floor.',
         resolution:
-          'You opened the reward lane. That teaches the second rule of floor flow: not every smart play is aggression. Sometimes the right route is the one that keeps the run breathing.',
+          'You chose volatility. That can be correct, but only if the game makes the danger and the reward legible before the click. Hidden consequences are not strategy.',
       },
     ],
   },
   {
-    id: 'battle-read',
-    eyebrow: 'Step 2',
-    title: 'Resolve a fight',
-    summary: 'Combat is about pressure, timing, and enemy intent.',
-    body: 'Read what the enemy is threatening, then choose the action that makes the next exchange less unfair for you and much worse for them.',
-    instruction: 'Pick one combat action.',
+    id: 'combat-read',
+    eyebrow: 'Step 3',
+    title: 'Win one ugly exchange',
+    summary: 'The room should tell you what hurts, what helps, and why the trade mattered.',
+    body: 'Combat should reward fast reading. The player needs to know what the enemy is threatening, what their button press changes, and how much health moved because of it.',
+    instruction: 'Pick the combat approach that makes the next exchange best for you.',
     kind: 'battle',
     choices: [
       {
-        id: 'stabilize',
-        title: 'Stabilize',
-        description: 'Recover HP and blunt the next hit.',
-        preview: 'Best when HP is tight or the enemy is telegraphing heavy damage.',
+        id: 'pressure',
+        title: 'Pressure Hard',
+        description: 'End the room faster before the danger scales.',
+        preview: 'Good when speed is safer than caution.',
         resolution:
-          'You chose survival over tempo. That is often correct when a room is about to spike. The key lesson is that actions have different purposes, not just different numbers.',
+          'You chose tempo. Some rooms punish hesitation, so the safest answer is to end the problem before it gets another full turn to exist.',
       },
       {
-        id: 'disrupt',
-        title: 'Disrupt',
-        description: 'Reduce enemy pressure and buy breathing room.',
-        preview: 'Best when you need tempo control before committing to damage.',
+        id: 'control',
+        title: 'Control The Room',
+        description: 'Reduce the threat first, then finish clean.',
+        preview: 'Good when the enemy is about to make the room worse.',
         resolution:
-          'You chose control. That teaches the intent loop: the safest turn is often the one that makes the enemy less dangerous before you race for the kill.',
+          'You chose control. Good combat asks for reading, not guessing. If the enemy is clearly about to spike, reducing that pressure first is the smart play.',
       },
       {
-        id: 'push-hard',
-        title: 'Push Hard',
-        description: 'Trade safety for a faster finish.',
-        preview: 'Best when ending the fight now prevents a worse follow-up.',
+        id: 'recover',
+        title: 'Recover And Reset',
+        description: 'Spend the moment stabilizing so the room does not snowball.',
+        preview: 'Good when your health is already too low to be brave.',
         resolution:
-          'You chose tempo. That teaches the other half of combat: many rooms get more unfair the longer they stay alive, so fast pressure is often the safest kindness you can give yourself.',
+          'You chose survival. Recovery is a real decision, not a coward tax, as long as the screen makes the health trade obvious instead of burying it in text.',
       },
     ],
   },
   {
-    id: 'reward-draft',
-    eyebrow: 'Step 3',
-    title: 'Choose one payout',
-    summary: 'Rewards are build decisions, not just loot.',
-    body: 'Pick the reward that solves your biggest problem right now. Some payouts steady the run immediately; others make the next few rooms easier if you can afford the risk.',
-    instruction: 'Pick the package you would actually take.',
+    id: 'reward-read',
+    eyebrow: 'Step 4',
+    title: 'Take the package that changes the next room',
+    summary: 'Rewards should be build decisions with exact before-and-after clarity.',
+    body: 'A good reward screen shows the current value, the new value, and why that package matters now. The player should not have to remember their HP, gear, or currency from another screen.',
+    instruction: 'Choose the reward that helps this run most right now.',
     kind: 'reward',
     choices: [
       {
-        id: 'recovery-kit',
-        title: 'Recovery Kit',
-        description: '+3 HP now and a small chit payout.',
-        preview: 'Good when stabilizing the current run matters more than long-term greed.',
+        id: 'patch-now',
+        title: 'Patch Now',
+        description: 'Heal immediately and steady the next room.',
+        preview: 'Best when breathing room matters more than greed.',
         resolution:
-          'You prioritized survival. That is a real build decision, and the UI should always make the trade between breathing now and scaling later obvious before you lock it in.',
+          'You chose immediate stability. That is only satisfying if the screen shows exactly how much health you gain and what problem you are solving with it.',
       },
       {
-        id: 'paper-armor',
-        title: 'Paper Armor',
-        description: 'Add a contraband item that improves future exchanges.',
-        preview: 'Good when you can afford short-term risk for a stronger rest of run.',
+        id: 'build-now',
+        title: 'Build Now',
+        description: 'Take a stronger upgrade that changes the next rooms more sharply.',
+        preview: 'Best when you can afford to get greedier for a stronger run shape.',
         resolution:
-          'You drafted a build piece. That teaches the reward loop: good rewards change how the next few rooms play, not just what number goes up.',
+          'You chose build power. That should feel exciting because it changes how the next room plays, not because the description is longer.',
       },
     ],
   },
   {
-    id: 'event-decision',
-    eyebrow: 'Step 4',
-    title: 'Resolve an event',
-    summary: 'Events are choices with consequences, not flavor-only cutaways.',
-    body: 'Read the preview, pick once, and live with the fallout. Some choices are safer. Some pay more if you can absorb the mess.',
-    instruction: 'Choose one event response.',
-    kind: 'event',
-    choices: [
-      {
-        id: 'tell-the-truth',
-        title: 'Tell the truth plainly',
-        description: 'Lower immediate chaos, smaller reward.',
-        preview: 'Safer outcome with less upside.',
-        resolution:
-          'You chose the lower-volatility path. Events should support agency by showing what is dangerous, what is safer, and what the likely gain actually is.',
-      },
-      {
-        id: 'weaponize-policy',
-        title: 'Weaponize policy',
-        description: 'Higher upside, higher fallout.',
-        preview: 'Potential bigger reward if you can absorb the mess.',
-        resolution:
-          'You chose the higher-variance path. That teaches why event previews matter: the player should understand the danger before the game asks for commitment, not after the hallway starts laughing.',
-      },
-    ],
-  },
-  {
-    id: 'meta-loop',
+    id: 'carry-forward',
     eyebrow: 'Step 5',
-    title: 'See what carries forward',
-    summary: 'Runs end, but the profile keeps progress.',
-    body: 'When a run ends, you should be able to tell what you earned, what changed, and what to chase next. Even a failed climb should leave behind one useful lesson and one reason to queue another dive.',
-    instruction: 'Finish orientation and continue.',
+    title: 'Know why another run matters',
+    summary: 'A run should end with one clear reason to queue the next one.',
+    body: 'When the case file closes, the recap should show what you earned, what carried forward, and what the next run can reveal that this one did not. If the player wins or loses and still feels aimless, the loop is unfinished.',
+    instruction: 'Finish orientation and move to class selection.',
     kind: 'meta',
   },
 ];

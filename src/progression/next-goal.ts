@@ -46,8 +46,8 @@ export function getNextGoalSummary(input: {
   if (!profile || profile.stats.totalRuns === 0) {
     return {
       eyebrow: 'FIRST SESSION',
-      title: 'Finish your first dive',
-      body: 'Complete, lose, or abandon one run to seed the archive, expose permanent rewards, and prove the meta loop is live.',
+      title: 'Survive your first 10-floor case file',
+      body: 'Complete, lose, or abandon one full dive to seed the archive, expose permanent rewards, and prove the first case file is only the start of the long game.',
       ctaLabel: 'Start New Dive',
       href: '/' as Href,
     };
@@ -71,8 +71,8 @@ export function getNextGoalSummary(input: {
   if (profile.stats.totalWins === 0) {
     return {
       eyebrow: 'MILESTONE',
-      title: 'Secure your first clean win',
-      body: 'You have already seeded the archive. The next sticky goal is a full surviving win that proves the climb can end on your terms.',
+      title: 'Secure your first full clear',
+      body: 'You have already seeded the archive. The next sticky goal is a surviving 10-floor clear that proves this tower can be finished on your terms, not just endured once.',
       ctaLabel: 'Start New Dive',
       href: '/' as Href,
     };
@@ -86,7 +86,7 @@ export function getNextGoalSummary(input: {
     return {
       eyebrow: 'TRUTH LADDER',
       title: `Log ${missingEndingStates[0]?.label ?? 'the next ending state'}`,
-      body: `You have logged ${profile.retention.truth.discoveredEndingIds.length}/${endingStateDefinitions.length} ending states so far. Fill the archive with every version of the truth before you start locking in class-specific total wins.`,
+      body: `You have logged ${profile.retention.truth.discoveredEndingIds.length}/${endingStateDefinitions.length} ending states so far. One clear is only one testimony. Fill the archive with every version of the truth before you lock in class-specific total wins.`,
       ctaLabel: 'Open Progression',
       href: '/progression' as Href,
     };
@@ -103,7 +103,7 @@ export function getNextGoalSummary(input: {
     return {
       eyebrow: 'CLASS CASE FILE',
       title: `Earn Full Exposure with ${nextFullExposureClass.name}`,
-      body: `${nextFullExposureClass.name} is your next best lens for ${truthRoute.label.toLowerCase()}. Clearing that route gives the class a distinct reason to exist beyond another attack button.`,
+      body: `${nextFullExposureClass.name} is your next best lens for ${truthRoute.label.toLowerCase()}. The next run should reveal a different side of Meridian, not just replay the same clear with a new sprite.`,
       ctaLabel: 'Review Classes',
       href: '/class-select' as Href,
     };
@@ -124,8 +124,8 @@ export function getNextGoalSummary(input: {
       eyebrow: 'ROSTER LADDER',
       title: `Unlock ${className}`,
       body: nextClassOffer.affordable
-        ? `${className} is ready to requisition right now. The roster ladder is working when every win opens another department immediately.`
-        : `Save ${nextClassOffer.shortage} more chit${nextClassOffer.shortage === 1 ? '' : 's'} to unlock ${className} and keep the post-win roster loop moving.`,
+        ? `${className} is ready to requisition right now. The roster ladder is working when a win changes the next run immediately instead of leaving you with the same solved setup.`
+        : `Save ${nextClassOffer.shortage} more chit${nextClassOffer.shortage === 1 ? '' : 's'} to unlock ${className} and keep the next case file from feeling like the same draft again.`,
       ctaLabel: 'Open Breakroom Hub',
       href: '/hub' as Href,
     };
@@ -153,7 +153,7 @@ export function getNextGoalSummary(input: {
     return {
       eyebrow: 'RELATIONSHIP LADDER',
       title: 'Push bonds and crew chemistry',
-      body: `You have logged ${profile.retention.relationship.unlockedBondSceneIds.length}/${bondSceneDefinitions.length} bond scenes and ${profile.retention.relationship.synergyPairIds.length} archived pairings. Rotate companions until the tower feels different with each crew.`,
+      body: `You have logged ${profile.retention.relationship.unlockedBondSceneIds.length}/${bondSceneDefinitions.length} bond scenes and ${profile.retention.relationship.synergyPairIds.length} archived pairings. Rotate companions until the tower feels different with each crew instead of reading like the same run in a new folder.`,
       ctaLabel: 'Open Bonds',
       href: '/bonds' as Href,
     };
@@ -194,7 +194,7 @@ export function getNextGoalSummary(input: {
   return {
     eyebrow: 'POST-WIN LADDERS',
     title: 'Pick your next case file',
-    body: 'Truth ladder: earn Full Exposure with every class. Relationship ladder: finish the bond scene deck and archive more crew pairings. Quarterly ladder: keep your score alive before the quarter cools off.',
+    body: 'Truth ladder: earn Full Exposure with every class. Relationship ladder: finish the bond scene deck and archive more crew pairings. Quarterly ladder: keep your score alive before the quarter cools off. The next run should reveal something new, not just confirm you can repeat the old one.',
     ctaLabel: 'Open Progression',
     href: '/progression' as Href,
   };

@@ -76,7 +76,7 @@ const floorBlueprints: FloorBlueprint[] = [
     description:
       'The final wing of the pits stores policy, shame, and the executive desire to make both your problem.',
     nodes: [
-      { kind: 'reward' },
+      { kind: 'battle' },
       {
         kind: 'boss',
         fixedCopy: {
@@ -117,7 +117,7 @@ const floorBlueprints: FloorBlueprint[] = [
     description:
       'The company offsite burned long ago, but the keynote energy and uninsured confidence still scream through the rafters.',
     nodes: [
-      { kind: 'reward' },
+      { kind: 'battle' },
       {
         kind: 'boss',
         fixedCopy: {
@@ -158,7 +158,7 @@ const floorBlueprints: FloorBlueprint[] = [
     description:
       'The top floor is polished brass, occult access, and the last warm breath before absolute executive blame reassignment.',
     nodes: [
-      { kind: 'reward' },
+      { kind: 'battle' },
       {
         kind: 'boss',
         fixedCopy: {
@@ -650,6 +650,17 @@ function createNode(
   };
 }
 
+function getInitialFloorNodeStatus(
+  floorNumber: number,
+  nodeKind: RunNodeKind
+): RunNodeState['status'] {
+  if (floorNumber !== 1) {
+    return 'locked';
+  }
+
+  return nodeKind === 'boss' ? 'locked' : 'active';
+}
+
 export function generateRunMap(seed: string): RunMapState {
   const random = createSeededRandom(seed);
   const usedEventIds = new Set<string>();
@@ -672,7 +683,7 @@ export function generateRunMap(seed: string): RunMapState {
             nodeBlueprint,
             random,
             usedEventIds,
-            floorNumber === 1 ? 'active' : 'locked'
+            getInitialFloorNodeStatus(floorNumber, nodeBlueprint.kind)
           )
         ),
       } satisfies RunFloorState;

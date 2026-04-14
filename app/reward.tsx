@@ -13,16 +13,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
-  getLoopSurfaceArtSource,
   getRewardPackageArtSource,
   getRouteNodeArtSource,
 } from '@/src/assets/loop-art-sources';
 import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { playUiSfx } from '@/src/audio/ui-sfx';
-import { getBiomeAmbientArtSource } from '@/src/assets/supplemental-art-sources';
 import { GameButton } from '@/src/components/game-button';
 import { playUiHaptic } from '@/src/haptics/ui-haptics';
-import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import {
   getRotatedPartyScene,
   getRewardPackagePitch,
@@ -32,7 +29,9 @@ import {
   createTicketBrief,
 } from '@/src/content/company-lore';
 import { getItemDefinition } from '@/src/content/items';
+import { applyPendingReward } from '@/src/engine/reward/apply-pending-reward';
 import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
+import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
@@ -44,9 +43,31 @@ import {
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
+import type { PendingRewardOptionState, PendingRewardState } from '@/src/types/run';
+
+type RewardOptionPreview = {
+  runHpText: string;
+  profileChitsText: string;
+  itemStateText: string | null;
+  itemEffectText: string | null;
+};
+
+function createRewardPreviewPayload(
+  reward: PendingRewardState,
+  option: PendingRewardOptionState
+): PendingRewardState {
+  return {
+    ...reward,
+    selectedOptionId: option.optionId,
+    metaCurrency: option.metaCurrency,
+    runHealing: option.runHealing,
+    itemId: option.itemId,
+  };
+}
 
 export default function RewardScreen() {
   const { run, currentNode, loadState, error } = useHydratedRun();
+  const profile = useProfileStore((state) => state.profile);
   const preparePendingRewardForCurrentNode = useRunStore(
     (state) => state.preparePendingRewardForCurrentNode
   );
@@ -130,6 +151,37 @@ export default function RewardScreen() {
     () => getRewardPackagePitch(selectedRewardOption?.optionId),
     [selectedRewardOption?.optionId]
   );
+  const rewardOptionPreviews = useMemo(() => {
+    if (!pendingReward?.options?.length || !run || !profile) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      pendingReward.options.map((option) => {
+        const previewReward = createRewardPreviewPayload(pendingReward, option);
+        const runPreview = applyPendingRewardToRun(run, previewReward);
+        const profilePreview = applyPendingReward(profile, previewReward);
+        const optionItem = option.itemId ? getItemDefinition(option.itemId) : null;
+        const itemStateText = optionItem
+          ? run.inventoryItemIds.includes(optionItem.id)
+            ? `${optionItem.name} is already equipped on this dive, so this claim stays a resource pickup.`
+            : profile.unlockedItemIds.includes(optionItem.id)
+              ? `${optionItem.name} is already archived on this profile, so the duplicate converts into bonus chits instead of a new unlock.`
+              : `${optionItem.name} is new for this profile and joins this dive immediately.`
+          : null;
+
+        return [
+          option.optionId,
+          {
+            runHpText: `${run.hero.currentHp}/${run.hero.maxHp} HP -> ${runPreview.run.hero.currentHp}/${runPreview.run.hero.maxHp} HP`,
+            profileChitsText: `${profile.metaCurrency} -> ${profilePreview.profile.metaCurrency} chits`,
+            itemStateText,
+            itemEffectText: optionItem?.effectSummary ?? null,
+          } satisfies RewardOptionPreview,
+        ];
+      })
+    ) as Record<string, RewardOptionPreview>;
+  }, [pendingReward, profile, run]);
   const ticketBrief = useMemo(() => {
     if (!run || !pendingReward) {
       return null;
@@ -142,25 +194,7 @@ export default function RewardScreen() {
       currentNodeLabel: currentNode?.label ?? pendingReward.title,
     });
   }, [currentNode?.label, pendingReward, run]);
-  const rewardSurfaceArtSource = useMemo(
-    () => getLoopSurfaceArtSource('reward', settings),
-    [settings]
-  );
-  
-  const rewardAmbientArtSource = useMemo(
-    () => getBiomeAmbientArtSource(run?.floorIndex, settings),
-    [run?.floorIndex, settings]
-  );
   const helpStartsCollapsed = useRunHelpStartsCollapsed(run?.floorIndex ?? 1);
-  const selectedRewardArtSource = useMemo(
-    () =>
-      getRewardPackageArtSource(selectedRewardOption?.optionId, settings) ??
-      getRouteNodeArtSource('reward', settings),
-    [selectedRewardOption?.optionId, settings]
-  );
-  const selectedPackageHeading = hasSelectableOptions
-    ? 'Selected Package'
-    : 'Current Payout';
 
   useEffect(() => {
     if (!run || !pendingReward) {
@@ -250,11 +284,13 @@ export default function RewardScreen() {
               <Text style={styles.eyebrow}>REWARD</Text>
               <Text style={styles.title}>Claim The Haul</Text>
               <Text style={styles.subtitle}>
-                Pick the package that makes the next rooms easier to survive.
+                Take one package and keep climbing.
               </Text>
-              <Text style={styles.body}>
-                Chits are your between-dive currency for the Breakroom Hub. Healing and contraband help this run survive right now.
-              </Text>
+              {!helpStartsCollapsed ? (
+                <Text style={styles.body}>
+                  Chits are your between-dive currency for the Breakroom Hub. Healing and contraband help this run survive right now.
+                </Text>
+              ) : null}
             </View>
 
           {loadState === 'idle' || loadState === 'loading' ? (
@@ -283,81 +319,30 @@ export default function RewardScreen() {
             />
           ) : (
             <>
-              {ticketBrief ? (
-                <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Ticket Payout</Text>
-                  <View style={styles.detailCard}>
-                    <Text style={styles.detailCardTitle}>
-                      {ticketBrief.ticketId} - {ticketBrief.subject}
-                    </Text>
-                    <Text style={styles.detailCardBody}>
-                      {createClassRewardBrief(
-                        run.heroClassId,
-                        pendingReward.sourceKind
-                      )}
-                    </Text>
-                    <Text style={styles.detailCardBody}>
-                      Current track: {ticketBrief.escalationTrack}
-                    </Text>
-                  </View>
-                </View>
-              ) : null}
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>{pendingReward.title}</Text>
-                <Text style={styles.panelBody}>{pendingReward.description}</Text>
-                <View style={styles.statGrid}>
-                  <RewardStatCard label="Chits" value={`+${pendingReward.metaCurrency}`} />
-                  <RewardStatCard label="Recovery" value={`+${pendingReward.runHealing} HP`} />
-                </View>
-                <View style={styles.previewCard}>
-                  <Text style={styles.previewLabel}>{selectedPackageHeading}</Text>
-                  <Text style={styles.previewValue}>
-                    {selectedRewardOption?.label ?? 'Standard payout'}
-                  </Text>
-                  <Text style={styles.previewBody}>
-                    {selectedRewardOption?.description ??
-                      'A straightforward haul: keep the run alive now and the profile stronger later.'}
-                  </Text>
-                  {(selectedRewardOption?.companionBonusLabel ||
-                    selectedRewardOption?.synergyBonusLabel) ? (
-                    <Text style={styles.previewEdge}>
-                      {[selectedRewardOption?.companionBonusLabel, selectedRewardOption?.synergyBonusLabel]
-                        .filter(Boolean)
-                        .join(' / ')}
-                    </Text>
-                  ) : null}
-                  {rewardPackagePitch ? (
-                    <Text style={styles.previewEdge}>
-                      Build lane: {rewardPackagePitch.name}. {rewardPackagePitch.description}
-                    </Text>
-                  ) : null}
-                  <Text style={styles.previewEdge}>
-                    {pendingReward.sourceKind === 'battle-victory'
-                      ? 'Escalation cleared: this is the recovered payout before the ticket climbs again.'
-                      : 'Side-room seizure: this is optional contraband tied to the same active ticket.'}
-                  </Text>
-                </View>
-              </View>
-
               {hasSelectableOptions ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Choose One Package</Text>
                   <Text style={styles.panelBody}>
                     Pick the package that changes this run the most right now.
                   </Text>
-                  <LoopArtPanel
-                    title={selectedRewardOption ? 'Selected Package' : 'Package Preview'}
-                    body={
-                      selectedRewardOption
-                        ? selectedRewardOption.description
-                        : 'Pick a package below to preview it here.'
-                    }
-                    ambientSource={rewardAmbientArtSource}
-                    source={selectedRewardArtSource}
-                    backgroundSource={rewardSurfaceArtSource}
-                    frameVariant="portrait"
-                  />
+                  <View style={styles.detailCard}>
+                    <DetailLine
+                      label="Run HP"
+                      value={`${run.hero.currentHp}/${run.hero.maxHp}`}
+                    />
+                    <DetailLine
+                      label="Profile chits"
+                      value={String(profile?.metaCurrency ?? 0)}
+                    />
+                    <DetailLine
+                      label="Gear"
+                      value={
+                        run.inventoryItemIds.length > 0
+                          ? String(run.inventoryItemIds.length)
+                          : 'None yet'
+                      }
+                    />
+                  </View>
                   <View style={styles.optionList}>
                     {pendingReward.options?.map((option) => {
                       const optionItem = option.itemId
@@ -365,6 +350,7 @@ export default function RewardScreen() {
                         : null;
                       const isSelected =
                         option.optionId === pendingReward.selectedOptionId;
+                      const optionPreview = rewardOptionPreviews[option.optionId] ?? null;
 
                       return (
                         <Pressable
@@ -413,6 +399,21 @@ export default function RewardScreen() {
                             <RewardOptionPill label="HP" value={`+${option.runHealing}`} />
                             <RewardOptionPill label="Item" value={optionItem?.name ?? 'None'} />
                           </View>
+                          {optionPreview ? (
+                            <>
+                              <Text style={styles.optionEdge}>
+                                Run HP: {optionPreview.runHpText}
+                              </Text>
+                              <Text style={styles.optionEdge}>
+                                Profile chits: {optionPreview.profileChitsText}
+                              </Text>
+                              {optionPreview.itemStateText ? (
+                                <Text style={styles.optionEdge}>
+                                  Item state: {optionPreview.itemStateText}
+                                </Text>
+                              ) : null}
+                            </>
+                          ) : null}
                           {option.companionBonusLabel ? (
                             <Text style={styles.optionEdge}>
                               Crew edge: {option.companionBonusLabel}
@@ -423,9 +424,105 @@ export default function RewardScreen() {
                               Synergy edge: {option.synergyBonusLabel}
                             </Text>
                           ) : null}
+                          {isSelected ? (
+                            <View style={styles.selectedOptionDetail}>
+                              <Text style={styles.detailCardTitle}>Selected package</Text>
+                              <Text style={styles.detailCardBody}>{option.description}</Text>
+                              {rewardPackagePitch ? (
+                                <Text style={styles.detailCardBody}>
+                                  Run direction: {rewardPackagePitch.name}. {rewardPackagePitch.description}
+                                </Text>
+                              ) : null}
+                              <Text style={styles.detailCardBody}>
+                                {pendingReward.sourceKind === 'battle-victory'
+                                  ? 'This payout comes from winning the fight and goes live before the ticket climbs.'
+                                  : 'This is an optional side-room haul tied to the same ticket, not a separate route to clear.'}
+                              </Text>
+                              <Text style={styles.detailCardBody}>
+                                {optionPreview
+                                  ? `Run impact: ${optionPreview.runHpText}`
+                                  : 'Run impact preview unavailable.'}
+                              </Text>
+                              <Text style={styles.detailCardBody}>
+                                {optionPreview
+                                  ? `Profile chits: ${optionPreview.profileChitsText}`
+                                  : 'Profile chit preview unavailable.'}
+                              </Text>
+                              {optionItem ? (
+                                <>
+                                  <Text style={styles.detailCardBody}>
+                                    Item effect: {optionPreview?.itemEffectText ?? optionItem.effectSummary}
+                                  </Text>
+                                  <Text style={styles.detailCardBody}>
+                                    {optionPreview?.itemStateText ??
+                                      `${optionItem.name} joins this dive immediately.`}
+                                  </Text>
+                                </>
+                              ) : null}
+                            </View>
+                          ) : null}
                         </Pressable>
                       );
                     })}
+                  </View>
+                  <View style={styles.actionGroup}>
+                    <GameButton
+                      label={
+                        isClaimingReward
+                          ? 'Claiming...'
+                          : 'Take Selected Package'
+                      }
+                      onPress={handleClaim}
+                      disabled={isClaimingReward || isSelectingRewardOption}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Take The Package</Text>
+                  <Text style={styles.panelBody}>
+                    This payout is already set. Take it now and move to the next beat.
+                  </Text>
+                  <View style={styles.actionGroup}>
+                    <GameButton
+                      label={isClaimingReward ? 'Claiming...' : 'Take Package'}
+                      onPress={handleClaim}
+                      disabled={isClaimingReward || isSelectingRewardOption}
+                    />
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>{pendingReward.title}</Text>
+                <Text style={styles.panelBody}>{pendingReward.description}</Text>
+                <View style={styles.statGrid}>
+                  <RewardStatCard label="Chits" value={`+${pendingReward.metaCurrency}`} />
+                  <RewardStatCard label="Recovery" value={`+${pendingReward.runHealing} HP`} />
+                </View>
+                <Text style={styles.panelBody}>
+                  {pendingReward.sourceKind === 'battle-victory'
+                    ? 'This payout comes from surviving the room. Take the package that helps the next room most.'
+                    : 'This side-room haul is optional prep tied to the same ticket, not a second objective.'}
+                </Text>
+              </View>
+
+              {ticketBrief ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Ticket Payout</Text>
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>
+                      {ticketBrief.ticketId} - {ticketBrief.subject}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      {createClassRewardBrief(
+                        run.heroClassId,
+                        pendingReward.sourceKind
+                      )}
+                    </Text>
+                    <Text style={styles.detailCardBody}>
+                      Current track: {ticketBrief.escalationTrack}
+                    </Text>
                   </View>
                 </View>
               ) : null}
@@ -445,7 +542,7 @@ export default function RewardScreen() {
                   }
                   accessibilityState={{ expanded: showDetails }}
                 >
-                  <Text style={styles.panelTitle}>Reward Details</Text>
+                  <Text style={styles.panelTitle}>Source Notes</Text>
                   <Text style={styles.toggleLabel}>{showDetails ? 'Hide' : 'Show'}</Text>
                 </Pressable>
                 {showDetails ? (
@@ -469,8 +566,14 @@ export default function RewardScreen() {
                             : 'Reward room'
                         }
                       />
-                      <DetailLine label="Origin node" value={pendingReward.sourceNodeId} />
-                      <DetailLine label="Current node" value={currentNode?.label ?? 'Not required'} />
+                      <DetailLine
+                        label="Source room"
+                        value={currentNode?.label ?? pendingReward.title}
+                      />
+                      <DetailLine
+                        label="Floor"
+                        value={run ? String(run.floorIndex) : 'Unknown'}
+                      />
                       <DetailLine
                         label="Item pickup"
                         value={rewardItem?.name ?? 'No item attached'}
@@ -494,22 +597,9 @@ export default function RewardScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-Source notes and deeper run-impact previews stay tucked here once you know the reward flow.
+                    Source notes and deeper run-impact previews stay tucked here once the reward flow makes sense.
                   </Text>
                 )}
-                <View style={styles.actionGroup}>
-                  <GameButton
-                    label={
-                      isClaimingReward
-                        ? 'Claiming...'
-                        : hasSelectableOptions
-                          ? 'Claim Selected Package'
-                          : 'Claim Reward'
-                    }
-                    onPress={handleClaim}
-                    disabled={isClaimingReward || isSelectingRewardOption}
-                  />
-                </View>
                 {error ? <Text style={styles.errorBody}>{error}</Text> : null}
               </View>
             </>
@@ -892,6 +982,14 @@ function createStyles(
       color: colors.textSecondary,
       fontSize: scaleFontSize(13, settings),
       lineHeight: scaleLineHeight(19, settings),
+    },
+    selectedOptionDetail: {
+      backgroundColor: colors.background,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      padding: 12,
+      gap: spacing.xs + 2,
     },
     optionStats: {
       flexDirection: 'row',

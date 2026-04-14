@@ -6,12 +6,21 @@ Offline mobile roguelite where a burned-out office worker gets dragged into a pr
 
 `Crown Meridian Holdings` damaged reality through `Project Everrise`, a leadership-brained attempt to fuse every department into one executive control stack. `Meridian Spire` is the literal result. The game leans into dark comedy, workplace satire, grotesque absurdity, and companion banter while staying inside a sellable mature-but-store-safe lane.
 
+## Governing Spec
+
+`C:\ddbd\dungeon_crawler_mobile_design_spec_codex.md` is now the product's non-negotiable source of truth.
+
+- Treat the spec as a governing design contract, not optional guidance.
+- If the current runtime, docs, or launch plan diverge from the spec, treat that divergence as a real gap to close.
+- Do not justify shipping decisions from the current implementation alone when the spec sets a higher bar.
+
 ## Current Product Shape
 
 - Shipping platform: Android via Expo / React Native
 - Format: portrait, offline, single-player
-- Core loop: title -> interactive onboarding tutorial -> class select -> companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
-- Opening setup: fresh profiles now get a short first-run title intro, then an interactive orientation sim and assigned-role class briefing before companion selection
+- Current state: controlled partial restart guided by the governing spec, with the legacy 10-floor turn-based runtime still serving as the live reference implementation while the new vertical slice is rebuilt in place
+- Core loop: title -> live onboarding / orientation -> class select -> companion select -> route-choice run map -> battle / reward / event -> archive recap -> progression
+- Opening setup: fresh profiles now get a short first-run title intro, immediate Settings & Accessibility access, then a live orientation flow and class briefing before companion selection
 - Starting roster: 3 companions are available by default and each run still requires exactly 2 companion picks
 - Run-map presentation: active floors now present a small progress strip plus live route choices instead of a full future-floor text dump
 - Loop-facing presentation: run-map, event, reward, and end-run now use curated panel art sourced from `src/assets`, while compact stat cards have been tightened for narrow-phone readability
@@ -23,7 +32,7 @@ Offline mobile roguelite where a burned-out office worker gets dragged into a pr
 - Combat readability: live battle status labels now use readable durations/summaries, repeated crew chatter is rotated or hidden behind tactical detail, and each action now snaps the view back to the HP / threat read above the action list
 - Resume clarity: title-screen resume labels now reflect the actual saved scene, such as reward, battle, event, or route selection, instead of only a generic dive label
 - Persistence: SQLite with active slot, backup slot, archive history, and archive-backed recap/progression screens
-- Run structure: 10 floors, 3 biomes, bosses on floors 4, 7, and 10
+- Run structure: the current legacy runtime still uses one 10-floor case file across 3 biomes with bosses on floors 4, 7, and 10; this is the present implementation, not proof that the public launch scope or final reboot structure is sufficient
 - Story framing: role-fantasy and stake language now feed the assigned-role fallback, run map, battle intros, and event class reads
 - Accessibility foundation: persisted theme presets, text-size controls, contrast/motion toggles, dyslexia-friendly spacing, and screen-reader hints are now in the live settings route
 - Input accessibility: battle now supports a profile-backed action order, dominant-hand bias, and controller-style hint badges
@@ -144,6 +153,7 @@ This is a deliberate product constraint. Do not add a second save path unless th
 - Keep content IDs kebab-case.
 - Keep archive-backed recap behavior.
 - Keep `scripts/smoke-sim.cjs` aligned with system changes.
+- Treat `dungeon_crawler_mobile_design_spec_codex.md` as a binding product contract unless a newer explicit owner decision replaces part of it.
 - Treat the handoff document as the current source of truth for release planning.
 - Treat pacing, long-tail retention, and pricing fit as release blockers; use `docs/launch-postlaunch-retention-plan.md` as the retention source of truth before locking the launch business model.
 
@@ -169,7 +179,7 @@ npm run smoke:sim
 Manual:
 
 - Use `dev-smoke` in native dev builds to validate final-boss win/loss archive flows.
-- Validate at least one full 10-floor run in release-candidate builds before store upload.
+- Validate the full first-session shell and current end-to-end slice on device before broader testing; if you cut a build from the legacy 10-floor runtime, also validate at least one full 10-floor run.
 - Confirm title, new-run setup, run map, reward/event resolution, archive recap, and resume behavior on target devices.
 - Run guided first-session tests with outside players and confirm they understand the hook, complete the opening path, and can name a next goal without coaching.
 - Confirm support/privacy/store materials, permissions, and launch screenshots all match the real shipped build.
@@ -193,57 +203,23 @@ Canonical local repo root:
 
 ## Release Status
 
-The game is in release-candidate hardening mode:
+The repo is in a controlled partial restart:
 
-- feature freeze is recommended outside retention tuning, pricing, and release-readiness work called out in `docs/launch-postlaunch-retention-plan.md`
-- pacing, long-tail retention, and post-first-win motivation must be tuned and validated before the game can launch at `US$3.99`; if that bar is not met, revisit a free route with optional paid upgrades, future games, or extras
-- fresh-profile onboarding now starts with a one-time title intro, then routes through an interactive orientation sim before the assigned-role class briefing and companion selection
+- `dungeon_crawler_mobile_design_spec_codex.md` is the governing product contract
+- the live codebase still contains the legacy 10-floor turn-based runtime, but that runtime is now the reference implementation being rebuilt in place rather than the accepted final product shape
+- current runtime divergences from the governing spec are product gaps to close, not soft wishlist items
+- scope discipline matters more than feature-freeze language now: keep work focused on the rebooted vertical slice, first-session clarity, room feel, reward/event readability, recap motivation, and release-trust surfaces
+- pacing, long-tail retention, post-first-win motivation, and overall engagement still need to be proven before any premium launch at `US$3.99`
+- the current single 10-floor case-file runtime should still be treated as insufficient for public launch by default; either the final product must expand beyond that scope or outside testing must prove the smaller structure feels unusually compelling, novel, and replayable
+- fresh-profile onboarding now starts with a one-time title intro, immediate Settings & Accessibility access, a live orientation flow, then class and crew setup
 - the opening roster now shows 3 companions so the first team pick is a real choice
-- the run map now centers one current floor at a time with explicit route picks instead of front-loading future-floor detail
-- battle and reward screens now hide deeper mechanical detail behind toggles so the first read is shorter and more phone-friendly
-- battle now auto-returns focus to the HP and threat read after each action so the next decision starts from the top of the exchange again
-- event screens now lead with the real choice and tuck class/crew readouts behind an explicit toggle
-- setup screens now keep role and crew flavor available without forcing it ahead of the first actionable decision
-- archived defeat recaps now call out the enemy, final exchange, live statuses, and a suggested next-run adjustment
-- the April 4 authored-content pass now feeds:
-  - floors 1 to 3 lore beats on the run map
-  - starting-trio chemistry on setup, route choice, rewards, events, and danger states
-  - companion/class codex entries with stronger first-seen and archive flavor
-  - authored event overlays across the full current live event pool, with the first three orientation-phase sheets still acting as the clearest bespoke onboarding-phase set
-  - stronger voiced defeat recommendations after losses
-- Android dev-smoke win/loss validation is covered
-- Android live dev-build smoke now covers resume -> event choice -> floor transition -> battle -> reward claim -> map return on emulator
-- an April 2 Android visual sweep confirmed the updated title, onboarding, settings, support, privacy, and no-active-run map copy in-context on the current debug build
-- an April 4 repo smoke pass confirmed the current source still passes `tsc`, `lint`, and `smoke:sim` after the authored writing integration
-- an April 5 focused Android pass confirmed reward claim -> run-map -> authored event entry -> cold relaunch resume on emulator, and a fresh local release APK now installs and launches cleanly
-- automated smoke validation now also covers the route-choice map structure deterministically instead of assuming a single forced floor path
-- the native Android app label now matches the real product title instead of the repo slug
-- the live settings route now persists the real accessibility/theme settings that the app actually uses
-- the live settings route now includes a visual preview so high contrast, color assist, reduced motion, and readability changes are visibly testable
-- the primary gameplay, recap, reference, and test routes now respect the saved accessibility/theme profile rather than only the shared chrome
-- the in-app support/privacy routes and the repo markdown now agree on the offline-only/local-save model, while `dev-smoke` remains the explicit QA surface for telemetry and remote analytics checks
-- class-specific company lore and higher-stakes job-survival framing are now wired into the main run flow
-- older companion/meta writing now carries more of that sharper company-specific tone
-- combat log ordering now places the rolling narrative above the action list
-- companion bond growth now has visibly stronger run impact and is surfaced in companion selection
-- baseline combat/reward tuning is less forgiving than the earlier release-candidate pass
-- tester-facing support/privacy/settings copy no longer exposes placeholder or future-feature language
-- the GitHub `main` ruleset is now active and the stable `validate` workflow remains the required CI gate
-- the project owner has already completed one full manual 10-floor Android release-build playthrough on the prior candidate
-- the local Android launcher now resolves the real workspace path first, so `npm run android` works from the current repo checkout without the earlier Expo root-resolution failure
-- the native-only `dev-smoke` route now surfaces local UX telemetry for first-floor choice timing, route churn, repeated crew-read detection, `Run It Back` usage, and remote analytics validation state
-- the April 8 pass added profile-backed combat remapping, controller-style action hints, a live dodge action in battle, and a vendor-neutral remote analytics adapter / validation surface
-- the April 8 retention pass added Truth / Roster / Relationship ladders, class truth-route framing, quarterly challenge score, optional probation contracts, and quick-clear bonus tracking across save, recap, hub, progression, class-select, and next-goal surfaces
-- the current app and markdown policy docs now agree that public gameplay remains offline-first while remote analytics validation is a dev-only, explicitly configured QA path
-- the April 14 GitHub readiness pass re-ran `npx tsc --noEmit`, `npm run audit:classes`, `npm run lint`, and `npm run smoke:sim`, refreshed the dated source-of-truth docs, and reconfirmed that the April 8 tester APK remains the current dated outside-share build until runtime source changes again
-- the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
-- the April 7 pass added a persistent first-run intro, clearer route-objective language, cleaner mandatory reward CTAs, plain-language defeat/status support, and finalized Play icon/feature-graphic treatment in the repo and app config
-- the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
-- the home screen now shows the full title image without forced cropping, and the installed Android launcher icon now uses the `ddbd logo` asset
-- the April 6 emulator pass confirmed title -> new run -> run-map -> battle -> reward -> cold relaunch resume -> reward claim -> end-run
-- the April 7 release-build emulator pass confirmed fresh-install title -> first-run setup -> run-map -> battle -> reward -> cold relaunch reward resume -> reward claim -> run-map -> abandon -> end-run
-- before tester or store distribution after future source changes, rebuild from the final accepted source in the current repo checkout and re-verify install behavior
-- the current code/docs state still needs a focused Android regression across the new route-choice run map, battle, reward, event, end-run, resume, setup compression, settings preview, and `dev-smoke` telemetry surfaces before broader playtesting and upload
+- run-map, battle, reward, and event screens now prioritize the immediate player decision and keep more choice consequences on the same screen
+- battle now surfaces structured turn outcomes, exact HP deltas, and a recommended next move instead of relying only on prose logs
+- rewards and events now show clearer before/after impact on the same screen, and required fights can no longer be bypassed by clearing only side rooms
+- the live settings route persists the actual accessibility/theme/input preferences the app uses, including a visual preview
+- the in-app support/privacy routes and repo markdown still agree on the offline-only/local-save public model, while `dev-smoke` remains the explicit QA surface for local telemetry and remote analytics validation
+- the GitHub `main` ruleset and `validate` workflow remain the required CI gate
+- before future tester or store distribution, rebuild from the final accepted source in the current repo checkout and re-verify install behavior on device
 
 ## Launch Defaults
 
@@ -276,7 +252,14 @@ For the current ship checklist and app-store readiness gate, use the latest hand
 - `PROJECT_HANDOFF_2026-04-14.md`
 - `PROJECT_HANDOFF_2026-04-14.docx`
 - `DUNGEON_DIVE_APP_NEEDS_2026-04-14.docx`
+- `docs/current-app-needs-source.md`
 - `docs/launch-postlaunch-retention-plan.md`
+- `docs/restart-plan.md`
+- `docs/vertical-slice-contract.md`
+- `docs/rebuild-order.md`
+- `docs/implementation-roadmap.md`
+- `docs/art-production-plan.md`
+- `docs/audio-production-plan.md`
 - `PROJECT_HANDOFF_2026-04-08.md`
 - `PROJECT_HANDOFF_2026-04-08.docx`
 - `PROJECT_HANDOFF_2026-04-07.md`

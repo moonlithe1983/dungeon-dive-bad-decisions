@@ -32,16 +32,16 @@ If you report a problem, include:
 
 ## Current Product Notes
 
-- the game is currently being prepared as an offline single-player release
+- the game is currently being rebuilt as an offline single-player Android product under a controlled partial restart
 - unfinished settings that do not affect real runtime behavior are intentionally hidden from the live UI
 - settings now include a live preview so readability, contrast, and motion choices can be checked before a run starts
 - battle, reward, event, and route screens now prioritize the immediate player decision and progressively disclose deeper flavor/detail
-- one full 10-floor Android release-build validation pass has already been completed on the prior candidate
+- the current repo still contains the legacy 10-floor runtime, but that runtime is now a reference implementation rather than the accepted final launch shape
 - fresh-profile onboarding now starts with a short title intro, an interactive orientation sim, an assigned-role class briefing, and then three default companion options
-- the current polished source now includes compact route choice, loop-facing art panels, stronger defeat recap, authored early-run writing integration, and clearer progressive-disclosure treatment on event/setup screens
+- the current source now includes compact route choice, loop-facing art panels, stronger defeat recap, clearer first-session setup, and stronger on-screen consequence framing for combat, rewards, and events
 - the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
 - battle now supports a remappable action order, controller-style hint badges, and a new dodge action that adds a more defensive tempo choice to the turn loop
 - the native-dev `Smoke Lab` route now includes a vendor-neutral remote analytics validation surface, but that path is still dev-only and is not part of the public release build by default
-- the April 8 local release APK is still the current rebuilt tester artifact and should remain the default smoke-testing build until runtime source changes again
+- the April 8 local release APK is still the latest dated outside-share artifact in the workspace, but it no longer represents the current rebooted repo state
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
 - the `Smoke Lab` route is native-dev only and now surfaces local UX telemetry plus optional remote analytics validation for manual QA; it is not part of the public release build or support burden

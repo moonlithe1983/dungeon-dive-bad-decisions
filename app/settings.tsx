@@ -585,7 +585,7 @@ export default function SettingsScreen() {
                           }}
                           style={styles.audioStepButton}
                         >
-                          <Text style={styles.audioStepButtonText}>↑</Text>
+                          <Text style={styles.audioStepButtonText}>Up</Text>
                         </Pressable>
                         <Pressable
                           accessibilityRole="button"
@@ -596,7 +596,7 @@ export default function SettingsScreen() {
                           }}
                           style={styles.audioStepButton}
                         >
-                          <Text style={styles.audioStepButtonText}>↓</Text>
+                          <Text style={styles.audioStepButtonText}>Down</Text>
                         </Pressable>
                       </View>
                     </View>

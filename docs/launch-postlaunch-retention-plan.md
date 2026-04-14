@@ -1,15 +1,17 @@
 ﻿# Launch / Post-Launch Retention Plan
 
-Version date: April 8, 2026
-Owner intent: pacing and long-tail retention must be fully tuned before public release. If the game cannot clearly justify a premium `US$3.99` launch through replay value, the launch path must be revisited in favor of a free route with optional paid upgrades, future games, or extras.
+Version date: April 14, 2026
+Owner intent: `C:/ddbd/dungeon_crawler_mobile_design_spec_codex.md` is now the governing product contract. The owner is only willing to put this product in front of the public when it is as engaging, replay-addictive, and commercially honest as possible without resorting to manipulative grind. If the game cannot clearly justify a premium `US$3.99` launch through replay value, the launch path must be revisited in favor of a free route with optional paid upgrades, future games, or extras.
 
 ## 1. Release gate
 
 Do not let the game go live until all of the following are true:
 
+- The current product materially satisfies the non-negotiable pillars and loop expectations in `C:/ddbd/dungeon_crawler_mobile_design_spec_codex.md`, or any remaining divergences are explicitly accepted by a newer owner decision.
 - The average player can understand the baseline win condition, the total win condition, and why another run matters immediately after a clear.
 - The run pacing feels deliberate rather than padded, with enough novelty and post-run pull to support a premium ask.
 - The first-win aftermath no longer ends on vague archive-only motivation. The player must leave the recap with an explicit next ladder.
+- The current content scope is strong enough to feel recommendable. A single 10-floor case file is not automatically enough for public launch; either the shipped game must offer broader scope or the smaller scope must prove unusually compelling and novel in outside tests.
 - The premium `US$3.99` route still feels honest after outside testing. If it does not, revisit a free route with optional paid upgrades, future games, or extras instead of shipping a weak premium proposition.
 
 ## 1.1 First-impression and viability gates
@@ -31,17 +33,25 @@ Do not go live until all of the following are true:
 Before public release, decide the launch business model using evidence instead of hope.
 
 - Ship premium at `US$3.99` only if the average first session feels polished, the replay hook is obvious after the first clear, and outside testing supports the price.
+- Do not treat the current 10-floor runtime as inherently sufficient value. A paid launch requires either materially broader content or outside-test proof that the smaller structure feels exceptional.
 - If first-session delight, replay motivation, or value-for-price still feel soft, revisit a free route with optional paid upgrades, future games, or extras instead of forcing a weak premium launch.
 - Do not use grind, confusion, or punitive loss systems to manufacture premium value.
 
 ## 2. Win structure and timing targets
 
-### 2.1 Canonical win structure
+### 2.1 Win structure
 
-- Baseline win: clear floor 10 and survive the run.
-- Truth win: clear floor 10 while meaningfully progressing the Everrise proof chain.
-- Total win: collect all three proofs and choose `force-the-truth-to-surface` at `Root Access`, producing `full-exposure`.
-- Incomplete but valid clears: `controlled-detonation`, `partial-exposure`, `licensed-survival`, and `quiet-survival` remain meaningful endings, not fake failures.
+Current legacy runtime reference:
+
+- The current live reference implementation still treats clearing floor 10 as the baseline case-file win.
+- That legacy runtime should not be mistaken for the final rebooted launch structure.
+
+Reboot launch target:
+
+- The first meaningful victory must happen early enough to create replay pull in the first session window.
+- The final shipped win structure can still include larger campaign or floor-chain clears, but it should not depend on one uninterrupted 10-floor case file to prove the game is compelling.
+- Truth routing, roster growth, and relationship payoff should remain the major post-run ladders even if the exact floor/campaign structure changes.
+- Incomplete but valid clears should still feel meaningful instead of fake failures.
 
 ### 2.2 Launch pacing targets
 
@@ -51,7 +61,8 @@ These targets should be treated as release criteria, not nice-to-have aspiration
 - First baseline win: usually within 3 to 5 runs.
 - First total win: usually within 6 to 10 runs.
 - First-session time to understanding the long game: inside the first completed run recap.
-- Mature run length after onboarding: roughly 12 to 18 minutes, unless save/resume and checkpoints make longer climbs feel harmless on mobile.
+- Meaningful reboot-slice run length after onboarding: usually about 5 to 9 minutes.
+- Longer multi-floor or campaign sequences are acceptable only if checkpoints and resume make them feel harmless on mobile.
 
 ## 3. Post-win ladders
 
@@ -293,4 +304,6 @@ Before release, the following must stay aligned:
 - `src/progression/next-goal.ts` should keep the post-win ladder framing explicit.
 - `README.md` and `PROJECT_HANDOFF_2026-04-14.md` should treat pacing, retention, and pricing fit as a real release gate.
 - `docs/design-spec-audit.md` should continue marking retention and live-ops as incomplete until they are proven, not merely described.
+- `docs/restart-plan.md`, `docs/vertical-slice-contract.md`, and `docs/rebuild-order.md` should stay aligned with the governing spec during the rebuild.
+- `docs/implementation-roadmap.md`, `docs/art-production-plan.md`, and `docs/audio-production-plan.md` should stay aligned with the governing spec and the rebooted slice goals.
 - Future class and event extensions should reinforce the class truth-route lenses instead of flattening them into generic combat variety.

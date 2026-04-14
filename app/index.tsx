@@ -1,10 +1,9 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   ActivityIndicator,
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import { getRunResumeTarget } from '@/src/engine/run/progress-run';
 import { getNextGoalSummary } from '@/src/progression/next-goal';
@@ -32,6 +32,10 @@ const titleScreenArt = require('@/src/assets/store/Title Screen.png');
 
 const TITLE_SCREEN_ART_ASPECT_RATIO = 1632 / 2912;
 
+function formatHrefForAnalytics(href: Href) {
+  return typeof href === 'string' ? href : href.pathname ?? 'object-route';
+}
+
 export default function IndexScreen() {
   const bootstrapStatus = useGameStore((state) => state.bootstrapStatus);
   const snapshot = useGameStore((state) => state.bootstrapSnapshot);
@@ -45,7 +49,8 @@ export default function IndexScreen() {
   const beginNewRunSetup = useRunStore((state) => state.beginNewRunSetup);
   const { colors, settings } = useAppTheme();
   const layout = useResponsiveLayout();
-  const [showFirstDivePrimer, setShowFirstDivePrimer] = useState(false);
+  const firstOpenedTrackedRef = useRef(false);
+  const nextGoalTrackedRef = useRef<string | null>(null);
   const styles = useMemo(
     () => createStyles(settings, colors, layout),
     [colors, layout, settings]
@@ -76,6 +81,57 @@ export default function IndexScreen() {
     () => getNextGoalSummary({ profile, activeRun }),
     [activeRun, profile]
   );
+  const isFirstRunIntroVisible = Boolean(
+    profile &&
+      !activeRun &&
+      profile.stats.totalRuns === 0 &&
+      !profile.onboarding.narrativeIntroSeen
+  );
+
+  useEffect(() => {
+    if (bootstrapStatus === 'loading' || bootstrapStatus === 'idle') {
+      return;
+    }
+
+    void trackAnalyticsEvent('screen_viewed', {
+      screen: 'home',
+      firstRunIntroVisible: isFirstRunIntroVisible,
+      hasActiveRun: Boolean(activeRun),
+      totalRuns: profile?.stats.totalRuns ?? 0,
+    });
+  }, [activeRun, bootstrapStatus, isFirstRunIntroVisible, profile?.stats.totalRuns]);
+
+  useEffect(() => {
+    if (!profile || firstOpenedTrackedRef.current || profile.stats.totalRuns > 0) {
+      return;
+    }
+
+    firstOpenedTrackedRef.current = true;
+    void trackAnalyticsEvent('first_opened', {
+      screen: 'home',
+      accessibilityPromptVisible: isFirstRunIntroVisible,
+    });
+  }, [isFirstRunIntroVisible, profile]);
+
+  useEffect(() => {
+    if (isFirstRunIntroVisible) {
+      return;
+    }
+
+    const trackingKey = `${nextGoal.eyebrow}:${nextGoal.title}`;
+
+    if (nextGoalTrackedRef.current === trackingKey) {
+      return;
+    }
+
+    nextGoalTrackedRef.current = trackingKey;
+    void trackAnalyticsEvent('next_goal_presented', {
+      screen: 'home',
+      eyebrow: nextGoal.eyebrow,
+      title: nextGoal.title,
+      ctaLabel: nextGoal.ctaLabel,
+    });
+  }, [isFirstRunIntroVisible, nextGoal.body, nextGoal.ctaLabel, nextGoal.eyebrow, nextGoal.title]);
 
   const handleRetry = async () => {
     await refreshBootstrap();
@@ -88,13 +144,6 @@ export default function IndexScreen() {
 
     router.push(resumeTarget.route as Href);
   };
-
-  const isFirstRunIntroVisible = Boolean(
-    profile &&
-      !activeRun &&
-      profile.stats.totalRuns === 0 &&
-      !profile.onboarding.narrativeIntroSeen
-  );
 
   const handleNewDive = async () => {
     if (isFirstRunIntroVisible) {
@@ -142,7 +191,7 @@ export default function IndexScreen() {
           <View style={styles.heroCard}>
             <View style={styles.badgeRow}>
               <View style={styles.badge}>
-                <Text style={styles.badgeText}>Premium</Text>
+                <Text style={styles.badgeText}>Case File</Text>
               </View>
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>Offline</Text>
@@ -173,7 +222,73 @@ export default function IndexScreen() {
               executives who caused it, keep yourself alive, and avoid becoming
               the scapegoat when the tower asks who broke first.
             </Text>
+            <Text style={styles.runCardHint}>
+              A dive is one 10-floor case file. The real long game is different
+              endings, class angles, and crew testimony that make the next climb
+              feel sharper than the last one.
+            </Text>
           </View>
+
+          {isFirstRunIntroVisible ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Start Here</Text>
+              <Text style={styles.panelBody}>
+                The first-session path should be quick and clear: learn the fantasy,
+                open Settings if you need accessibility support, run the live
+                orientation, then pick your class and crew.
+              </Text>
+              <View style={styles.introCard}>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>Who are you?</Text>
+                  <Text style={styles.introAnswer}>
+                    The employee left holding the incident after leadership fused every
+                    department into one catastrophe.
+                  </Text>
+                </View>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>What are you doing?</Text>
+                  <Text style={styles.introAnswer}>
+                    Survive the case file, force the damage upward, and make the people
+                    who caused it own the fallout.
+                  </Text>
+                </View>
+                <View style={styles.introRow}>
+                  <Text style={styles.introQuestion}>What happens next?</Text>
+                  <Text style={styles.introAnswer}>
+                    Live orientation, class select, companion select, then your first
+                    real dive.
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.runCardHint}>
+                Open Settings first if you want larger text, higher contrast, reduced
+                motion, dyslexia assist, handedness changes, or other comfort support.
+              </Text>
+              <View style={styles.primaryActions}>
+                <GameButton
+                  label="Begin HR Onboarding"
+                  onPress={() => {
+                    void trackAnalyticsEvent('home_cta_pressed', {
+                      cta: 'begin-hr-onboarding',
+                      firstRun: true,
+                    });
+                    handleNewDive();
+                  }}
+                />
+                <GameButton
+                  label="Settings & Accessibility"
+                  onPress={() => {
+                    void trackAnalyticsEvent('home_cta_pressed', {
+                      cta: 'settings-accessibility',
+                      firstRun: true,
+                    });
+                    handleSettings();
+                  }}
+                  variant="secondary"
+                />
+              </View>
+            </View>
+          ) : null}
 
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>Employee Status</Text>
@@ -240,99 +355,60 @@ export default function IndexScreen() {
                   )}
                 </View>
 
-                <View style={styles.primaryActions}>
-                  {activeRun && resumeLabel ? (
-                    <GameButton
-                      label={resumeLabel}
-                      onPress={handleResume}
-                    />
-                  ) : null}
-                  <GameButton
-                    label={isFirstRunIntroVisible ? 'Begin HR Onboarding' : 'Start New Dive'}
-                    onPress={handleNewDive}
-                    variant={activeRun ? 'secondary' : 'primary'}
-                  />
-                </View>
-                <View style={styles.nextGoalCard}>
-                  <Text style={styles.nextGoalEyebrow}>{nextGoal.eyebrow}</Text>
-                  <Text style={styles.nextGoalTitle}>{nextGoal.title}</Text>
-                  <Text style={styles.nextGoalBody}>{nextGoal.body}</Text>
-                  <GameButton
-                    label={nextGoal.ctaLabel}
-                    onPress={() => {
-                      router.push(nextGoal.href);
-                    }}
-                    variant="secondary"
-                  />
-                </View>
+                {!isFirstRunIntroVisible ? (
+                  <>
+                    <View style={styles.primaryActions}>
+                      {activeRun && resumeLabel ? (
+                        <GameButton
+                          label={resumeLabel}
+                          onPress={() => {
+                            void trackAnalyticsEvent('home_cta_pressed', {
+                              cta: 'resume-dive',
+                              firstRun: false,
+                              target: resumeTarget
+                                ? formatHrefForAnalytics(resumeTarget.route as Href)
+                                : 'unknown',
+                            });
+                            handleResume();
+                          }}
+                        />
+                      ) : null}
+                      <GameButton
+                        label="Start New Dive"
+                        onPress={() => {
+                          void trackAnalyticsEvent('home_cta_pressed', {
+                            cta: 'start-new-dive',
+                            firstRun: false,
+                          });
+                          handleNewDive();
+                        }}
+                        variant={activeRun ? 'secondary' : 'primary'}
+                      />
+                    </View>
+                    <View style={styles.nextGoalCard}>
+                      <Text style={styles.nextGoalEyebrow}>{nextGoal.eyebrow}</Text>
+                      <Text style={styles.nextGoalTitle}>{nextGoal.title}</Text>
+                      <Text style={styles.nextGoalBody}>{nextGoal.body}</Text>
+                      <GameButton
+                        label={nextGoal.ctaLabel}
+                        onPress={() => {
+                          void trackAnalyticsEvent('home_cta_pressed', {
+                            cta: 'next-goal',
+                            goalTitle: nextGoal.title,
+                            target: formatHrefForAnalytics(nextGoal.href),
+                          });
+                          router.push(nextGoal.href);
+                        }}
+                        variant="secondary"
+                      />
+                    </View>
+                  </>
+                ) : null}
               </>
             )}
           </View>
 
-          {isFirstRunIntroVisible ? (
-            <View style={styles.panel}>
-              <Pressable
-                style={styles.toggleRow}
-                onPress={() => {
-                  setShowFirstDivePrimer((current) => !current);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Need the setup"
-                accessibilityHint={
-                  showFirstDivePrimer
-                    ? 'Double tap to collapse the world primer.'
-                    : 'Double tap to expand the world primer.'
-                }
-                accessibilityState={{ expanded: showFirstDivePrimer }}
-              >
-                <Text style={styles.panelTitle}>Need the setup?</Text>
-                <Text style={styles.toggleLabel}>
-                  {showFirstDivePrimer ? 'Hide' : 'Show'}
-                </Text>
-              </Pressable>
-              {showFirstDivePrimer ? (
-                <>
-                  <View style={styles.introCard}>
-                    <View style={styles.introRow}>
-                      <Text style={styles.introQuestion}>Who are you?</Text>
-                      <Text style={styles.introAnswer}>
-                        The employee left holding the ticket after leadership fused every
-                        department into one catastrophe.
-                      </Text>
-                    </View>
-                    <View style={styles.introRow}>
-                      <Text style={styles.introQuestion}>What is Meridian Spire?</Text>
-                      <Text style={styles.introAnswer}>
-                        A vertical corporate ruin where each floor is another department&apos;s
-                        bad decision turned into a hostile room.
-                      </Text>
-                    </View>
-                    <View style={styles.introRow}>
-                      <Text style={styles.introQuestion}>What are you trying to do?</Text>
-                      <Text style={styles.introAnswer}>
-                        Push the incident upward, survive each floor, and force the people
-                        responsible to finally face the fallout.
-                      </Text>
-                    </View>
-                    <View style={styles.introRow}>
-                      <Text style={styles.introQuestion}>Why companions?</Text>
-                      <Text style={styles.introAnswer}>
-                        They change your early turns, cover weaknesses, and help carry the
-                        run when the tower stops fighting fair.
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={styles.runCardHint}>
-                    HR runs a short orientation sim before class assignment. The full packet is archived in the codex afterward.
-                  </Text>
-                </>
-              ) : (
-                <Text style={styles.runCardHint}>
-                  The short version: you are the one still holding the ticket when Meridian Spire goes hostile.
-                </Text>
-              )}
-            </View>
-          ) : (
+          {!isFirstRunIntroVisible ? (
             <View style={styles.panel}>
               <Text style={styles.panelTitle}>Operations</Text>
               <View style={styles.menuGrid}>
@@ -370,7 +446,7 @@ export default function IndexScreen() {
                 ) : null}
               </View>
             </View>
-          )}
+          ) : null}
 
           <View style={styles.footerCard}>
             <Text style={styles.footerTitle}>Compliance Notice</Text>
@@ -568,6 +644,12 @@ function createStyles(
       fontWeight: '800',
       lineHeight: scaleLineHeight(22, settings),
     },
+    panelBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(21, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
     loadingState: {
       paddingVertical: spacing.lg + 2,
       alignItems: 'center',
@@ -702,21 +784,6 @@ function createStyles(
     },
     menuGrid: {
       gap: spacing.sm + 2,
-    },
-    toggleRow: {
-      flexDirection: layout.stackInlineHeader ? 'column' : 'row',
-      justifyContent: 'space-between',
-      alignItems: layout.stackInlineHeader ? 'flex-start' : 'center',
-      gap: spacing.sm,
-      minHeight: 48,
-    },
-    toggleLabel: {
-      color: colors.accent,
-      fontSize: scaleFontSize(12, settings),
-      fontWeight: '800',
-      lineHeight: scaleLineHeight(16, settings),
-      textTransform: 'uppercase',
-      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     },
     introCard: {
       backgroundColor: colors.surfaceRaised,

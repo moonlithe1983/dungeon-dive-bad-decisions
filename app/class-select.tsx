@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -12,27 +12,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GameButton } from '@/src/components/game-button';
+import { trackAnalyticsEvent } from '@/src/analytics/client';
 import {
   getClassEmblemAlignmentLabel,
   getClassEmblemSource,
 } from '@/src/assets/supplemental-art-sources';
 import { playUiSfx } from '@/src/audio/ui-sfx';
+import { GameButton } from '@/src/components/game-button';
 import { getClassActionKit } from '@/src/content/class-actions';
-import { classDefinitions } from '@/src/content/classes';
-import {
-  COMPANY_NAME,
-  TOWER_NAME,
-  createTicketBrief,
-  getClassNarrative,
-  getCompanyDisasterSummary,
-} from '@/src/content/company-lore';
-import {
-  buildMetaUpgradeCatalog,
-  getMetaUpgradeRewardCurrencyBonus,
-  getMetaUpgradeRewardHealingBonus,
-} from '@/src/engine/meta/meta-upgrade-engine';
-import { getRunHeroMaxHp } from '@/src/engine/run/run-hero';
+import { classDefinitions, getClassUnlockCost } from '@/src/content/classes';
 import { getClassTruthRouteSummary } from '@/src/engine/retention/retention-engine';
 import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
@@ -44,12 +32,28 @@ import {
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
 
+function getClassPickPitch(classId: string) {
+  switch (classId) {
+    case 'it-support':
+      return 'Pick this if you want the cleanest control tools and the safest first learning curve.';
+    case 'sales-rep':
+      return 'Pick this if you want faster kills, riskier tempo, and a more aggressive room plan.';
+    case 'customer-service-rep':
+      return 'Pick this if you want steadier health, better recovery, and fewer panic turns.';
+    case 'intern':
+      return 'Pick this if you want chaos, scaling, and a stranger run every time.';
+    case 'paralegal':
+      return 'Pick this if you want precise punishment windows and cleaner technical play.';
+    default:
+      return 'Pick this if its strengths match how you want the run to feel.';
+  }
+}
+
 export default function ClassSelectScreen() {
   const profile = useProfileStore((state) => state.profile);
   const refreshProfile = useProfileStore((state) => state.refreshProfile);
   const selectedClassId = useRunStore((state) => state.selectedClassId);
   const setSelectedClassId = useRunStore((state) => state.setSelectedClassId);
-  const [showRoleDetails, setShowRoleDetails] = useState(false);
   const { colors, settings } = useAppTheme();
   const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
 
@@ -59,49 +63,63 @@ export default function ClassSelectScreen() {
     }
   }, [profile, refreshProfile]);
 
+  useEffect(() => {
+    void trackAnalyticsEvent('screen_viewed', {
+      screen: 'class-select',
+      unlockedClasses: profile?.unlockedClassIds.length ?? 0,
+    });
+  }, [profile?.unlockedClassIds.length]);
+
+  const unlockedClassIds = profile?.unlockedClassIds ?? [];
   const unlockedClasses = classDefinitions.filter((classDefinition) =>
-    profile?.unlockedClassIds.includes(classDefinition.id)
+    unlockedClassIds.includes(classDefinition.id)
   );
   const hasMultipleClassChoices = unlockedClasses.length > 1;
-  const assignedClassDefinition = unlockedClasses[0] ?? null;
-  const selectedClassDefinition =
-    classDefinitions.find((item) => item.id === selectedClassId) ?? null;
-  const metaUpgradeCatalog = profile ? buildMetaUpgradeCatalog(profile) : [];
-  const rewardCurrencyBonus = profile
-    ? getMetaUpgradeRewardCurrencyBonus(profile.metaUpgradeLevels)
-    : 0;
-  const rewardHealingBonus = profile
-    ? getMetaUpgradeRewardHealingBonus(profile.metaUpgradeLevels)
-    : 0;
-  const selectedStartingHp =
-    profile && selectedClassId
-      ? getRunHeroMaxHp(selectedClassId, [], profile.metaUpgradeLevels)
-      : null;
-  const selectedNarrative = selectedClassId
-    ? getClassNarrative(selectedClassId)
-    : null;
-  const ticketBrief = useMemo(() => {
-    if (!selectedClassId) {
-      return null;
-    }
-
-    return createTicketBrief({
-      classId: selectedClassId,
-      floorIndex: 1,
-    });
-  }, [selectedClassId]);
+  const selectableClassId =
+    selectedClassId && unlockedClassIds.includes(selectedClassId)
+      ? selectedClassId
+      : unlockedClasses[0]?.id ?? null;
+  const selectedClass = classDefinitions.find((item) => item.id === selectableClassId) ?? null;
+  const lockedClasses = classDefinitions.filter(
+    (classDefinition) => !unlockedClassIds.includes(classDefinition.id)
+  );
 
   useEffect(() => {
-    if (!profile || unlockedClasses.length !== 1) {
+    if (!selectableClassId) {
       return;
     }
 
-    const onlyUnlockedClassId = unlockedClasses[0]?.id ?? null;
-
-    if (onlyUnlockedClassId && selectedClassId !== onlyUnlockedClassId) {
-      setSelectedClassId(onlyUnlockedClassId);
+    if (selectedClassId !== selectableClassId) {
+      setSelectedClassId(selectableClassId);
     }
-  }, [profile, selectedClassId, setSelectedClassId, unlockedClasses]);
+  }, [selectableClassId, selectedClassId, setSelectedClassId]);
+
+  if (!profile) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="light" />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.shell}>
+            <View style={styles.heroCard}>
+              <Text style={styles.eyebrow}>FIRST SESSION</Text>
+              <Text style={styles.title}>Choose Your Department</Text>
+              <Text style={styles.subtitle}>Loading the available survivors.</Text>
+            </View>
+            <View style={styles.panel}>
+              <View style={styles.loadingState}>
+                <ActivityIndicator size="small" color={colors.accent} />
+                <Text style={styles.panelBody}>Checking your starting roster...</Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -114,299 +132,166 @@ export default function ClassSelectScreen() {
       >
         <View style={styles.shell}>
           <View style={styles.heroCard}>
-            <Text style={styles.eyebrow}>RUN SETUP</Text>
+            <Text style={styles.eyebrow}>FIRST SESSION</Text>
             <Text style={styles.title}>
-              {hasMultipleClassChoices ? 'Choose Your Class' : 'Assigned Role'}
+              {hasMultipleClassChoices ? 'Choose Your Department' : 'Your Starting Department'}
             </Text>
             <Text style={styles.subtitle}>
               {hasMultipleClassChoices
-                ? 'Pick the role you want to pilot through the climb.'
-                : `${assignedClassDefinition?.name ?? 'IT Support'} drew the short straw.`}
+                ? 'Pick the class that makes the first run feel the way you want it to feel.'
+                : 'You are starting with one department. More open up as the roster grows.'}
             </Text>
             <Text style={styles.body}>
-              {hasMultipleClassChoices
-                ? `Your class sets your starting health, action kit, and the kind of trouble you solve best inside ${COMPANY_NAME}.`
-                : `${COMPANY_NAME} already picked the department. Read the role fast, then choose the crew that supports it.`}
+              Classes should feel like distinct playstyles, not paperwork. Pick the one
+              whose strengths match how you want to solve rooms.
             </Text>
           </View>
 
-          {!profile ? (
-            <View style={styles.panel}>
-              <View style={styles.loadingState}>
-                <ActivityIndicator size="small" color={colors.accent} />
-                <Text style={styles.panelBody}>
-                  Checking your personnel roster...
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <>
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>
-                  {hasMultipleClassChoices ? 'Unlocked Classes' : 'Assigned Class'}
-                </Text>
-                <View style={styles.cardGrid}>
-                  {unlockedClasses.map((classDefinition) => {
-                    const isSelected = selectedClassId === classDefinition.id;
-                    const emblemSource = getClassEmblemSource(
-                      classDefinition.id,
-                      settings
-                    );
-                    const emblemLabel = getClassEmblemAlignmentLabel(
-                      classDefinition.id
-                    );
+          <View style={styles.panel}>
+            <Text style={styles.panelTitle}>
+              {hasMultipleClassChoices ? 'Available Now' : 'Start Here'}
+            </Text>
+            <Text style={styles.panelBody}>
+              Each card should answer the same question quickly: why would you pick this
+              class over another one?
+            </Text>
+            <View style={styles.cardGrid}>
+              {unlockedClasses.map((classDefinition) => {
+                const isSelected = selectableClassId === classDefinition.id;
+                const emblemSource = getClassEmblemSource(classDefinition.id, settings);
+                const actionKit = getClassActionKit(classDefinition.id).actions.slice(0, 2);
 
-                    return (
-                      <Pressable
-                        key={classDefinition.id}
-                        accessibilityRole="button"
-                        accessibilityState={{
-                          selected: isSelected,
-                          disabled: !hasMultipleClassChoices,
-                        }}
-                        onPress={() => {
-                          if (!hasMultipleClassChoices) {
-                            void playUiSfx('invalid-tap', settings);
-                            return;
-                          }
+                return (
+                  <Pressable
+                    key={classDefinition.id}
+                    accessibilityRole="button"
+                    accessibilityState={{
+                      selected: isSelected,
+                      disabled: !hasMultipleClassChoices,
+                    }}
+                    onPress={() => {
+                      if (!hasMultipleClassChoices) {
+                        void playUiSfx('invalid-tap', settings);
+                        return;
+                      }
 
-                          setSelectedClassId(classDefinition.id);
-                        }}
-                        style={({ pressed }) => [
-                          styles.optionCard,
-                          isSelected && styles.optionCardSelected,
-                          pressed && hasMultipleClassChoices && styles.optionCardPressed,
-                        ]}
-                      >
-                        {emblemSource ? (
-                          <View style={styles.optionArtFrame}>
-                            <Image
-                              source={emblemSource}
-                              style={styles.optionArt}
-                              resizeMode="contain"
-                            />
-                          </View>
-                        ) : null}
-                        <Text style={styles.optionTitle}>
-                          {classDefinition.name}
-                        </Text>
-                        <Text style={styles.optionRole}>
-                          {getClassNarrative(classDefinition.id).roleLabel}
-                        </Text>
-                        {emblemLabel ? (
-                          <Text style={styles.optionTrack}>{emblemLabel}</Text>
-                        ) : null}
-                        <Text style={styles.optionTrack}>
-                          {getClassTruthRouteSummary(classDefinition.id).shortLabel}: {getClassTruthRouteSummary(classDefinition.id).label}
-                        </Text>
-                        <Text style={styles.optionMeta}>
-                          {classDefinition.combatIdentity}
-                        </Text>
-                        <Text style={styles.optionBody}>
-                          {classDefinition.description}
-                        </Text>
-                        {profile ? (
-                          <Text style={styles.optionStat}>
-                            Starting Max HP{' '}
-                            {getRunHeroMaxHp(
-                              classDefinition.id,
-                              [],
-                              profile.metaUpgradeLevels
-                            )}
-                          </Text>
-                        ) : null}
-                        <View style={styles.kitList}>
-                          {getClassActionKit(classDefinition.id).actions.map((action) => (
-                            <View
-                              key={`${classDefinition.id}-${action.id}`}
-                              style={styles.kitCard}
-                            >
-                              <Text style={styles.kitTitle}>{action.label}</Text>
-                              <Text style={styles.kitBody}>{action.summary}</Text>
-                            </View>
-                          ))}
-                        </View>
-                        <Text style={styles.optionFooter}>
-                          {hasMultipleClassChoices
-                            ? isSelected
-                              ? 'Selected for this dive'
-                              : 'Tap to select'
-                            : 'Assigned for this dive'}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>
-                  {hasMultipleClassChoices ? 'Current Selection' : 'Role Briefing'}
-                </Text>
-                {selectedClassDefinition ? (
-                  <View style={styles.selectionDetailCard}>
-                    {getClassEmblemSource(selectedClassDefinition.id, settings) ? (
-                      <View style={styles.selectionArtRow}>
-                        <View style={styles.selectionArtFrame}>
+                      void trackAnalyticsEvent('class_selected', {
+                        classId: classDefinition.id,
+                        selected: true,
+                      });
+                      setSelectedClassId(classDefinition.id);
+                    }}
+                    style={({ pressed }) => [
+                      styles.optionCard,
+                      isSelected ? styles.optionCardSelected : null,
+                      pressed && hasMultipleClassChoices ? styles.optionCardPressed : null,
+                    ]}
+                  >
+                    <View style={styles.optionHeader}>
+                      {emblemSource ? (
+                        <View style={styles.optionArtFrame}>
                           <Image
-                            source={getClassEmblemSource(
-                              selectedClassDefinition.id,
-                              settings
-                            )!}
-                            style={styles.selectionArt}
+                            source={emblemSource}
+                            style={styles.optionArt}
                             resizeMode="contain"
                           />
                         </View>
-                        <View style={styles.selectionArtCopy}>
-                          <Text style={styles.selectionIdentity}>
-                            {selectedClassDefinition.name}
-                          </Text>
-                          {getClassEmblemAlignmentLabel(selectedClassDefinition.id) ? (
-                            <Text style={styles.selectionTrack}>
-                              {getClassEmblemAlignmentLabel(selectedClassDefinition.id)}
-                            </Text>
-                          ) : null}
-                        </View>
+                      ) : null}
+                      <View style={styles.optionHeaderCopy}>
+                        <Text style={styles.optionTitle}>{classDefinition.name}</Text>
+                        <Text style={styles.optionMeta}>{classDefinition.combatIdentity}</Text>
+                        <Text style={styles.optionTrack}>
+                          {getClassEmblemAlignmentLabel(classDefinition.id) ??
+                            getClassTruthRouteSummary(classDefinition.id).shortLabel}
+                        </Text>
                       </View>
-                    ) : (
-                      <Text style={styles.selectionIdentity}>
-                        {selectedClassDefinition.name}
-                      </Text>
-                    )}
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Role: </Text>
-                      {selectedNarrative?.roleLabel ?? 'Unknown'}
+                    </View>
+                    <Text style={styles.optionPitch}>
+                      {getClassPickPitch(classDefinition.id)}
                     </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Truth Route: </Text>
-                      {getClassTruthRouteSummary(selectedClassDefinition.id).label}
+                    <Text style={styles.optionBody}>{classDefinition.description}</Text>
+                    <View style={styles.kitList}>
+                      {actionKit.map((action) => (
+                        <View
+                          key={`${classDefinition.id}-${action.id}`}
+                          style={styles.kitCard}
+                        >
+                          <Text style={styles.kitTitle}>{action.label}</Text>
+                          <Text style={styles.kitBody}>{action.summary}</Text>
+                        </View>
+                      ))}
+                    </View>
+                    <Text style={styles.optionFooter}>
+                      {hasMultipleClassChoices
+                        ? isSelected
+                          ? 'Selected for this run'
+                          : 'Tap to choose this class'
+                        : 'Starting class for the first case file'}
                     </Text>
-                    <Text style={styles.selectionActionLine}>
-                      {getClassTruthRouteSummary(selectedClassDefinition.id).body}
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      {selectedNarrative?.openingHook ?? getCompanyDisasterSummary()}
-                    </Text>
-                    {ticketBrief ? (
-                      <>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Current Ticket: </Text>
-                          {ticketBrief.ticketId}
-                        </Text>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Subject: </Text>
-                          {ticketBrief.subject}
-                        </Text>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Escalation Track: </Text>
-                          {ticketBrief.escalationTrack}
-                        </Text>
-                      </>
-                    ) : null}
-                    {selectedStartingHp ? (
-                      <Text style={styles.selectionActionLine}>
-                        <Text style={styles.selectionActionLabel}>
-                          Starting Max HP:{' '}
-                        </Text>
-                        {selectedStartingHp}
-                      </Text>
-                    ) : null}
-                    {getClassActionKit(selectedClassDefinition.id).actions.slice(0, 2).map((action) => (
-                      <Text
-                        key={`selected-${action.id}`}
-                        style={styles.selectionActionLine}
-                      >
-                        <Text style={styles.selectionActionLabel}>
-                          {action.label}:{' '}
-                        </Text>
-                        {action.summary}
-                      </Text>
-                    ))}
-                  </View>
-                ) : null}
-                <Pressable
-                  style={styles.toggleRow}
-                  onPress={() => {
-                    setShowRoleDetails((current) => !current);
-                  }}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.panelTitle}>Role Details</Text>
-                  <Text style={styles.toggleLabel}>
-                    {showRoleDetails ? 'Hide' : 'Show'}
-                  </Text>
-                </Pressable>
-                {showRoleDetails && selectedNarrative ? (
-                  <View style={styles.selectionDetailCard}>
-                    {ticketBrief ? (
-                      <>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Filed By:</Text>{' '}
-                          {ticketBrief.filedBy}
-                        </Text>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Current Desk:</Text>{' '}
-                          {ticketBrief.currentOwner}
-                        </Text>
-                        <Text style={styles.selectionActionLine}>
-                          <Text style={styles.selectionActionLabel}>Why It Matters:</Text>{' '}
-                          {ticketBrief.summary}
-                        </Text>
-                      </>
-                    ) : null}
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>What Leadership Broke:</Text>{' '}
-                      {selectedNarrative.leadershipFailure}
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>What It Costs You:</Text>{' '}
-                      {selectedNarrative.stake}
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>What Slows You Down:</Text>{' '}
-                      {selectedNarrative.approvalConstraint}
-                    </Text>
-                    <Text style={styles.selectionActionLine}>
-                      <Text style={styles.selectionActionLabel}>Run Perks:</Text>{' '}
-                      +{rewardCurrencyBonus} chits, +{rewardHealingBonus} healing per reward
-                    </Text>
-                    {metaUpgradeCatalog.slice(0, 2).map((offer) => (
-                      <Text
-                        key={`ops-${offer.id}`}
-                        style={styles.selectionActionLine}
-                      >
-                        <Text style={styles.selectionActionLabel}>
-                          {offer.title}:
-                        </Text>{' '}
-                        {offer.currentEffectLabel}
-                      </Text>
-                    ))}
-                  </View>
-                ) : null}
-                {profile.unlockedClassIds.length < classDefinitions.length ? (
-                  <Text style={styles.hintText}>
-                    Unlock more departments from the hub before future climbs up {TOWER_NAME}.
-                  </Text>
-                ) : null}
-                <View style={styles.actionGroup}>
-                  <GameButton
-                    label="Continue to Companions"
-                    onPress={() => {
-                      router.push('/companion-select' as Href);
-                    }}
-                    disabled={!selectedClassId}
-                  />
-                  <GameButton
-                    label="Employee Portal"
-                    onPress={() => {
-                      router.push('/' as Href);
-                    }}
-                    variant="secondary"
-                  />
-                </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {selectedClass ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>Why this class is live now</Text>
+              <View style={styles.summaryCard}>
+                <Text style={styles.summaryTitle}>{selectedClass.name}</Text>
+                <Text style={styles.summaryBody}>
+                  {getClassPickPitch(selectedClass.id)}
+                </Text>
+                <Text style={styles.summaryDetail}>
+                  Truth route: {getClassTruthRouteSummary(selectedClass.id).label}
+                </Text>
+                <Text style={styles.summaryDetail}>
+                  First-room identity: {selectedClass.combatIdentity}
+                </Text>
               </View>
-            </>
-          )}
+              <View style={styles.actionGroup}>
+                <GameButton
+                  label="Continue to Crew"
+                  onPress={() => {
+                    router.push('/companion-select' as Href);
+                  }}
+                  disabled={!selectableClassId}
+                />
+                <GameButton
+                  label="Back to Employee Portal"
+                  onPress={() => {
+                    router.push('/' as Href);
+                  }}
+                  variant="secondary"
+                />
+              </View>
+            </View>
+          ) : null}
+
+          {lockedClasses.length > 0 ? (
+            <View style={styles.panel}>
+              <Text style={styles.panelTitle}>More Departments Later</Text>
+              <Text style={styles.panelBody}>
+                These are future class directions. They matter because replay should come
+                from genuinely different playstyles, not from repeating the same route with
+                a bigger number.
+              </Text>
+              <View style={styles.lockedList}>
+                {lockedClasses.map((classDefinition) => (
+                  <View key={`locked-${classDefinition.id}`} style={styles.lockedCard}>
+                    <Text style={styles.lockedTitle}>{classDefinition.name}</Text>
+                    <Text style={styles.lockedMeta}>
+                      {classDefinition.combatIdentity} - unlock for{' '}
+                      {getClassUnlockCost(classDefinition.id)} chits
+                    </Text>
+                    <Text style={styles.lockedBody}>
+                      {getClassPickPitch(classDefinition.id)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -498,7 +383,22 @@ function createStyles(
       borderColor: colors.border,
       borderRadius: 16,
       padding: spacing.lg,
-      gap: spacing.xs + 2,
+      gap: spacing.sm,
+    },
+    optionCardSelected: {
+      borderColor: colors.accent,
+    },
+    optionCardPressed: {
+      opacity: settings.reducedMotionEnabled ? 0.98 : 0.94,
+    },
+    optionHeader: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      alignItems: 'center',
+    },
+    optionHeaderCopy: {
+      flex: 1,
+      gap: spacing.xs,
     },
     optionArtFrame: {
       width: 72,
@@ -510,17 +410,10 @@ function createStyles(
       justifyContent: 'center',
       alignItems: 'center',
       padding: spacing.sm,
-      marginBottom: spacing.xs,
     },
     optionArt: {
       width: '100%',
       height: '100%',
-    },
-    optionCardSelected: {
-      borderColor: colors.accent,
-    },
-    optionCardPressed: {
-      opacity: settings.reducedMotionEnabled ? 0.98 : 0.94,
     },
     optionTitle: {
       color: colors.textPrimary,
@@ -534,18 +427,17 @@ function createStyles(
       fontWeight: '700',
       lineHeight: scaleLineHeight(18, settings),
     },
-    optionRole: {
-      color: colors.textSubtle,
-      fontSize: scaleFontSize(12, settings),
-      fontWeight: '800',
-      letterSpacing: 0.5 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
-      textTransform: 'uppercase',
-    },
     optionTrack: {
-      color: colors.textSecondary,
+      color: colors.textSubtle,
       fontSize: scaleFontSize(12, settings),
       fontWeight: '700',
       lineHeight: scaleLineHeight(17, settings),
+    },
+    optionPitch: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(19, settings),
     },
     optionBody: {
       color: colors.textMuted,
@@ -553,15 +445,8 @@ function createStyles(
       lineHeight: scaleLineHeight(21, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
-    optionStat: {
-      color: colors.textSecondary,
-      fontSize: scaleFontSize(13, settings),
-      fontWeight: '700',
-      lineHeight: scaleLineHeight(19, settings),
-    },
     kitList: {
       gap: spacing.xs,
-      marginTop: spacing.xs,
     },
     kitCard: {
       backgroundColor: colors.surfaceRaised,
@@ -588,9 +473,8 @@ function createStyles(
       fontSize: scaleFontSize(12, settings),
       fontWeight: '700',
       lineHeight: scaleLineHeight(18, settings),
-      marginTop: 2,
     },
-    selectionDetailCard: {
+    summaryCard: {
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
@@ -598,72 +482,53 @@ function createStyles(
       padding: spacing.md,
       gap: spacing.xs,
     },
-    selectionArtRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.md,
-      marginBottom: spacing.xs,
-    },
-    selectionArtFrame: {
-      width: 70,
-      height: 70,
-      borderRadius: 18,
-      backgroundColor: colors.surfaceRaised,
-      borderWidth: 1,
-      borderColor: colors.borderStrong,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: spacing.sm,
-    },
-    selectionArt: {
-      width: '100%',
-      height: '100%',
-    },
-    selectionArtCopy: {
-      flex: 1,
-      gap: spacing.xs,
-    },
-    selectionIdentity: {
-      color: colors.accent,
-      fontSize: scaleFontSize(13, settings),
+    summaryTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(16, settings),
       fontWeight: '800',
-      lineHeight: scaleLineHeight(18, settings),
+      lineHeight: scaleLineHeight(21, settings),
     },
-    selectionTrack: {
+    summaryBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(14, settings),
+      lineHeight: scaleLineHeight(20, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    summaryDetail: {
       color: colors.textSecondary,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    lockedList: {
+      gap: spacing.sm,
+    },
+    lockedCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 14,
+      padding: spacing.md,
+      gap: spacing.xs,
+      opacity: 0.9,
+    },
+    lockedTitle: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(15, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(20, settings),
+    },
+    lockedMeta: {
+      color: colors.accent,
       fontSize: scaleFontSize(12, settings),
       fontWeight: '700',
       lineHeight: scaleLineHeight(17, settings),
     },
-    selectionActionLine: {
+    lockedBody: {
       color: colors.textMuted,
       fontSize: scaleFontSize(13, settings),
       lineHeight: scaleLineHeight(19, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-    },
-    selectionActionLabel: {
-      color: colors.textPrimary,
-      fontWeight: '800',
-    },
-    hintText: {
-      color: colors.textSubtle,
-      fontSize: scaleFontSize(13, settings),
-      lineHeight: scaleLineHeight(19, settings),
-      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
-    },
-    toggleRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: spacing.sm,
-    },
-    toggleLabel: {
-      color: colors.accent,
-      fontSize: scaleFontSize(12, settings),
-      fontWeight: '800',
-      lineHeight: scaleLineHeight(16, settings),
-      textTransform: 'uppercase',
-      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
     },
     actionGroup: {
       gap: spacing.sm + 2,

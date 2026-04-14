@@ -20,7 +20,10 @@ import {
 } from '@/src/assets/supplemental-art-sources';
 import { playUiSfx } from '@/src/audio/ui-sfx';
 import { getPartyScene } from '@/src/content/authored-voice';
-import { getCombatActionDefinitions } from '@/src/engine/battle/combat-engine';
+import {
+  getCombatActionDefinitions,
+  getRecommendedCombatAction,
+} from '@/src/engine/battle/combat-engine';
 import { getCombatControllerHint } from '@/src/input/combat-input';
 import { formatCombatStatusLabel } from '@/src/engine/battle/combat-statuses';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
@@ -47,7 +50,7 @@ import {
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
-import type { CombatActionId } from '@/src/types/combat';
+import type { CombatActionId, CombatState } from '@/src/types/combat';
 
 function hashString(value: string) {
   let hash = 0;
@@ -65,6 +68,49 @@ function splitActionDescription(description: string) {
   return {
     core: core?.trim() ?? description,
     modifiers: modifiers?.trim() ?? null,
+  };
+}
+
+function formatHpDelta(delta: number) {
+  if (delta === 0) {
+    return 'No HP change';
+  }
+
+  return delta > 0 ? `+${delta} HP` : `${delta} HP`;
+}
+
+function getCombatPriorityCallout(combatState: CombatState) {
+  const heroHpRatio =
+    combatState.heroMaxHp > 0 ? combatState.heroHp / combatState.heroMaxHp : 0;
+  const enemyHpRatio =
+    combatState.enemy.maxHp > 0
+      ? combatState.enemy.currentHp / combatState.enemy.maxHp
+      : 0;
+
+  if (heroHpRatio <= 0.35) {
+    return {
+      title: 'Protect the next exchange.',
+      body: 'You are in danger. Stabilize or cut incoming damage before racing for the finish.',
+    };
+  }
+
+  if (enemyHpRatio <= 0.3) {
+    return {
+      title: 'Close this room now.',
+      body: 'The enemy is low enough that tempo matters more than theory. End the fight before the next bad trade lands.',
+    };
+  }
+
+  if (combatState.enemyStatuses.length > 0) {
+    return {
+      title: 'Press while the room is open.',
+      body: 'The enemy is already carrying pressure. Use that window before the board resets itself.',
+    };
+  }
+
+  return {
+    title: 'Read first, then trade.',
+    body: 'The safest turn is usually the one that makes the next enemy exchange weaker before you chase damage.',
   };
 }
 
@@ -216,6 +262,10 @@ export default function BattleScreen() {
         : [],
     [run, settings.combatActionOrder, settings.controllerHintsEnabled]
   );
+  const actionRecommendation = useMemo(
+    () => (run ? getRecommendedCombatAction(run) : null),
+    [run]
+  );
   const ticketBrief = useMemo(() => {
     if (!run || !currentNode) {
       return null;
@@ -255,13 +305,11 @@ export default function BattleScreen() {
 
     return combatState.log[combatState.log.length - 1] ?? 'No recent exchange logged.';
   }, [combatState]);
-  const previousLogEntry = useMemo(() => {
-    if (!combatState || combatState.log.length < 2) {
-      return null;
-    }
-
-    return combatState.log[combatState.log.length - 2] ?? null;
-  }, [combatState]);
+  const lastTurnSummary = combatState?.lastTurnSummary ?? null;
+  const combatPriorityCallout = useMemo(
+    () => (combatState ? getCombatPriorityCallout(combatState) : null),
+    [combatState]
+  );
   const crewChannelSceneId = useMemo(() => {
     if (!run || !combatState || !currentNode) {
       return null;
@@ -362,6 +410,16 @@ export default function BattleScreen() {
     setShowTicketRead(!helpStartsCollapsed);
   }, [helpStartsCollapsed, run?.runId, currentNode?.id]);
 
+  useEffect(() => {
+    if (!combatState || combatState.turnNumber <= 1) {
+      return;
+    }
+
+    setShowBattleRead(false);
+    setShowTicketRead(false);
+    setShowFullLog(false);
+  }, [combatState]);
+
   const handleAction = async (actionId: CombatActionId) => {
     if (run && currentNode && combatState) {
       void trackAnalyticsEvent('battle_action_selected', {
@@ -414,7 +472,17 @@ export default function BattleScreen() {
 
     if (result.nextRoute !== '/battle') {
       router.replace(result.nextRoute as Href);
+      return;
     }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollViewRef.current?.scrollTo({
+          y: Math.max(0, combatOverviewOffsetRef.current - 12),
+          animated: true,
+        });
+      });
+    });
   };
 
   return (
@@ -436,7 +504,7 @@ export default function BattleScreen() {
             <Text style={styles.subtitle}>
               Read the room fast. Hit hard. Keep enough HP to climb again.
             </Text>
-            {run && currentNode ? (
+            {run && currentNode && !helpStartsCollapsed ? (
               <Text style={styles.body}>
                 {createClassEncounterBrief(run.heroClassId, currentNode.label)}
               </Text>
@@ -476,6 +544,265 @@ export default function BattleScreen() {
             <LoadingPanel label="Constructing the current encounter..." />
           ) : (
             <>
+              <View
+                style={styles.panel}
+                onLayout={(event) => {
+                  combatOverviewOffsetRef.current = event.nativeEvent.layout.y;
+                }}
+              >
+                <Text style={styles.panelTitle}>{currentNode.label}</Text>
+                <Text style={styles.panelBody}>{currentNode.description}</Text>
+                <View style={styles.statGrid}>
+                  <CombatStatCard
+                    label={`${className ?? 'Hero'} HP`}
+                    value={`${combatState.heroHp}/${combatState.heroMaxHp}`}
+                  />
+                  <CombatStatCard
+                    label={`${combatState.enemy.name} HP`}
+                    value={`${combatState.enemy.currentHp}/${combatState.enemy.maxHp}`}
+                  />
+                </View>
+                <View style={styles.exchangeImpactCard}>
+                  <Text style={styles.readLabel}>Last Turn Impact</Text>
+                  <View style={styles.exchangeImpactGrid}>
+                    <View style={styles.exchangeImpactItem}>
+                      <Text style={styles.exchangeImpactName}>
+                        {className ?? 'Hero'}
+                      </Text>
+                      <Text style={styles.exchangeImpactValue}>
+                        {lastTurnSummary
+                          ? formatHpDelta(lastTurnSummary.heroDelta)
+                          : 'No turn resolved yet'}
+                      </Text>
+                    </View>
+                    <View style={styles.exchangeImpactItem}>
+                      <Text style={styles.exchangeImpactName}>
+                        {combatState.enemy.name}
+                      </Text>
+                      <Text style={styles.exchangeImpactValue}>
+                        {lastTurnSummary
+                          ? formatHpDelta(lastTurnSummary.enemyDelta)
+                          : 'No turn resolved yet'}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.readHint}>
+                    Negative numbers mean HP lost. Positive numbers mean HP recovered.
+                  </Text>
+                </View>
+                <View style={styles.readCard}>
+                  <Text style={styles.readLabel}>Do This Next</Text>
+                  <Text style={styles.readValue}>
+                    {combatPriorityCallout?.title ?? 'Read first, then trade.'}
+                  </Text>
+                  <Text style={styles.readHint}>
+                    {combatPriorityCallout?.body ??
+                      'Take the action that makes the next exchange less unfair.'}
+                  </Text>
+                </View>
+                <View style={styles.readCard}>
+                  <Text style={styles.readLabel}>Enemy Intent</Text>
+                  <Text style={styles.readValue}>{combatState.enemy.intent}</Text>
+                  <Text style={styles.readHint}>
+                    {currentNode.kind === 'boss'
+                      ? 'This is the escalation gate for the current ticket. Close it fast or the next layer gets a vote.'
+                      : 'Keep the board readable: the enemy acts right after you unless you end the fight first.'}
+                  </Text>
+                </View>
+                <View style={styles.tagRow}>
+                  <InfoTag label={`Lead: ${companionName ?? 'Unknown'}`} />
+                  <InfoTag label={`Gear: ${carriedItems.length}`} />
+                  <InfoTag label={`Synergies: ${teamSynergyCards.length}`} />
+                </View>
+                {heroStatusCards.length > 0 || enemyStatusCards.length > 0 ? (
+                  <View style={styles.statusStack}>
+                    {heroStatusCards.length > 0 ? (
+                      <View style={styles.statusCard}>
+                        <Text style={styles.statusHeading}>Your Status</Text>
+                        <View style={styles.statusList}>
+                          {heroStatusCards.map((status) => (
+                            <View key={`hero-${status.id}`} style={styles.statusItem}>
+                              <Text style={styles.statusLabel}>{status.label}</Text>
+                              <Text style={styles.statusBody}>{status.summary}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    ) : null}
+                    {enemyStatusCards.length > 0 ? (
+                      <View style={styles.statusCard}>
+                        <Text style={styles.statusHeading}>Enemy Status</Text>
+                        <View style={styles.statusList}>
+                          {enemyStatusCards.map((status) => (
+                            <View key={`enemy-${status.id}`} style={styles.statusItem}>
+                              <Text style={styles.statusLabel}>{status.label}</Text>
+                              <Text style={styles.statusBody}>{status.summary}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    ) : null}
+                  </View>
+                ) : null}
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Latest Beat</Text>
+                <Text style={styles.resultLead}>{latestLogEntry}</Text>
+                {lastTurnSummary ? (
+                  <Text style={styles.panelBody}>
+                    Turn result: {className ?? 'You'} {formatHpDelta(lastTurnSummary.heroDelta)}.{' '}
+                    {combatState.enemy.name} {formatHpDelta(lastTurnSummary.enemyDelta)}.
+                  </Text>
+                ) : null}
+                <Text style={styles.panelBody}>
+                  This is the newest resolved change in the fight.
+                </Text>
+                {lastTurnSummary?.playerHighlights.length ? (
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>Why it changed for you</Text>
+                    {lastTurnSummary.playerHighlights.map((line, index) => (
+                      <Text
+                        key={`player-highlight-${index}`}
+                        style={styles.detailCardBody}
+                      >
+                        {line}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
+                {lastTurnSummary?.enemyHighlights.length ? (
+                  <View style={styles.detailCard}>
+                    <Text style={styles.detailCardTitle}>Why it changed for the room</Text>
+                    {lastTurnSummary.enemyHighlights.map((line, index) => (
+                      <Text
+                        key={`enemy-highlight-${index}`}
+                        style={styles.detailCardBody}
+                      >
+                        {line}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
+
+              <View style={styles.panel}>
+                <Pressable
+                  style={styles.toggleRow}
+                  onPress={() => {
+                    setShowFullLog((current) => !current);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Earlier beats"
+                  accessibilityHint={
+                    showFullLog
+                      ? 'Double tap to collapse the earlier battle beats.'
+                      : 'Double tap to expand the earlier battle beats.'
+                  }
+                  accessibilityState={{ expanded: showFullLog }}
+                >
+                  <Text style={styles.panelTitle}>Earlier Beats</Text>
+                  <Text style={styles.toggleLabel}>
+                    {showFullLog ? 'Hide' : 'Show'}
+                  </Text>
+                </Pressable>
+                <Text style={styles.panelBody}>
+                  {showFullLog
+                    ? 'Earlier beats stay here so the newest change can stay separate above.'
+                    : 'Open this if you need the earlier chain that led to the latest beat.'}
+                </Text>
+                <View style={styles.logList}>
+                  {showFullLog ? (
+                    earlierLogEntries.length > 0 ? (
+                      earlierLogEntries.map((entry, index) => (
+                        <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
+                          {entry}
+                        </Text>
+                      ))
+                    ) : (
+                      <Text style={styles.logEntry}>No earlier turns yet.</Text>
+                    )
+                  ) : null}
+                </View>
+                <GameButton
+                  label="Retreat to Map"
+                  onPress={() => {
+                    router.replace('/run-map' as Href);
+                  }}
+                  variant="secondary"
+                  disabled={isPerformingCombatAction}
+                />
+                <GameButton
+                  label="Open Codex"
+                  onPress={() => {
+                    router.push('/codex?returnTo=%2Fbattle' as Href);
+                  }}
+                  variant="secondary"
+                  disabled={isPerformingCombatAction}
+                />
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Pick One Action</Text>
+                {!helpStartsCollapsed ? (
+                  <Text style={styles.panelBody}>
+                    Read the last exchange first, then choose the action that changes the next trade in your favor.
+                  </Text>
+                ) : null}
+                {actionRecommendation ? (
+                  <View style={styles.readCard}>
+                    <Text style={styles.readLabel}>Recommended Next Move</Text>
+                    <Text style={styles.readValue}>
+                      {actions.find((action) => action.id === actionRecommendation.actionId)?.label ??
+                        actionRecommendation.actionId}
+                    </Text>
+                    <Text style={styles.readHint}>{actionRecommendation.reason}</Text>
+                  </View>
+                ) : null}
+                <View style={styles.actionList}>
+                  {actions.map((action) => (
+                    <View
+                      key={action.id}
+                      style={[
+                        styles.actionCard,
+                        actionRecommendation?.actionId === action.id
+                          ? styles.actionCardRecommended
+                          : null,
+                      ]}
+                    >
+                      {actionRecommendation?.actionId === action.id ? (
+                        <View style={styles.actionRecommendationRow}>
+                          <Text style={styles.actionRecommendationBadge}>
+                            Best now
+                          </Text>
+                          <Text style={styles.actionRecommendationText}>
+                            {actionRecommendation.reason}
+                          </Text>
+                        </View>
+                      ) : null}
+                      <GameButton
+                        label={isPerformingCombatAction ? 'Resolving...' : action.label}
+                        onPress={() => {
+                          void handleAction(action.id);
+                        }}
+                        disabled={isPerformingCombatAction}
+                        inputHint={action.inputHint}
+                        inputHintPosition={
+                          settings.dominantHand === 'left' ? 'left' : 'right'
+                        }
+                        accessibilityHint={`${
+                          action.core
+                        }${action.inputHint ? ` Bound to ${action.inputHint}.` : ''}`}
+                      />
+                      <Text style={styles.actionDescription}>{action.core}</Text>
+                      {action.modifiers ? (
+                        <Text style={styles.actionModifiers}>{action.modifiers}</Text>
+                      ) : null}
+                    </View>
+                  ))}
+                </View>
+              </View>
+
               {ticketBrief ? (
                 <View style={styles.panel}>
                   <Pressable
@@ -525,15 +852,15 @@ export default function BattleScreen() {
                       setShowBattleRead((current) => !current);
                     }}
                     accessibilityRole="button"
-                    accessibilityLabel="Threat Read"
+                    accessibilityLabel="Room read"
                     accessibilityHint={
                       showBattleRead
-                        ? 'Double tap to collapse the threat read.'
-                        : 'Double tap to expand the threat read.'
+                        ? 'Double tap to collapse the room read.'
+                        : 'Double tap to expand the room read.'
                     }
                     accessibilityState={{ expanded: showBattleRead }}
                   >
-                    <Text style={styles.panelTitle}>Threat Read</Text>
+                    <Text style={styles.panelTitle}>Room Read</Text>
                     <Text style={styles.toggleLabel}>
                       {showBattleRead ? 'Hide' : 'Show'}
                     </Text>
@@ -543,10 +870,10 @@ export default function BattleScreen() {
                       {!helpStartsCollapsed ? (
                         <Text style={styles.panelBody}>
                           {combatState.enemy.tier === 'boss'
-                            ? 'Boss preview. Read the threat before the first trade.'
+                            ? 'Boss preview. Read the threat before the next trade.'
                             : combatState.enemy.tier === 'miniboss'
                               ? 'Elite preview. This room hits harder than a normal stop.'
-                              : 'Quick room read before the first trade.'}
+                              : 'Quick room read before the next trade.'}
                         </Text>
                       ) : null}
                       <View style={styles.encounterArtCard}>
@@ -585,181 +912,14 @@ export default function BattleScreen() {
                           <Text style={styles.encounterBody}>{combatState.enemy.intent}</Text>
                         </View>
                       </View>
-                      {!helpStartsCollapsed ? (
-                        <View style={styles.detailCard}>
-                          <Text style={styles.detailCardTitle}>Turn Read</Text>
-                          <Text style={styles.detailCardBody}>
-                            HP is your remaining health. Statuses are ongoing effects that keep changing the fight after a button press.
-                          </Text>
-                        </View>
-                      ) : null}
                     </>
                   ) : (
                     <Text style={styles.panelBody}>
-                      Threat art, room cues, and quick combat reminders stay tucked here after the opening floor.
+                      Art, room cues, and broader threat flavor stay here once the fight itself is readable.
                     </Text>
                   )}
                 </View>
               ) : null}
-
-              <View
-                style={styles.panel}
-                onLayout={(event) => {
-                  combatOverviewOffsetRef.current = event.nativeEvent.layout.y;
-                }}
-              >
-                <Text style={styles.panelTitle}>{currentNode.label}</Text>
-                <Text style={styles.panelBody}>{currentNode.description}</Text>
-                <View style={styles.statGrid}>
-                  <CombatStatCard
-                    label={`${className ?? 'Hero'} HP`}
-                    value={`${combatState.heroHp}/${combatState.heroMaxHp}`}
-                  />
-                  <CombatStatCard
-                    label={`${combatState.enemy.name} HP`}
-                    value={`${combatState.enemy.currentHp}/${combatState.enemy.maxHp}`}
-                  />
-                </View>
-                <View style={styles.readCard}>
-                  <Text style={styles.readLabel}>Enemy Intent</Text>
-                  <Text style={styles.readValue}>{combatState.enemy.intent}</Text>
-                  <Text style={styles.readHint}>
-                    {currentNode.kind === 'boss'
-                      ? 'This is the escalation gate for the current ticket. Close it fast or the next layer gets a vote.'
-                      : 'Keep the board readable: the enemy acts right after you unless you end the fight first.'}
-                  </Text>
-                </View>
-                <View style={styles.tagRow}>
-                  <InfoTag label={`Lead: ${companionName ?? 'Unknown'}`} />
-                  <InfoTag label={`Gear: ${carriedItems.length}`} />
-                  <InfoTag label={`Synergies: ${teamSynergyCards.length}`} />
-                </View>
-                {heroStatusCards.length > 0 || enemyStatusCards.length > 0 ? (
-                  <View style={styles.statusStack}>
-                    {heroStatusCards.length > 0 ? (
-                      <View style={styles.statusCard}>
-                        <Text style={styles.statusHeading}>Your Status</Text>
-                        <View style={styles.statusList}>
-                          {heroStatusCards.map((status) => (
-                            <View key={`hero-${status.id}`} style={styles.statusItem}>
-                              <Text style={styles.statusLabel}>{status.label}</Text>
-                              <Text style={styles.statusBody}>{status.summary}</Text>
-                            </View>
-                          ))}
-                        </View>
-                      </View>
-                    ) : null}
-                    {enemyStatusCards.length > 0 ? (
-                      <View style={styles.statusCard}>
-                        <Text style={styles.statusHeading}>Enemy Status</Text>
-                        <View style={styles.statusList}>
-                          {enemyStatusCards.map((status) => (
-                            <View key={`enemy-${status.id}`} style={styles.statusItem}>
-                              <Text style={styles.statusLabel}>{status.label}</Text>
-                              <Text style={styles.statusBody}>{status.summary}</Text>
-                            </View>
-                          ))}
-                        </View>
-                      </View>
-                    ) : null}
-                  </View>
-                ) : null}
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Latest Exchange</Text>
-                <Text style={styles.resultLead}>{latestLogEntry}</Text>
-                {previousLogEntry && !helpStartsCollapsed ? (
-                  <Text style={styles.panelBody}>Just before that: {previousLogEntry}</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.panel}>
-                <Pressable
-                  style={styles.toggleRow}
-                  onPress={() => {
-                    setShowFullLog((current) => !current);
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel="Earlier beats"
-                  accessibilityHint={
-                    showFullLog
-                      ? 'Double tap to collapse the earlier battle beats.'
-                      : 'Double tap to expand the earlier battle beats.'
-                  }
-                  accessibilityState={{ expanded: showFullLog }}
-                >
-                  <Text style={styles.panelTitle}>Earlier Beats</Text>
-                  <Text style={styles.toggleLabel}>
-                    {showFullLog ? 'Hide' : 'Show'}
-                  </Text>
-                </Pressable>
-                {showFullLog ? (
-                  <Text style={styles.panelBody}>Open this if you need the lead-up before the latest exchange.</Text>
-                ) : (
-                  <Text style={styles.panelBody}>Open this if you need the earlier chain.</Text>
-                )}
-                <View style={styles.logList}>
-                  {showFullLog ? (
-                    earlierLogEntries.length > 0 ? (
-                      earlierLogEntries.map((entry, index) => (
-                        <Text key={`${combatState.combatId}-${index}`} style={styles.logEntry}>
-                          {entry}
-                        </Text>
-                      ))
-                    ) : (
-                      <Text style={styles.logEntry}>No earlier turns yet.</Text>
-                    )
-                  ) : null}
-                </View>
-                <GameButton
-                  label="Retreat to Map"
-                  onPress={() => {
-                    router.replace('/run-map' as Href);
-                  }}
-                  variant="secondary"
-                  disabled={isPerformingCombatAction}
-                />
-                <GameButton
-                  label="Open Codex"
-                  onPress={() => {
-                    router.push('/codex?returnTo=%2Fbattle' as Href);
-                  }}
-                  variant="secondary"
-                  disabled={isPerformingCombatAction}
-                />
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Pick One Action</Text>
-                <Text style={styles.panelBody}>
-                  Read the last exchange first, then choose the action that changes the next trade in your favor.
-                </Text>
-                <View style={styles.actionList}>
-                  {actions.map((action) => (
-                    <View key={action.id} style={styles.actionCard}>
-                      <GameButton
-                        label={isPerformingCombatAction ? 'Resolving...' : action.label}
-                        onPress={() => {
-                          void handleAction(action.id);
-                        }}
-                        disabled={isPerformingCombatAction}
-                        inputHint={action.inputHint}
-                        inputHintPosition={
-                          settings.dominantHand === 'left' ? 'left' : 'right'
-                        }
-                        accessibilityHint={`${
-                          action.core
-                        }${action.inputHint ? ` Bound to ${action.inputHint}.` : ''}`}
-                      />
-                      <Text style={styles.actionDescription}>{action.core}</Text>
-                      {action.modifiers ? (
-                        <Text style={styles.actionModifiers}>{action.modifiers}</Text>
-                      ) : null}
-                    </View>
-                  ))}
-                </View>
-              </View>
 
               <View style={styles.panel}>
                 <Pressable
@@ -1214,6 +1374,42 @@ function createStyles(
       borderColor: colors.border,
       gap: spacing.xs + 2,
     },
+    exchangeImpactCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      gap: spacing.sm,
+    },
+    exchangeImpactGrid: {
+      flexDirection: layout.stackStatCards ? 'column' : 'row',
+      gap: spacing.sm + 2,
+    },
+    exchangeImpactItem: {
+      flex: 1,
+      backgroundColor: colors.background,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      gap: spacing.xs,
+    },
+    exchangeImpactName: {
+      color: colors.textSubtle,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '700',
+      lineHeight: scaleLineHeight(16, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    exchangeImpactValue: {
+      color: colors.textPrimary,
+      fontSize: scaleFontSize(18, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(22, settings),
+    },
     readLabel: {
       color: colors.textSubtle,
       fontSize: scaleFontSize(12, settings),
@@ -1296,6 +1492,32 @@ function createStyles(
     },
     actionCard: {
       gap: spacing.xs + 2,
+      borderRadius: 16,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surfaceRaised,
+    },
+    actionCardRecommended: {
+      borderColor: colors.accent,
+      backgroundColor: colors.surface,
+    },
+    actionRecommendationRow: {
+      gap: spacing.xs,
+    },
+    actionRecommendationBadge: {
+      color: colors.accent,
+      fontSize: scaleFontSize(12, settings),
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+      lineHeight: scaleLineHeight(16, settings),
+    },
+    actionRecommendationText: {
+      color: colors.textSecondary,
+      fontSize: scaleFontSize(12, settings),
+      lineHeight: scaleLineHeight(18, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
     },
     actionDescription: {
       color: colors.textSecondary,

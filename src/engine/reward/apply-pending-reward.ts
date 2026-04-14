@@ -26,7 +26,7 @@ export function applyPendingReward(
       unlockedItemIds = [...profile.unlockedItemIds, reward.itemId];
     } else {
       duplicateItemId = reward.itemId;
-      metaCurrencyAwarded += 4;
+      metaCurrencyAwarded += 2;
     }
   }
 

@@ -122,7 +122,7 @@ const runItemModifiersById: Record<string, Partial<RunItemModifiers>> = {
   },
   'stress-ball-of-impact': {
     stabilizeHealingBonus: 1,
-    stabilizeDamageBonus: 4,
+    stabilizeDamageBonus: 2,
   },
   'synergy-stone': {
     maxHpBonus: 2,

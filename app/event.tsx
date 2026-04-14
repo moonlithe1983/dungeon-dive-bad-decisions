@@ -25,8 +25,11 @@ import { getClassDefinition } from '@/src/content/classes';
 import { getCompanyDisasterSummary } from '@/src/content/company-lore';
 import { getCompanionDefinition } from '@/src/content/companions';
 import { getItemDefinition } from '@/src/content/items';
+import { applyPendingReward } from '@/src/engine/reward/apply-pending-reward';
+import { applyPendingRewardToRun } from '@/src/engine/reward/apply-pending-reward-to-run';
 import { getEventSceneForCurrentNode } from '@/src/engine/event/event-engine';
 import { getRunNodeRoute } from '@/src/engine/run/progress-run';
+import { useProfileStore } from '@/src/state/profileStore';
 import { useRunStore } from '@/src/state/runStore';
 import { useHydratedRun } from '@/src/state/use-hydrated-run';
 import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
@@ -38,9 +41,44 @@ import {
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
+import type { EventChoice } from '@/src/types/event';
+import type { PendingRewardState } from '@/src/types/run';
+
+type EventChoicePreview = {
+  runHpText: string;
+  profileChitsText: string;
+  leadAfterText: string;
+  itemStateText: string | null;
+};
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function createEventRewardPreviewPayload(
+  runId: string,
+  nodeId: string,
+  updatedAt: string,
+  choice: EventChoice
+): PendingRewardState {
+  return {
+    rewardId: `event-preview-${runId}-${choice.id}`,
+    sourceNodeId: nodeId,
+    sourceKind: 'reward-node',
+    title: choice.label,
+    description: choice.outcomeText,
+    selectedOptionId: null,
+    options: null,
+    metaCurrency: choice.effect.metaCurrency,
+    runHealing: choice.effect.runHealing,
+    itemId: choice.effect.itemId,
+    createdAt: updatedAt,
+  };
+}
 
 export default function EventScreen() {
   const { run, currentNode, loadState, error } = useHydratedRun();
+  const profile = useProfileStore((state) => state.profile);
   const applyEventChoice = useRunStore((state) => state.applyEventChoice);
   const isApplyingEventChoice = useRunStore(
     (state) => state.isApplyingEventChoice
@@ -108,6 +146,69 @@ export default function EventScreen() {
     [run?.floorIndex, settings]
   );
   const helpStartsCollapsed = useRunHelpStartsCollapsed(run?.floorIndex ?? 1);
+  const choicePreviews = useMemo(() => {
+    if (!run || !currentNode || !profile || !eventScene) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      eventScene.choices.map((choice) => {
+        const damageTaken = clamp(
+          choice.effect.runDamage,
+          0,
+          Math.max(0, run.hero.currentHp - 1)
+        );
+        const damagedRun = {
+          ...run,
+          hero: {
+            ...run.hero,
+            currentHp: run.hero.currentHp - damageTaken,
+          },
+        };
+        const previewReward = createEventRewardPreviewPayload(
+          run.runId,
+          currentNode.id,
+          run.updatedAt,
+          {
+            ...choice,
+            effect: {
+              ...choice.effect,
+              runDamage: damageTaken,
+            },
+          }
+        );
+        const runPreview = applyPendingRewardToRun(damagedRun, previewReward);
+        const profilePreview = applyPendingReward(profile, previewReward);
+        const nextLeadId =
+          choice.effect.nextActiveCompanionId &&
+          run.chosenCompanionIds.includes(choice.effect.nextActiveCompanionId)
+            ? choice.effect.nextActiveCompanionId
+            : run.activeCompanionId;
+        const nextLeadName =
+          getCompanionDefinition(nextLeadId)?.name ?? nextLeadId;
+        const choiceItem = choice.effect.itemId
+          ? getItemDefinition(choice.effect.itemId)
+          : null;
+        const itemStateText = choiceItem
+          ? run.inventoryItemIds.includes(choiceItem.id)
+            ? `${choiceItem.name} is already equipped on this dive, so this choice stays a resource swing.`
+            : profile.unlockedItemIds.includes(choiceItem.id)
+              ? `${choiceItem.name} is already archived on this profile, so the duplicate converts into bonus chits instead of a new unlock.`
+              : `${choiceItem.name} is new for this profile and joins this dive immediately.`
+          : null;
+
+        return [
+          choice.id,
+          {
+            runHpText: `${run.hero.currentHp}/${run.hero.maxHp} HP -> ${runPreview.run.hero.currentHp}/${runPreview.run.hero.maxHp} HP`,
+            profileChitsText: `${profile.metaCurrency} -> ${profilePreview.profile.metaCurrency} chits`,
+            leadAfterText: nextLeadName,
+            itemStateText,
+          } satisfies EventChoicePreview,
+        ];
+      })
+    ) as Record<string, EventChoicePreview>;
+  }, [currentNode, eventScene, profile, run]);
 
   const wrongSceneRoute =
     currentNode && currentNode.kind !== 'event'
@@ -181,12 +282,14 @@ export default function EventScreen() {
             <Text style={styles.eyebrow}>RUN NODE</Text>
             <Text style={styles.title}>Event</Text>
             <Text style={styles.subtitle}>
-              Read the room, choose once, and live with the paperwork.
+              Make one risk call and live with it.
             </Text>
-            <Text style={styles.body}>
-              {eventScene?.description ??
-                getCompanyDisasterSummary()}
-            </Text>
+            {!helpStartsCollapsed ? (
+              <Text style={styles.body}>
+                {eventScene?.description ??
+                  getCompanyDisasterSummary()}
+              </Text>
+            ) : null}
           </View>
 
           {loadState === 'idle' || loadState === 'loading' ? (
@@ -226,52 +329,55 @@ export default function EventScreen() {
           ) : (
             <>
               <View style={styles.panel}>
-                <Text style={styles.panelTitle}>{eventScene.title}</Text>
+                <Text style={styles.panelTitle}>Risk Call</Text>
                 <Text style={styles.panelBody}>
-                  Pick the line that keeps the crew alive and the tower slightly less in control.
+                  Pick one response. Each card shows the immediate risk and payoff.
                 </Text>
-                <View style={styles.statGrid}>
-                  <StatCard
+                <View style={styles.detailCard}>
+                  <DetailLine
                     label={`${className ?? 'Hero'} HP`}
                     value={`${run.hero.currentHp}/${run.hero.maxHp}`}
                   />
-                  <StatCard
-                    label="Companion"
+                  <DetailLine
+                    label="Lead"
                     value={activeCompanionName ?? 'Unknown'}
                   />
+                  <DetailLine
+                    label="Profile chits"
+                    value={String(profile?.metaCurrency ?? 0)}
+                  />
                 </View>
-                <View style={styles.detailCard}>
-                  <DetailLine label="Floor" value={String(run.floorIndex)} />
-                  <DetailLine label="Node" value={currentNode.label} />
-                  <DetailLine label="Run ID" value={run.runId} />
-                </View>
-                <LoopArtPanel
-                  title="Room Signal"
-                  body={eventScene.description}
-                  ambientSource={eventAmbientArtSource}
-                  source={eventArtSource}
-                  backgroundSource={eventSurfaceArtSource}
-                  frameVariant="portrait"
-                />
-              </View>
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>Make The Call</Text>
-                <Text style={styles.panelBody}>
-                  Pick one response. The preview shows the immediate tradeoff.
-                </Text>
                 <View style={styles.choiceList}>
                   {eventScene.choices.map((choice) => {
                     const itemName = choice.effect.itemId
                       ? getItemDefinition(choice.effect.itemId)?.name ??
                         choice.effect.itemId
                       : null;
+                    const choicePreview = choicePreviews[choice.id] ?? null;
 
                     return (
                       <View key={choice.id} style={styles.choiceCard}>
                         <Text style={styles.choiceTitle}>{choice.label}</Text>
                         <Text style={styles.choiceBody}>{choice.description}</Text>
                         <Text style={styles.choicePreview}>{choice.preview}</Text>
+                        {choicePreview ? (
+                          <>
+                            <Text style={styles.choiceEdge}>
+                              Run HP: {choicePreview.runHpText}
+                            </Text>
+                            <Text style={styles.choiceEdge}>
+                              Profile chits: {choicePreview.profileChitsText}
+                            </Text>
+                            <Text style={styles.choiceEdge}>
+                              Lead after choice: {choicePreview.leadAfterText}
+                            </Text>
+                            {choicePreview.itemStateText ? (
+                              <Text style={styles.choiceEdge}>
+                                Item state: {choicePreview.itemStateText}
+                              </Text>
+                            ) : null}
+                          </>
+                        ) : null}
                         {choice.classBonusLabel ? (
                           <Text style={styles.choiceEdge}>
                             Class Edge: {choice.classBonusLabel}
@@ -307,24 +413,31 @@ export default function EventScreen() {
                     );
                   })}
                 </View>
-                <View style={styles.actionGroup}>
-                  <GameButton
-                    label="Return to Map"
-                    onPress={() => {
-                      router.replace('/run-map' as Href);
-                    }}
-                    variant="secondary"
-                    disabled={isApplyingEventChoice}
-                  />
-                  <GameButton
-                    label="Open Codex"
-                    onPress={() => {
-                      router.push('/codex?returnTo=%2Fevent' as Href);
-                    }}
-                    variant="secondary"
-                    disabled={isApplyingEventChoice}
-                  />
+              </View>
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>{eventScene.title}</Text>
+                <Text style={styles.panelBody}>
+                  Pick the line that keeps the crew alive and the tower slightly less in control.
+                </Text>
+                <View style={styles.detailCard}>
+                  <DetailLine label="Floor" value={String(run.floorIndex)} />
+                  <DetailLine label="Room" value={currentNode.label} />
                 </View>
+                {showSupportingReads ? (
+                  <LoopArtPanel
+                    title="Room Signal"
+                    body={eventScene.description}
+                    ambientSource={eventAmbientArtSource}
+                    source={eventArtSource}
+                    backgroundSource={eventSurfaceArtSource}
+                    frameVariant="portrait"
+                  />
+                ) : (
+                  <Text style={styles.panelBody}>
+                    Room flavor and extra signal stay below the choice once you already know how events work.
+                  </Text>
+                )}
               </View>
 
               <View style={styles.panel}>
@@ -342,7 +455,7 @@ export default function EventScreen() {
                   }
                   accessibilityState={{ expanded: showSupportingReads }}
                 >
-                  <Text style={styles.panelTitle}>Class and Crew Reads</Text>
+                  <Text style={styles.panelTitle}>Supporting Reads</Text>
                   <Text style={styles.toggleLabel}>
                     {showSupportingReads ? 'Hide' : 'Show'}
                   </Text>
@@ -392,9 +505,27 @@ export default function EventScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-Extra class context and crew reads stay tucked here once the event loop makes sense.
+                    Extra class context and crew banter stay tucked here once the event decision itself is clear.
                   </Text>
                 )}
+                <View style={styles.actionGroup}>
+                  <GameButton
+                    label="Return to Map"
+                    onPress={() => {
+                      router.replace('/run-map' as Href);
+                    }}
+                    variant="secondary"
+                    disabled={isApplyingEventChoice}
+                  />
+                  <GameButton
+                    label="Open Codex"
+                    onPress={() => {
+                      router.push('/codex?returnTo=%2Fevent' as Href);
+                    }}
+                    variant="secondary"
+                    disabled={isApplyingEventChoice}
+                  />
+                </View>
               </View>
             </>
           )}
@@ -465,34 +596,6 @@ function InfoPanel({
           />
         ) : null}
       </View>
-    </View>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  const { colors, settings } = useAppTheme();
-  const layout = useResponsiveLayout();
-  const styles = useMemo(
-    () => createStyles(settings, colors, layout),
-    [colors, layout, settings]
-  );
-
-  return (
-    <View style={styles.statCard}>
-      <Text
-        style={styles.statValue}
-        numberOfLines={2}
-        adjustsFontSizeToFit
-      >
-        {value}
-      </Text>
-      <Text
-        style={styles.statLabel}
-        numberOfLines={2}
-        adjustsFontSizeToFit
-      >
-        {label}
-      </Text>
     </View>
   );
 }

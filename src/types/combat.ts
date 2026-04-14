@@ -34,6 +34,19 @@ export type CombatEnemyState = {
   intent: string;
 };
 
+export type CombatTurnSummary = {
+  actionId: CombatActionId;
+  actionLabel: string;
+  heroHpBefore: number;
+  heroHpAfter: number;
+  enemyHpBefore: number;
+  enemyHpAfter: number;
+  heroDelta: number;
+  enemyDelta: number;
+  playerHighlights: string[];
+  enemyHighlights: string[];
+};
+
 export type CombatState = {
   combatId: string;
   nodeId: string;
@@ -47,4 +60,5 @@ export type CombatState = {
   rollCursor: number;
   log: string[];
   lastActionId: CombatActionId | null;
+  lastTurnSummary?: CombatTurnSummary | null;
 };

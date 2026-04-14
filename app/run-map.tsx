@@ -12,10 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-  getLoopSurfaceArtSource,
-  getRouteNodeArtSource,
-} from '@/src/assets/loop-art-sources';
+import { getRouteNodeArtSource } from '@/src/assets/loop-art-sources';
 import { trackAnalyticsEvent } from '@/src/analytics/client';
 import { playUiSfx } from '@/src/audio/ui-sfx';
 import {
@@ -25,7 +22,6 @@ import {
   getFloorBadgeArtSource,
   getFloorHeaderArtSource,
 } from '@/src/assets/supplemental-art-sources';
-import { LoopArtPanel } from '@/src/components/loop-art-panel';
 import { getRunCompanionSupportCards } from '@/src/engine/bond/companion-perks';
 import { GameButton } from '@/src/components/game-button';
 import { playUiHaptic } from '@/src/haptics/ui-haptics';
@@ -75,10 +71,10 @@ function summarizeRoute(node: RunNodeState) {
   }
 
   if (node.kind === 'reward') {
-    return 'Low-combat scavenging room with a build-shaping pickup.';
+    return 'Optional scavenging room. Good if you want supplies before the required fight.';
   }
 
-  return 'Story choice with upside, downside, and character fallout.';
+  return 'Optional risk event. Take it for upside, fallout, and prep before the required fight.';
 }
 
 function getRoleCue(node: RunNodeState) {
@@ -95,6 +91,18 @@ function getRoleCue(node: RunNodeState) {
   }
 
   return 'Risk Event';
+}
+
+function getRouteRequirementLabel(node: RunNodeState) {
+  if (node.kind === 'boss') {
+    return 'Boss Gate';
+  }
+
+  if (node.kind === 'battle') {
+    return 'Required Fight';
+  }
+
+  return 'Optional Prep';
 }
 
 function describeFloorObjective(
@@ -114,14 +122,25 @@ function describeFloorObjective(
     return `Boss gate unlocked: clear ${activeBossNode.label} to reach the next floor.`;
   }
 
-  if (hasBossNode && activePrepNodes.length > 0) {
-    return activePrepNodes.length > 1
-      ? 'Pick one prep room. Clearing it skips the other prep room and unlocks the boss gate for this floor.'
-      : 'Clear one prep room. The boss gate unlocks right after; you do not need to clear every room on the floor.';
+  const activeBattleNode = activePrepNodes.find((node) => node.kind === 'battle') ?? null;
+  const activeSideRoomNodes = activePrepNodes.filter((node) => node.kind !== 'battle');
+
+  if (hasBossNode && activeBattleNode) {
+    return activeSideRoomNodes.length > 0
+      ? 'The side room is optional prep. This floor only opens the boss gate after the required fight is cleared.'
+      : `Clear ${activeBattleNode.label} to unlock the boss gate for this floor.`;
+  }
+
+  if (activeBattleNode && activeSideRoomNodes.length > 0) {
+    return 'The side room is optional prep. The floor only advances after you clear the fight.';
+  }
+
+  if (activeBattleNode && activeNodes.length === 1) {
+    return `Clear ${activeBattleNode.label} to advance the ticket upward.`;
   }
 
   if (activeNodes.length > 1) {
-    return 'Pick one active room. Clearing it advances the floor; the other room is an alternate path, not another requirement.';
+    return 'Pick one active room to keep climbing.';
   }
 
   if (currentNode) {
@@ -239,6 +258,7 @@ export default function RunMapScreen() {
 
     return getSelectableCurrentFloorNodes(run);
   }, [run]);
+  const singleOpenChoice = floorChoices.length === 1 ? floorChoices[0] ?? null : null;
   const floorBeat = useMemo(() => {
     if (!run) {
       return null;
@@ -264,11 +284,6 @@ export default function RunMapScreen() {
       run.chosenCompanionIds
     );
   }, [run]);
-  const currentNodeRoute = currentNode ? getRunNodeRoute(currentNode.kind) : null;
-  const runMapSurfaceArtSource = useMemo(
-    () => getLoopSurfaceArtSource('run-map', settings),
-    [settings]
-  );
   const runMapAmbientArtSource = useMemo(
     () => getBiomeAmbientArtSource(run?.floorIndex, settings),
     [run?.floorIndex, settings]
@@ -284,14 +299,6 @@ export default function RunMapScreen() {
   const floorActLabel = useMemo(
     () => getFloorActLabelForIndex(run?.floorIndex),
     [run?.floorIndex]
-  );
-  const selectedRouteArtSource = useMemo(
-    () =>
-      getRouteNodeArtSource(
-        currentNode?.kind ?? floorChoices[0]?.kind ?? 'battle',
-        settings
-      ),
-    [currentNode?.kind, floorChoices, settings]
   );
   const pendingRewardItem = run?.pendingReward?.itemId
     ? getItemDefinition(run.pendingReward.itemId)
@@ -323,6 +330,12 @@ export default function RunMapScreen() {
 
     return 'Abandoning ends this dive, records the result, and clears the active save slot.';
   }, [run]);
+  const floorThemeTitle = floorBeat?.title ?? 'Floor Theme';
+  const floorThemeBody =
+    floorBeat?.summary ??
+    selectedFloor?.description ??
+    currentFloor?.description ??
+    'Each floor changes the kind of pressure on the run.';
 
   useEffect(() => {
     if (!run) {
@@ -334,6 +347,26 @@ export default function RunMapScreen() {
     setShowBriefing(!helpStartsCollapsed);
     setShowTicketSummary(!helpStartsCollapsed);
   }, [helpStartsCollapsed, run?.runId]);
+
+  useEffect(() => {
+    if (!run || run.pendingReward || run.combatState || canRotateAtFloorStart) {
+      return;
+    }
+
+    if (!singleOpenChoice || currentNode?.id === singleOpenChoice.id) {
+      return;
+    }
+
+    void chooseCurrentNode(singleOpenChoice.id).catch(() => {
+      // Store captures the error for the UI.
+    });
+  }, [
+    canRotateAtFloorStart,
+    chooseCurrentNode,
+    currentNode?.id,
+    run,
+    singleOpenChoice,
+  ]);
 
   const handleAbandon = async () => {
     const result = await abandonCurrentRun();
@@ -546,23 +579,6 @@ export default function RunMapScreen() {
                 </View>
               ) : null}
 
-              {floorBeat ? (
-                <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>{floorBeat.title}</Text>
-                  <Text style={styles.panelBody}>{floorBeat.summary}</Text>
-                </View>
-              ) : null}
-
-              <View style={styles.panel}>
-                <Text style={styles.panelTitle}>How This Floor Works</Text>
-                <Text style={styles.panelBody}>{floorObjective}</Text>
-                {!helpStartsCollapsed ? (
-                  <Text style={styles.panelBody}>
-                    HP is your current run health. Chits are the currency you keep after the dive.
-                  </Text>
-                ) : null}
-              </View>
-
               {canRotateAtFloorStart ? (
                 <View style={styles.panel}>
                   <Text style={styles.panelTitle}>Floor Handoff</Text>
@@ -594,6 +610,194 @@ export default function RunMapScreen() {
                   </View>
                 </View>
               ) : null}
+
+              {run.pendingReward ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Reward Waiting</Text>
+                  <Text style={styles.panelBody}>
+                    Claim the current haul before you do anything else. This is the only forward path right now.
+                  </Text>
+                  <View style={styles.detailCard}>
+                    <DetailLine label="Package" value={run.pendingReward.title} />
+                    <DetailLine label="Chits" value={`+${run.pendingReward.metaCurrency}`} />
+                    <DetailLine label="Recovery" value={`+${run.pendingReward.runHealing} HP`} />
+                    <DetailLine
+                      label="Item"
+                      value={pendingRewardItem?.name ?? 'No item attached'}
+                    />
+                  </View>
+                  <View style={styles.actionGroup}>
+                    <GameButton
+                      label="Claim Reward"
+                      onPress={() => {
+                        router.push('/reward' as Href);
+                      }}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>Choose Your Next Stop</Text>
+                  <Text style={styles.panelBody}>
+                    Pick a room. Each card tells you if it is optional prep, the required fight, or the boss gate.
+                  </Text>
+                  <View style={styles.choiceList}>
+                    {floorChoices.map((node) => {
+                      const isSelected = node.id === currentNode?.id;
+                      const nodeRoute = getRunNodeRoute(node.kind);
+                      const requirementLabel = getRouteRequirementLabel(node);
+
+                      return (
+                        <Pressable
+                          key={node.id}
+                          style={[
+                            styles.choiceCard,
+                            isSelected ? styles.choiceCardSelected : null,
+                          ]}
+                          onPress={() => {
+                            void handleChooseRoute(node.id);
+                          }}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: isSelected }}
+                          accessibilityLabel={`${getRoleCue(node)} route. ${node.label}. ${node.description}`}
+                          accessibilityHint={
+                            isSelected
+                              ? 'Already selected. Use the Enter action below to continue into this room.'
+                              : `Double tap to select this route. ${summarizeRoute(node)}`
+                          }
+                        >
+                          <View style={styles.choiceHeader}>
+                            <View style={styles.choiceHeaderContent}>
+                              <View style={styles.choiceIconWrap}>
+                                <Image
+                                  source={getRouteNodeArtSource(node.kind, settings)}
+                                  style={styles.choiceIcon}
+                                  resizeMode="contain"
+                                />
+                              </View>
+                              <View style={styles.choiceTitleWrap}>
+                                <Text style={styles.choiceEyebrow}>
+                                  {getRoleCue(node)} | {requirementLabel}
+                                </Text>
+                                <Text style={styles.choiceTitle}>{node.label}</Text>
+                              </View>
+                            </View>
+                            {isSelected ? (
+                              <Text style={styles.choiceBadge}>Selected</Text>
+                            ) : null}
+                          </View>
+                          <Text style={styles.choiceBody}>{node.description}</Text>
+                          <Text style={styles.choiceHint}>{summarizeRoute(node)}</Text>
+                          {isSelected ? (
+                            <View style={styles.selectionDetailCard}>
+                              <View style={styles.choiceIconWrap}>
+                                <Image
+                                  source={getRouteNodeArtSource(node.kind, settings)}
+                                  style={styles.choiceIcon}
+                                  resizeMode="contain"
+                                />
+                              </View>
+                              <Text style={styles.selectionDetailName}>Selected route</Text>
+                              <Text style={styles.selectionDetailBody}>
+                                {requirementLabel}: {summarizeRoute(node)}
+                              </Text>
+                              <Text style={styles.selectionDetailBody}>
+                                If you go now, you are entering {node.label.toLowerCase()}.
+                              </Text>
+                              <GameButton
+                                label={`Enter ${node.label}`}
+                                onPress={() => {
+                                  recordRouteCommit({
+                                    runId: run.runId,
+                                    nodeId: node.id,
+                                    floorIndex: run.floorIndex,
+                                  });
+                                  void trackAnalyticsEvent('route_committed', {
+                                    runId: run.runId,
+                                    nodeId: node.id,
+                                    floorIndex: run.floorIndex,
+                                    kind: node.kind,
+                                  });
+                                  void trackAnalyticsEvent('room_entered', {
+                                    runId: run.runId,
+                                    nodeId: node.id,
+                                    floorIndex: run.floorIndex,
+                                    kind: node.kind,
+                                  });
+                                  router.push(nodeRoute as Href);
+                                }}
+                              />
+                            </View>
+                          ) : null}
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                  {singleOpenChoice && currentNode?.id !== singleOpenChoice.id ? (
+                    <View style={styles.selectionDetailCard}>
+                      <Text style={styles.selectionDetailName}>Only one room is open</Text>
+                      <Text style={styles.selectionDetailBody}>
+                        {singleOpenChoice.label}: {summarizeRoute(singleOpenChoice)}
+                      </Text>
+                      <GameButton
+                        label={`Enter ${singleOpenChoice.label}`}
+                        onPress={() => {
+                          recordRouteCommit({
+                            runId: run.runId,
+                            nodeId: singleOpenChoice.id,
+                            floorIndex: run.floorIndex,
+                          });
+                          void trackAnalyticsEvent('route_committed', {
+                            runId: run.runId,
+                            nodeId: singleOpenChoice.id,
+                            floorIndex: run.floorIndex,
+                            kind: singleOpenChoice.kind,
+                          });
+                          void trackAnalyticsEvent('room_entered', {
+                            runId: run.runId,
+                            nodeId: singleOpenChoice.id,
+                            floorIndex: run.floorIndex,
+                            kind: singleOpenChoice.kind,
+                          });
+                          router.push(getRunNodeRoute(singleOpenChoice.kind) as Href);
+                        }}
+                      />
+                    </View>
+                  ) : null}
+                  {currentNode ? (
+                    <View style={styles.actionGroup}>
+                      <GameButton
+                        label="Open Codex"
+                        onPress={() => {
+                          router.push('/codex?returnTo=%2Frun-map' as Href);
+                        }}
+                        variant="secondary"
+                      />
+                      <GameButton
+                        label="Employee Portal"
+                        onPress={() => {
+                          router.push('/' as Href);
+                        }}
+                        variant="secondary"
+                      />
+                    </View>
+                  ) : null}
+                </View>
+              )}
+
+              <View style={styles.panel}>
+                <Text style={styles.panelTitle}>Floor Read</Text>
+                <View style={styles.detailCard}>
+                  <Text style={styles.supportTitle}>{floorThemeTitle}</Text>
+                  <Text style={styles.supportBody}>{floorThemeBody}</Text>
+                </View>
+                <Text style={styles.panelBody}>{floorObjective}</Text>
+                {!helpStartsCollapsed ? (
+                  <Text style={styles.panelBody}>
+                    HP is your current run health. Chits are the currency you keep after the dive.
+                  </Text>
+                ) : null}
+              </View>
 
               {!run.pendingReward ? (
                 <View style={styles.panel}>
@@ -652,144 +856,6 @@ export default function RunMapScreen() {
                 </View>
               ) : null}
 
-              {run.pendingReward ? (
-                <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Reward Waiting</Text>
-                  <Text style={styles.panelBody}>
-                    Claim the current haul before you do anything else. This is the only forward path right now.
-                  </Text>
-                  <View style={styles.detailCard}>
-                    <DetailLine label="Package" value={run.pendingReward.title} />
-                    <DetailLine label="Chits" value={`+${run.pendingReward.metaCurrency}`} />
-                    <DetailLine label="Recovery" value={`+${run.pendingReward.runHealing} HP`} />
-                    <DetailLine
-                      label="Item"
-                      value={pendingRewardItem?.name ?? 'No item attached'}
-                    />
-                  </View>
-                  <View style={styles.actionGroup}>
-                    <GameButton
-                      label="Claim Reward"
-                      onPress={() => {
-                        router.push('/reward' as Href);
-                      }}
-                    />
-                  </View>
-                </View>
-              ) : (
-                <View style={styles.panel}>
-                  <Text style={styles.panelTitle}>Choose Your Next Stop</Text>
-                  <Text style={styles.panelBody}>
-                    Pick one room. The objective below tells you whether this floor needs a prep room, a boss gate, or just a straight advance.
-                  </Text>
-                  <LoopArtPanel
-                    title={currentNode ? 'Selected Route' : 'Route Preview'}
-                    body={
-                      currentNode
-                        ? `${currentNode.label}: ${summarizeRoute(currentNode)}`
-                        : 'Choose a route below to preview what comes next.'
-                    }
-                    ambientSource={runMapAmbientArtSource}
-                    source={selectedRouteArtSource}
-                    backgroundSource={runMapSurfaceArtSource}
-                    frameVariant="portrait"
-                  />
-                  <View style={styles.choiceList}>
-                    {floorChoices.map((node) => {
-                      const isSelected = node.id === currentNode?.id;
-
-                      return (
-                        <Pressable
-                          key={node.id}
-                          style={[
-                            styles.choiceCard,
-                            isSelected ? styles.choiceCardSelected : null,
-                          ]}
-                          onPress={() => {
-                            void handleChooseRoute(node.id);
-                          }}
-                          accessibilityRole="button"
-                          accessibilityState={{ selected: isSelected }}
-                          accessibilityLabel={`${getRoleCue(node)} route. ${node.label}. ${node.description}`}
-                          accessibilityHint={
-                            isSelected
-                              ? 'Already selected. Use the Enter action below to continue into this room.'
-                              : `Double tap to select this route. ${summarizeRoute(node)}`
-                          }
-                        >
-                          <View style={styles.choiceHeader}>
-                            <View style={styles.choiceHeaderContent}>
-                              <View style={styles.choiceIconWrap}>
-                                <Image
-                                  source={getRouteNodeArtSource(node.kind, settings)}
-                                  style={styles.choiceIcon}
-                                  resizeMode="contain"
-                                />
-                              </View>
-                              <View style={styles.choiceTitleWrap}>
-                                <Text style={styles.choiceEyebrow}>{getRoleCue(node)}</Text>
-                                <Text style={styles.choiceTitle}>{node.label}</Text>
-                              </View>
-                            </View>
-                            {isSelected ? (
-                              <Text style={styles.choiceBadge}>Selected</Text>
-                            ) : null}
-                          </View>
-                          <Text style={styles.choiceBody}>{node.description}</Text>
-                          <Text style={styles.choiceHint}>{summarizeRoute(node)}</Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                  {currentNode ? (
-                    <View style={styles.actionGroup}>
-                      <GameButton
-                        label={`Enter ${currentNode.label}`}
-                        onPress={() => {
-                          if (!currentNodeRoute) {
-                            void playUiSfx('invalid-tap', settings);
-                            return;
-                          }
-
-                          recordRouteCommit({
-                            runId: run.runId,
-                            nodeId: currentNode.id,
-                            floorIndex: run.floorIndex,
-                          });
-                          void trackAnalyticsEvent('route_committed', {
-                            runId: run.runId,
-                            nodeId: currentNode.id,
-                            floorIndex: run.floorIndex,
-                            kind: currentNode.kind,
-                          });
-                          void trackAnalyticsEvent('room_entered', {
-                            runId: run.runId,
-                            nodeId: currentNode.id,
-                            floorIndex: run.floorIndex,
-                            kind: currentNode.kind,
-                          });
-                          router.push(currentNodeRoute as Href);
-                        }}
-                      />
-                      <GameButton
-                        label="Open Codex"
-                        onPress={() => {
-                          router.push('/codex?returnTo=%2Frun-map' as Href);
-                        }}
-                        variant="secondary"
-                      />
-                      <GameButton
-                        label="Employee Portal"
-                        onPress={() => {
-                          router.push('/' as Href);
-                        }}
-                        variant="secondary"
-                      />
-                    </View>
-                  ) : null}
-                </View>
-              )}
-
               <View style={styles.panel}>
                 <Pressable
                     style={styles.toggleRow}
@@ -805,7 +871,7 @@ export default function RunMapScreen() {
                   }
                   accessibilityState={{ expanded: showCrewNotes }}
                 >
-                  <Text style={styles.panelTitle}>Fine Print</Text>
+                  <Text style={styles.panelTitle}>Loadout and Crew</Text>
                   <Text style={styles.toggleLabel}>
                     {showCrewNotes ? 'Hide' : 'Show'}
                   </Text>
@@ -867,7 +933,7 @@ export default function RunMapScreen() {
                   </>
                 ) : (
                   <Text style={styles.panelBody}>
-Class details, crew support, and gear stay parked here unless you want the fine print.
+                    Your class kit, crew support, and carried gear stay here when you need the deeper read.
                   </Text>
                 )}
               </View>
@@ -1322,6 +1388,28 @@ function createStyles(
       borderColor: colors.border,
       gap: spacing.xs + 2,
     },
+    selectionDetailCard: {
+      backgroundColor: colors.background,
+      borderWidth: 1,
+      borderColor: colors.borderStrong,
+      borderRadius: 14,
+      padding: 12,
+      gap: spacing.sm,
+    },
+    selectionDetailName: {
+      color: colors.accent,
+      fontSize: scaleFontSize(13, settings),
+      fontWeight: '800',
+      lineHeight: scaleLineHeight(18, settings),
+      textTransform: 'uppercase',
+      letterSpacing: 0.6 + (settings.dyslexiaAssistEnabled ? 0.16 : 0),
+    },
+    selectionDetailBody: {
+      color: colors.textMuted,
+      fontSize: scaleFontSize(13, settings),
+      lineHeight: scaleLineHeight(19, settings),
+      letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
     detailLine: {
       color: colors.textSecondary,
       fontSize: scaleFontSize(14, settings),
@@ -1384,9 +1472,4 @@ function createStyles(
     },
   });
 }
-
-
-
-
-
 

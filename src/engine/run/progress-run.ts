@@ -2,6 +2,7 @@ import type {
   RunMapState,
   RunNodeKind,
   RunNodeState,
+  RunNodeStatus,
   RunState,
 } from '@/src/types/run';
 import { createTimestamp } from '@/src/utils/time';
@@ -225,6 +226,19 @@ function cloneMap(map: RunMapState): RunMapState {
   };
 }
 
+function getFloorEntryNodeStatus(nodeKind: RunNodeKind): RunNodeStatus {
+  return nodeKind === 'boss' ? 'locked' : 'active';
+}
+
+function activateFloorNodes(
+  floor: RunMapState['floors'][number]
+) {
+  floor.status = 'active';
+  floor.nodes.forEach((node) => {
+    node.status = getFloorEntryNodeStatus(node.kind);
+  });
+}
+
 function findNodeLocation(map: RunMapState, nodeId: string): NodeLocation | null {
   for (let floorIndex = 0; floorIndex < map.floors.length; floorIndex += 1) {
     const nodeIndex = map.floors[floorIndex]?.nodes.findIndex(
@@ -264,6 +278,13 @@ export function resolveCurrentRunNode(run: RunState): ResolveCurrentNodeResult {
 
   currentNode.status = 'resolved';
 
+  const unresolvedBattleNode =
+    currentFloor.nodes.find(
+      (node) =>
+        node.id !== currentNode.id &&
+        node.kind === 'battle' &&
+        node.status !== 'resolved'
+    ) ?? null;
   const unresolvedBossNode =
     currentFloor.nodes.find(
       (node) =>
@@ -271,13 +292,41 @@ export function resolveCurrentRunNode(run: RunState): ResolveCurrentNodeResult {
         node.kind === 'boss' &&
         node.status !== 'resolved'
     ) ?? null;
+  const activeFollowUpNode = unresolvedBattleNode ?? unresolvedBossNode;
+
+  if (
+    (currentNode.kind === 'event' || currentNode.kind === 'reward') &&
+    activeFollowUpNode
+  ) {
+    if (unresolvedBossNode) {
+      unresolvedBossNode.status = 'locked';
+    }
+
+    return {
+      run: {
+        ...run,
+        currentNodeId: activeFollowUpNode.id,
+        map: nextMap,
+        updatedAt: createTimestamp(),
+      },
+      resolvedNode: { ...currentNode },
+      nextNode: { ...activeFollowUpNode },
+      advancedFloor: false,
+      completedRun: false,
+    };
+  }
 
   if (unresolvedBossNode && currentNode.kind !== 'boss') {
     currentFloor.nodes.forEach((node) => {
-      if (node.id !== currentNode.id && node.id !== unresolvedBossNode.id && node.status !== 'resolved') {
+      if (
+        node.id !== currentNode.id &&
+        node.id !== unresolvedBossNode.id &&
+        node.status !== 'resolved'
+      ) {
         node.status = 'resolved';
       }
     });
+    unresolvedBossNode.status = 'active';
 
     return {
       run: {
@@ -303,11 +352,11 @@ export function resolveCurrentRunNode(run: RunState): ResolveCurrentNodeResult {
   const nextFloor = nextMap.floors[location.floorIndex + 1] ?? null;
 
   if (nextFloor) {
-    nextFloor.status = 'active';
-    nextFloor.nodes.forEach((node) => {
-      node.status = 'active';
-    });
-    const nextFloorNode = nextFloor.nodes[0] ?? null;
+    activateFloorNodes(nextFloor);
+    const nextFloorNode =
+      nextFloor.nodes.find((node) => node.status === 'active') ??
+      nextFloor.nodes[0] ??
+      null;
 
     if (!nextFloorNode) {
       throw new Error('The next floor does not contain any nodes.');

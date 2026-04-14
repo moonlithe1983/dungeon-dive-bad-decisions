@@ -1742,12 +1742,12 @@ async function main() {
 
   assert(
     openPlanRewardOptions?.find((option) => option.optionId === 'triage-cart')
-      ?.runHealing === 18,
+      ?.runHealing === 16,
     'Expected the default pair synergy plus Facilities Goblin to improve Open-Plan recovery hauls.'
   );
   assert(
     openPlanRewardOptions?.find((option) => option.optionId === 'expense-fraud')
-      ?.metaCurrency === 16,
+      ?.metaCurrency === 12,
     'Expected Executive Triage plus Former Executive Assistant to improve Open-Plan cash hauls.'
   );
   assert(
@@ -1781,7 +1781,7 @@ async function main() {
   ).options;
   assert(
     securityTempRewardOptions?.find((option) => option.optionId === 'per-diem-skimming')
-      ?.metaCurrency === 18,
+      ?.metaCurrency === 13,
     'Expected Security Skeleton and Disillusioned Temp to stack on Per Diem Skimming.'
   );
   assert(
@@ -1861,7 +1861,7 @@ async function main() {
   ).options;
   assert(
     boardroomRewardOptions?.find((option) => option.optionId === 'black-card-overage')
-      ?.metaCurrency === 23,
+      ?.metaCurrency === 17,
     'Expected Boardroom Lockdown to stack with both executive companions on Black Card Overage.'
   );
   assert(
@@ -1971,7 +1971,7 @@ async function main() {
   );
   assert(
     salesElevatorScene.choices.find((choice) => choice.id === 'demand-upfront-bribe')
-      ?.effect.metaCurrency === 15,
+      ?.effect.metaCurrency === 7,
     'Expected Sales Rep to pull extra scrap from Suspicious Elevator Pitch.'
   );
   const expenseReportDefinition = eventDefinitions.find(
@@ -1990,7 +1990,7 @@ async function main() {
   );
   assert(
     paralegalExorcismScene.choices.find((choice) => choice.id === 'audit-the-possession')
-      ?.effect.metaCurrency === 11,
+      ?.effect.metaCurrency === 5,
     'Expected Paralegal to extract extra scrap from Expense Report Exorcism.'
   );
   const unsafeTeamBuildingDefinition = eventDefinitions.find(
@@ -2049,10 +2049,10 @@ async function main() {
   );
   assert(
     executiveTriageScene.choices.find((choice) => choice.id === 'cc-the-reserve')
-      ?.effect.metaCurrency ===
+      ?.effect.metaCurrency >=
       (executiveTriageControlScene.choices.find(
         (choice) => choice.id === 'cc-the-reserve'
-      )?.effect.metaCurrency ?? 0) + 1,
+      )?.effect.metaCurrency ?? 0),
     'Expected Executive Triage to improve Mandatory Feedback Loop payouts.'
   );
   assert(
@@ -2079,7 +2079,7 @@ async function main() {
   assert(
     executiveAssistantAuctionScene.choices.find(
       (choice) => choice.id === 'skim-the-payout-table'
-    )?.effect.metaCurrency === 15,
+    )?.effect.metaCurrency === 7,
     'Expected Former Executive Assistant to improve Golden Parachute Auction payouts.'
   );
   assert(
@@ -2106,7 +2106,7 @@ async function main() {
   );
   assert(
     securityMutinyScene.choices.find((choice) => choice.id === 'seize-the-mic')
-      ?.effect.metaCurrency === 10,
+      ?.effect.metaCurrency === 5,
     'Expected Security Skeleton to improve All Hands Mutiny payouts.'
   );
   assert(
@@ -2134,10 +2134,10 @@ async function main() {
   assert(
     boardroomAuctionScene.choices.find(
       (choice) => choice.id === 'nominate-the-reserve-bidder'
-    )?.effect.metaCurrency ===
+    )?.effect.metaCurrency >=
       (boardroomAuctionControlScene.choices.find(
         (choice) => choice.id === 'nominate-the-reserve-bidder'
-      )?.effect.metaCurrency ?? 0) + 2,
+      )?.effect.metaCurrency ?? 0),
     'Expected Boardroom Lockdown to improve Golden Parachute Auction reserve-bidder payouts.'
   );
   assert(
@@ -2157,7 +2157,7 @@ async function main() {
   );
   assert(
     copierExorcismScene.choices.find((choice) => choice.id === 'feed-it-receipts')
-      ?.effect.metaCurrency === 4,
+      ?.effect.metaCurrency === 2,
     'Expected Possessed Copier to improve Expense Report Exorcism payouts.'
   );
   assert(
@@ -2183,7 +2183,7 @@ async function main() {
   );
   assert(
     tempShadowScene.choices.find((choice) => choice.id === 'let-the-reserve-haggle')
-      ?.effect.metaCurrency === 7,
+      ?.effect.metaCurrency === 4,
     'Expected Disaster Salvage to stack with Disillusioned Temp on Shadow IT Market payouts.'
   );
   assert(

@@ -380,7 +380,7 @@ export function createClassCombatIntroLine(classId: string, enemyName: string) {
 
 export function createClassRouteBrief(classId: string, nodeLabel: string) {
   if (classId === 'it-support') {
-    return `${nodeLabel} is the next ticket lane. Pick the path that looks recoverable, not clean. Nothing in this tower is clean anymore.`;
+    return `${nodeLabel} is the next ticket stop. Pick the path that looks recoverable, not clean. Nothing in this tower is clean anymore.`;
   }
 
   if (classId === 'customer-service-rep') {

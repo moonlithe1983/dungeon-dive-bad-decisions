@@ -2,11 +2,17 @@
 
 Source spec: `C:/ddbd/dungeon_crawler_mobile_design_spec_codex.md`
 
-This is a living audit, not a marketing claim. Status values mean:
+This is a living compliance audit against the governing design contract, not a marketing claim. The source spec is now non-negotiable unless a newer explicit owner decision overrides part of it. Status values mean:
 
 - `met`: materially implemented in the current repo state.
 - `partial`: some meaningful support exists, but the full requirement is not satisfied yet.
 - `not yet`: not materially implemented in the current repo state.
+
+Interpretation rule:
+
+- A `partial` or `not yet` mark against a non-negotiable spec requirement is a real product gap.
+- Current runtime behavior does not overrule the spec.
+- Launch readiness must be argued from compliance with the spec, not from the fact that a weaker implementation already exists.
 
 ## Section Audit
 
@@ -36,7 +42,7 @@ This is a living audit, not a marketing claim. Status values mean:
 | `10. UX Principles` | `partial` | Menu flow and cause/effect are strong; advanced HUD/input customization is still missing. | `app/index.tsx`, `app/settings.tsx`, `src/components/game-button.tsx` |
 | `11. Accessibility and Universal Design` | `partial` | Visual, cognitive, and audio accessibility improved significantly; input accessibility remains incomplete. | `app/settings.tsx`, `app/_layout.tsx`, `src/state/systemAccessibilityStore.ts`, `src/audio/ui-sfx.ts` |
 | `12. User Agency Requirements` | `partial` | The player can inspect, replay tutorial, pause reading, and choose distinct rewards/events, but high-cost assist/remap systems are not there. | `app/onboarding.tsx`, `app/reward.tsx`, `app/event.tsx`, `app/settings.tsx` |
-| `13. Tutorials and Onboarding` | `partial` | The FTUE is now interactive, short, contextual, skippable, and replayable, but it is still a guided simulation rather than a full live run. | `app/onboarding.tsx`, `src/content/onboarding.ts` |
+| `13. Tutorials and Onboarding` | `partial` | The FTUE is now interactive, short, contextual, skippable, and replayable, but it is still a guided simulation rather than a full live run, which conflicts with the spec's stronger learn-by-doing expectation. | `app/onboarding.tsx`, `src/content/onboarding.ts` |
 | `14. Language, Copy, and Terminology` | `partial` | Voice and terminology are consistent, but localization-readiness is still limited. | `src/content/*`, `app/*` |
 | `15. Graphics and Art Direction Requirements` | `partial` | Art integration is strong and readability-aware, but the full action-game readability rules are only partially applicable. | `src/assets/*`, `src/components/loop-art-panel.tsx`, `app/run-map.tsx`, `app/battle.tsx` |
 | `16. Audio and Haptics Requirements` | `partial` | UI cues, haptics, toggle, and channel sliders exist, but full mix coverage and haptic intensity are not implemented. | `src/audio/ui-sfx.ts`, `src/haptics/ui-haptics.ts`, `app/settings.tsx` |
@@ -142,5 +148,6 @@ This is a living audit, not a marketing claim. Status values mean:
 1. Input accessibility is improved, but hardware controller input and broader global remapping are still missing.
 2. The spec's action-roguelite combat thesis is still only partially addressed: dodge/tempo and remapped action slots help, but the game remains fundamentally turn-based.
 3. Analytics can now validate against a generic remote endpoint, but the launch monitoring stance still needs to be chosen and proven, whether that means verified production telemetry or an explicit low-data alternative.
-4. Pacing, long-tail retention, and the premium-versus-free launch decision must be proven before release; the release gate is now documented in `docs/launch-postlaunch-retention-plan.md`.
-5. Live-ops content now has a documented quarterly roadmap, but the actual systems remain unimplemented.
+4. The current single 10-floor case-file runtime is not enough by itself to satisfy the spec's replayability and product-health bar; public launch should assume more scope or far stronger novelty unless outside testing proves otherwise.
+5. Pacing, long-tail retention, and the premium-versus-free launch decision must be proven before release; the release gate is now documented in `docs/launch-postlaunch-retention-plan.md`.
+6. Live-ops content now has a documented quarterly roadmap, but the actual systems remain unimplemented.

@@ -34,18 +34,18 @@ function pickRewardItemId(run: RunState, node: RunNodeState, slot = 'reward-item
 
 function getMetaCurrencyAward(sourceKind: RewardSourceKind, node: RunNodeState) {
   if (sourceKind === 'reward-node') {
-    return node.kind === 'reward' ? 7 : 5;
+    return node.kind === 'reward' ? 5 : 3;
   }
 
-  return node.kind === 'boss' ? 18 : 10;
+  return node.kind === 'boss' ? 10 : 6;
 }
 
 function getRunHealingAward(sourceKind: RewardSourceKind, node: RunNodeState) {
   if (sourceKind === 'reward-node') {
-    return node.kind === 'reward' ? 8 : 5;
+    return node.kind === 'reward' ? 6 : 4;
   }
 
-  return node.kind === 'boss' ? 0 : 5;
+  return node.kind === 'boss' ? 0 : 4;
 }
 
 function getRewardRoomBiomeId(node: RunNodeState): RewardRoomBiomeId {
@@ -84,7 +84,7 @@ function createRewardRoomOptions(
         label: 'Per Diem Skimming',
         description:
           'Pocket the retreat reimbursement float and leave the trust exercises to rot without you.',
-        metaCurrency: 14,
+        metaCurrency: 9,
         runHealing: 4,
         itemId: null,
       },
@@ -93,8 +93,8 @@ function createRewardRoomOptions(
         label: 'Wellness Cooler',
         description:
           'Strip the offsite recovery station for hydration, sugar, and enough supplies to make the next floor tolerable.',
-        metaCurrency: 5,
-        runHealing: 13,
+        metaCurrency: 3,
+        runHealing: 10,
         itemId: null,
       },
       {
@@ -103,8 +103,8 @@ function createRewardRoomOptions(
         description: contrabandItem
           ? `Rip open the premium retreat tote for ${contrabandItem.name} and a smaller mixed payout.`
           : 'Rip open the premium retreat tote for a smaller mixed payout and whatever useful junk survived.',
-        metaCurrency: 7 + rarityBonus,
-        runHealing: 7 + rarityBonus,
+        metaCurrency: 5 + rarityBonus,
+        runHealing: 6 + rarityBonus,
         itemId: contrabandItemId,
       },
     ]
@@ -115,7 +115,7 @@ function createRewardRoomOptions(
         label: 'Black Card Overage',
         description:
           'Take the executive slush money, leave the receipts screaming, and walk out before security rechecks the ledger.',
-        metaCurrency: 16,
+        metaCurrency: 10,
         runHealing: 3,
         itemId: null,
       },
@@ -124,8 +124,8 @@ function createRewardRoomOptions(
         label: 'Concierge Crash Cart',
         description:
           'Raid the luxury recovery kit for premium medicine, calm-down chemistry, and the will to keep climbing.',
-        metaCurrency: 6,
-        runHealing: 11,
+        metaCurrency: 4,
+        runHealing: 9,
         itemId: null,
       },
       {
@@ -134,8 +134,8 @@ function createRewardRoomOptions(
         description: contrabandItem
           ? `Steal the executive exit package for ${contrabandItem.name} and a sharper mixed payout.`
           : 'Steal the executive exit package for a sharper mixed payout and whatever elite contraband it still contains.',
-        metaCurrency: 9 + rarityBonus,
-        runHealing: 5 + rarityBonus,
+        metaCurrency: 6 + rarityBonus,
+        runHealing: 4 + rarityBonus,
         itemId: contrabandItemId,
       },
     ]
@@ -145,7 +145,7 @@ function createRewardRoomOptions(
       label: 'Expense Fraud Envelope',
       description:
         'Pocket the clean chits and leave before anyone asks why the drawer is lighter.',
-      metaCurrency: 12,
+      metaCurrency: 8,
       runHealing: 3,
       itemId: null,
     },
@@ -154,8 +154,8 @@ function createRewardRoomOptions(
       label: 'Triage Cart',
       description:
         'Burn the restock supplies on immediate recovery and push the next fight back a little.',
-      metaCurrency: 4,
-      runHealing: 12,
+      metaCurrency: 2,
+      runHealing: 10,
       itemId: null,
     },
     {
@@ -164,8 +164,8 @@ function createRewardRoomOptions(
       description: contrabandItem
         ? `Crack the marked locker for ${contrabandItem.name} and a smaller mixed payout.`
         : 'Crack the marked locker for a smaller mixed payout and whatever useful junk survived.',
-      metaCurrency: 6 + rarityBonus,
-      runHealing: 6 + rarityBonus,
+      metaCurrency: 4 + rarityBonus,
+      runHealing: 5 + rarityBonus,
       itemId: contrabandItemId,
     },
   ];

@@ -1,6 +1,6 @@
-# Dungeon Dive: Bad Decisions
+﻿# Dungeon Dive: Bad Decisions
 
-Premium mobile roguelite where a burned-out office worker gets dragged into a procedural corporate hellscape and turns workplace skills into combat classes.
+Offline mobile roguelite where a burned-out office worker gets dragged into a procedural corporate hellscape and turns workplace skills into combat classes.
 
 ## Premise
 
@@ -235,6 +235,7 @@ The game is in release-candidate hardening mode:
 - the April 8 pass added profile-backed combat remapping, controller-style action hints, a live dodge action in battle, and a vendor-neutral remote analytics adapter / validation surface
 - the April 8 retention pass added Truth / Roster / Relationship ladders, class truth-route framing, quarterly challenge score, optional probation contracts, and quick-clear bonus tracking across save, recap, hub, progression, class-select, and next-goal surfaces
 - the current app and markdown policy docs now agree that public gameplay remains offline-first while remote analytics validation is a dev-only, explicitly configured QA path
+- the April 14 GitHub readiness pass re-ran `npx tsc --noEmit`, `npm run audit:classes`, `npm run lint`, and `npm run smoke:sim`, refreshed the dated source-of-truth docs, and reconfirmed that the April 8 tester APK remains the current dated outside-share build until runtime source changes again
 - the April 6 pass fixed the reward-first post-battle progression path so victories now reliably land in reward claim before run advancement
 - the April 7 pass added a persistent first-run intro, clearer route-objective language, cleaner mandatory reward CTAs, plain-language defeat/status support, and finalized Play icon/feature-graphic treatment in the repo and app config
 - the current live build now exposes in-run Codex access, ticket-threaded recap copy, and `Employee Portal` wording across the loop
@@ -272,10 +273,12 @@ The game is in release-candidate hardening mode:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
+- `PROJECT_HANDOFF_2026-04-14.md`
+- `PROJECT_HANDOFF_2026-04-14.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-14.docx`
+- `docs/launch-postlaunch-retention-plan.md`
 - `PROJECT_HANDOFF_2026-04-08.md`
 - `PROJECT_HANDOFF_2026-04-08.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-08.docx`
-- `docs/launch-postlaunch-retention-plan.md`
 - `PROJECT_HANDOFF_2026-04-07.md`
 - `PROJECT_HANDOFF_2026-04-07.docx`
 - `PROJECT_HANDOFF_2026-04-06.md`

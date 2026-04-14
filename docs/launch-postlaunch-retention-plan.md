@@ -1,4 +1,4 @@
-# Launch / Post-Launch Retention Plan
+﻿# Launch / Post-Launch Retention Plan
 
 Version date: April 8, 2026
 Owner intent: pacing and long-tail retention must be fully tuned before public release. If the game cannot clearly justify a premium `US$3.99` launch through replay value, the launch path must be revisited in favor of a free route with optional paid upgrades, future games, or extras.
@@ -291,6 +291,6 @@ Before launch, collect proof in the same order the user experiences the product.
 Before release, the following must stay aligned:
 
 - `src/progression/next-goal.ts` should keep the post-win ladder framing explicit.
-- `README.md` and `PROJECT_HANDOFF_2026-04-08.md` should treat pacing, retention, and pricing fit as a real release gate.
+- `README.md` and `PROJECT_HANDOFF_2026-04-14.md` should treat pacing, retention, and pricing fit as a real release gate.
 - `docs/design-spec-audit.md` should continue marking retention and live-ops as incomplete until they are proven, not merely described.
 - Future class and event extensions should reinforce the class truth-route lenses instead of flattening them into generic combat variety.

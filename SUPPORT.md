@@ -1,6 +1,6 @@
 ﻿# Dungeon Dive: Bad Decisions Support
 
-Last updated: April 14, 2026
+Last updated: April 15, 2026
 
 ## Current Launch Defaults
 
@@ -17,6 +17,13 @@ A final public support inbox still needs to be confirmed before public release.
 Until that inbox is live, use the support contact listed with the storefront copy, distributor, or build channel that delivered the build.
 
 Support details may vary by region, storefront, or release channel.
+
+## Current Release Trust Notes
+
+- the intended public game model is still offline-first, single-player, and local-save by default
+- no production analytics or crash-reporting service should be assumed live for the public gameplay path unless a later release explicitly changes that
+- the native-dev `Smoke Lab` route and its optional remote analytics validation path are not part of the normal public release path
+- the April 15 tester APK in the workspace is the current guided smoke-test candidate and the April 8 tester APK is historical only
 
 ## Helpful Bug Report Details
 
@@ -42,6 +49,17 @@ If you report a problem, include:
 - the current build now explains route objectives, combat results, reward claims, and post-run guidance more plainly on first read
 - battle now supports a remappable action order, controller-style hint badges, and a new dodge action that adds a more defensive tempo choice to the turn loop
 - the native-dev `Smoke Lab` route now includes a vendor-neutral remote analytics validation surface, but that path is still dev-only and is not part of the public release build by default
-- the April 8 local release APK is still the latest dated outside-share artifact in the workspace, but it no longer represents the current rebooted repo state
+- the April 15 local release APK is now the latest dated outside-share artifact in the workspace
+- the April 8 tester APK remains historical only and should not be used as the current runtime reference
 - testers upgrading from a differently signed local build may need to uninstall the older package before installing the current tester APK
 - the `Smoke Lab` route is native-dev only and now surfaces local UX telemetry plus optional remote analytics validation for manual QA; it is not part of the public release build or support burden
+
+## Current Build Details
+
+The current app surfaces build details in-app for support and playtest use, including:
+
+- app version
+- Android package name
+- runtime type
+
+Include those fields with outside-test bug reports so notes can be matched back to the exact build that produced them.

@@ -1,6 +1,6 @@
 ﻿# Dungeon Dive: Bad Decisions Privacy Policy
 
-Last updated: April 14, 2026
+Last updated: April 15, 2026
 
 ## Current Scope
 
@@ -12,6 +12,12 @@ The current build does not require:
 - cloud sync
 - third-party sign-in
 - multiplayer identity
+
+## Current Release Stance
+
+The intended public release model is still offline-first, single-player, and local-save by default.
+
+No production analytics or crash-reporting service should be assumed live for the public gameplay path unless a later release explicitly changes that and updates the shipped policy text, in-app copy, and store declarations together.
 
 ## Data Stored On Device
 
@@ -49,3 +55,9 @@ A final public support inbox still needs to be confirmed before public release.
 Until that inbox is live, use the contact details listed with the storefront copy, distributor, or build channel that delivered the build.
 
 If a public privacy-policy URL is hosted for store submission later, it should mirror this repository copy and the released in-app policy text.
+
+## Current Build Details
+
+The app now surfaces its current build details in-app for support and outside-test reporting, including the app version, Android package, and runtime type.
+
+Use those details when matching a privacy or support report back to a specific test build.

@@ -302,7 +302,7 @@ Before launch, collect proof in the same order the user experiences the product.
 Before release, the following must stay aligned:
 
 - `src/progression/next-goal.ts` should keep the post-win ladder framing explicit.
-- `README.md` and `PROJECT_HANDOFF_2026-04-14.md` should treat pacing, retention, and pricing fit as a real release gate.
+- `README.md` and `PROJECT_HANDOFF_2026-04-15.md` should treat pacing, retention, and pricing fit as a real release gate.
 - `docs/design-spec-audit.md` should continue marking retention and live-ops as incomplete until they are proven, not merely described.
 - `docs/restart-plan.md`, `docs/vertical-slice-contract.md`, and `docs/rebuild-order.md` should stay aligned with the governing spec during the rebuild.
 - `docs/implementation-roadmap.md`, `docs/art-production-plan.md`, and `docs/audio-production-plan.md` should stay aligned with the governing spec and the rebooted slice goals.

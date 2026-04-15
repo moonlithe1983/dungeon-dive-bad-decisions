@@ -132,7 +132,8 @@ Expected output:
 Important notes:
 
 - a locally built release artifact currently exists at `android/app/build/outputs/apk/release/app-release.apk`
-- the current dated outside-tester share copy is `release/dungeon-dive-bad-decisions-android-tester-2026-04-08.apk`
+- the current dated outside-tester share copy is `release/dungeon-dive-bad-decisions-android-tester-2026-04-15.apk`
+- the April 8 tester APK is historical only and should not be treated as the current rebooted runtime reference
 - the Expo launcher now resolves the real workspace path before invoking Expo, so the current checked-out repo is the source you should rebuild from
 - before handing builds to testers or the store, rebuild the release APK from the final accepted source in the current repo checkout so the artifact is known current
 
@@ -249,11 +250,15 @@ The repo is in a controlled partial restart:
 
 For the current ship checklist and app-store readiness gate, use the latest handoff docs:
 
-- `PROJECT_HANDOFF_2026-04-14.md`
-- `PROJECT_HANDOFF_2026-04-14.docx`
-- `DUNGEON_DIVE_APP_NEEDS_2026-04-14.docx`
+- `PROJECT_HANDOFF_2026-04-15.md`
+- `PROJECT_HANDOFF_2026-04-15.docx`
+- `DUNGEON_DIVE_APP_NEEDS_2026-04-15.docx`
 - `docs/current-app-needs-source.md`
 - `docs/launch-postlaunch-retention-plan.md`
+- `docs/release-candidate-2026-04-15.md`
+- `docs/guided-first-session-test-plan.md`
+- `docs/google-play-data-safety-draft.md`
+- `docs/low-data-launch-evidence-plan.md`
 - `docs/restart-plan.md`
 - `docs/vertical-slice-contract.md`
 - `docs/rebuild-order.md`

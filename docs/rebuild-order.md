@@ -20,7 +20,7 @@ Keep the current implementation as a reference baseline.
 - `README.md`
 - `docs/launch-postlaunch-retention-plan.md`
 - `docs/design-spec-audit.md`
-- `PROJECT_HANDOFF_2026-04-14.md`
+- `PROJECT_HANDOFF_2026-04-15.md`
 
 Goal:
 

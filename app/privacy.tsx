@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -12,8 +13,17 @@ import {
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
+import { getBuildDetails } from '@/src/utils/build-info';
 
 const sections = [
+  {
+    title: 'Current Release Stance',
+    body: [
+      'The intended public model is offline-first, single-player, and local-save by default.',
+      'No production analytics or crash-reporting service is described as part of the public gameplay path yet.',
+      'If launch instrumentation or account-linked features are added later, the in-app policy text, store listing, and public policy URL must all be updated together before release.',
+    ],
+  },
   {
     title: 'How The Game Works',
     body: [
@@ -50,7 +60,12 @@ const sections = [
 
 export default function PrivacyScreen() {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const buildDetails = useMemo(() => getBuildDetails(), []);
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -88,6 +103,18 @@ export default function PrivacyScreen() {
           ))}
 
           <View style={styles.panel}>
+            <Text style={styles.panelTitle}>Current Build Details</Text>
+            <View style={styles.copyGroup}>
+              {buildDetails.map((detail) => (
+                <Text key={detail.label} style={styles.panelBody}>
+                  <Text style={styles.detailLabel}>{detail.label}: </Text>
+                  {detail.value}
+                </Text>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.panel}>
             <Text style={styles.panelTitle}>Actions</Text>
             <View style={styles.actionGroup}>
               <GameButton
@@ -120,7 +147,8 @@ export default function PrivacyScreen() {
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -132,7 +160,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -191,6 +222,10 @@ function createStyles(
       fontSize: scaleFontSize(14, settings),
       lineHeight: scaleLineHeight(21, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
     },
     actionGroup: {
       gap: spacing.sm + 2,

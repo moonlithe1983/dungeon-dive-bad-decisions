@@ -52,6 +52,7 @@ app-example
 
 # local tooling folders
 .gradle-local/
+.gradle-user/
 .codex-logs/
 .vscode/
 .tmp_app_needs_read/

@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameButton } from '@/src/components/game-button';
+import { useResponsiveLayout } from '@/src/hooks/use-responsive-layout';
 import {
   scaleFontSize,
   scaleLineHeight,
@@ -12,6 +13,7 @@ import {
 } from '@/src/theme/app-theme';
 import { spacing } from '@/src/theme/spacing';
 import type { ProfileSettingsState } from '@/src/types/profile';
+import { getBuildDetails } from '@/src/utils/build-info';
 
 const sections = [
   {
@@ -20,6 +22,14 @@ const sections = [
       'A final public support inbox still needs to be confirmed before release.',
       'Until that inbox is live, use the support contact listed with your storefront copy, distributor, or build channel.',
       'Support details may vary by region, storefront, or release channel.',
+    ],
+  },
+  {
+    title: 'Current Release Trust Notes',
+    body: [
+      'The public game model is still offline-first, single-player, and local-save by default.',
+      'The native-dev Smoke Lab route and its optional remote analytics validation tools are not part of the normal public gameplay path.',
+      'The April 15 tester APK in the repo is the current guided smoke-test candidate, and the April 8 tester APK is historical only.',
     ],
   },
   {
@@ -43,7 +53,12 @@ const sections = [
 
 export default function SupportScreen() {
   const { colors, settings } = useAppTheme();
-  const styles = useMemo(() => createStyles(settings, colors), [colors, settings]);
+  const layout = useResponsiveLayout();
+  const buildDetails = useMemo(() => getBuildDetails(), []);
+  const styles = useMemo(
+    () => createStyles(settings, colors, layout),
+    [colors, layout, settings]
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -82,6 +97,22 @@ export default function SupportScreen() {
           ))}
 
           <View style={styles.panel}>
+            <Text style={styles.panelTitle}>Current Build Details</Text>
+            <View style={styles.copyGroup}>
+              {buildDetails.map((detail) => (
+                <Text key={detail.label} style={styles.panelBody}>
+                  <Text style={styles.detailLabel}>{detail.label}: </Text>
+                  {detail.value}
+                </Text>
+              ))}
+              <Text style={styles.panelBody}>
+                Include these details with bug reports so outside-test notes can be
+                matched to the exact build that produced them.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.panel}>
             <Text style={styles.panelTitle}>Actions</Text>
             <View style={styles.actionGroup}>
               <GameButton
@@ -114,7 +145,8 @@ export default function SupportScreen() {
 
 function createStyles(
   settings: ProfileSettingsState,
-  colors: ReturnType<typeof useAppTheme>['colors']
+  colors: ReturnType<typeof useAppTheme>['colors'],
+  layout: ReturnType<typeof useResponsiveLayout>
 ) {
   return StyleSheet.create({
     safeArea: {
@@ -126,7 +158,10 @@ function createStyles(
     },
     shell: {
       flex: 1,
-      paddingHorizontal: spacing.lg,
+      width: '100%',
+      maxWidth: layout.maxContentWidth,
+      alignSelf: 'center',
+      paddingHorizontal: layout.shellPaddingHorizontal,
       paddingTop: spacing.md,
       paddingBottom: spacing.xxl,
       gap: spacing.lg,
@@ -185,6 +220,10 @@ function createStyles(
       fontSize: scaleFontSize(14, settings),
       lineHeight: scaleLineHeight(21, settings),
       letterSpacing: settings.dyslexiaAssistEnabled ? 0.16 : 0,
+    },
+    detailLabel: {
+      color: colors.textSubtle,
+      fontWeight: '700',
     },
     actionGroup: {
       gap: spacing.sm + 2,

@@ -42,7 +42,7 @@ These are not hard blockers because runtime fallbacks exist, but they should usu
   - review unlock copy and selection presentation for crowding
 - [progression.tsx](C:\ddbd\app\progression.tsx)
   - review unlock economy and next-goal messaging
-- [PROJECT_HANDOFF_2026-04-14.md](C:\ddbd\PROJECT_HANDOFF_2026-04-14.md)
+- [PROJECT_HANDOFF_2026-04-15.md](C:\ddbd\PROJECT_HANDOFF_2026-04-15.md)
   - update the current handoff if the class ships in the next live update
 
 ## Validation
